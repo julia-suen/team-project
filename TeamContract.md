@@ -17,6 +17,10 @@ This contract sets out shared expectations and commitments for how our team will
 
 * All communication will remain respectful, professional, and constructive, including actively listening to each team members ideas and giving everyone a chance to meaningfully contribute.
 
+### Work Quality
+* All deliverables should be completed on time, tested, and meet the agreed quality standard.
+* Members agree to review each other’s work constructively before submission.
+* Each Pull Request will be reviewed by at least two team members.
 
 ---
 
@@ -37,10 +41,9 @@ This contract sets out shared expectations and commitments for how our team will
 * Members should complete their share of the work in a timely manner, and should seek assistance from teammates/TAs/instructors when required.
 * Members will attend all scheduled classes and team meetings unless illness or emergencies occur.
 * If unable to attend, a member must notify the team 2 hours in advance.
-* If a teammate did not show up to lecture/lab, or fail to contribute to activities that are being graded, they would not be able to get that grade.
+* If a teammate did not show up to a lecture/lab, or fail to contribute to activities that are being graded, they would not be able to get that grade.
 * Persistent non-participation or failure to meet expectations may result in lower peer evaluation scores.
 * All members agree to provide honest and fair peer evaluations.
-
 ---
 
 By signing below, we acknowledge that we have read, discussed, and agreed to these terms. We understand that this contract is binding for the duration of the course and may be revised with the agreement of all team members.
