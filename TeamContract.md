@@ -39,7 +39,7 @@ This contract sets out shared expectations and commitments for how our team will
 ## Accountability
 
 * Members should complete their share of the work in a timely manner, and should seek assistance from teammates/TAs/instructors when required.
-* Members will attend all scheduled classes and team meetings unless illness or emergencies occur.
+* Members will show up to scheduled classes that involve graded content and team meetings unless illness or emergencies occur. 
 * If unable to attend, a member must notify the team 2 hours in advance.
 * If a teammate did not show up to a lecture/lab, or fail to contribute to activities that are being graded, they would not be able to get that grade.
 * Persistent non-participation or failure to meet expectations may result in lower peer evaluation scores.
