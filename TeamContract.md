@@ -54,7 +54,7 @@ Joseph Cheung <br>
 Sanjana Iyer <br>
 Perseus Dong <br>
 Angeline How <br>
-
+Yidan Xu <br>
 
 Date: October 8th, 2025
 
