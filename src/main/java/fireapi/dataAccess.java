@@ -51,7 +51,7 @@ public class dataAccess {
             String line;
             reader.readLine();
             while ((line = reader.readLine()) != null) {
-                String[] values = line.split(","); // Assuming comma as delimiter
+                String[] values = line.split(",");
                 System.out.println(Arrays.toString(values));
                 // process vals to array of floats for coords and array of obj for associated data
                 // only take vals that have nominal or high confidence (confidence == "n" or confidence == "h")
@@ -64,8 +64,6 @@ public class dataAccess {
                     dataPoints.put(coords, details);
                 }
 
-
-                System.out.println();
             }
             reader.close();
         } catch (Exception e) {
