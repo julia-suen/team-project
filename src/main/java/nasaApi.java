@@ -1,7 +1,18 @@
 //package nasaApi;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
+import java.io.IOException;
+import java.util.*;
 
 public class nasaApi {
 
@@ -19,10 +30,12 @@ public class nasaApi {
      * Fetch the list of sub breeds for the given breed from the dog.ceo API.
      *
      * @param dateRange an integer 1-10 specifying the number of days to fetch data for
-     * @param date      a start date from which to fetch data for
+     * @param date a start date from which to fetch data for
+     * @return dictionary with keys mapped to values needed (???)
+
      */
 
-    public void getFireData(int dateRange, String date) {
+    public List<String> getFireData(int dateRange, String date) {
         //consider returning a dictionary with keys diff attributes and associated values?
         final OkHttpClient client = new OkHttpClient();
         final String request_url = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/" + MAP_KEY + "/" + SOURCE +
@@ -31,6 +44,6 @@ public class nasaApi {
 
         // extract data from csv:
         // double latitude, double longitude, double brightTemp,
-        return ;
+        return [];
     }
 }
