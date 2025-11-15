@@ -30,7 +30,6 @@ public class MapView extends JFrame {
     zoomIn.setPreferredSize(buttonSize);
     zoomOut.setPreferredSize(buttonSize);
 
-
     // Center the map on Canada
     GeoPosition canada = new GeoPosition(56.1304, -106.3468);
     mapKit.setAddressLocation(canada);
