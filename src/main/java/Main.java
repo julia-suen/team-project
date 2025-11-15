@@ -1,13 +1,25 @@
-
-import view.MapView;
+import controller.DataFetchController;
+import controller.MapController;
+import controller.UserController;
+import view.MainFrame;
+import javax.swing.SwingUtilities;
 
 public class Main {
-    public static void main(String[] args) {
-        // Fix for Java + HTTPS issues
-        System.setProperty("jdk.tls.client.protocols", "TLSv1.2,TLSv1.3");
-        System.setProperty("java.net.useSystemProxies", "true");
-        System.setProperty("http.agent", "Mozilla/5.0");
+  public static void main(String[] args) {
+    SwingUtilities.invokeLater(() -> {
 
-        new MapView();
-    }
+      MainFrame mainFrame = new MainFrame();
+
+      DataFetchController dataFetcher = new DataFetchController();
+      MapController mapController = new MapController(
+        mainFrame.getMapView(),
+        mainFrame.getSidePanelView(),
+        dataFetcher
+      );
+
+      UserController userController = new UserController(mainFrame);
+
+      mainFrame.setVisible(true);
+    });
+  }
 }

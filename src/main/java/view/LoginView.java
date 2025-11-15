@@ -11,12 +11,29 @@ public class LoginView extends JDialog {
   public LoginView(JFrame parent) {
     super(parent, "Login", true);
 
-    setLayout(new FlowLayout());
-    add(new JLabel("Username:"));
-    add(usernameField);
-    add(new JLabel("Password:"));
-    add(passwordField);
-    add(loginButton);
+    JPanel mainPanel = new JPanel();
+    mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+
+    mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    // Username row
+    JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    userPanel.add(new JLabel("Username:"));
+    userPanel.add(usernameField);
+
+    // Password row
+    JPanel passPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    passPanel.add(new JLabel("Password:"));
+    passPanel.add(passwordField);
+
+    mainPanel.add(userPanel);
+    mainPanel.add(passPanel);
+    mainPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Vertical space
+    mainPanel.add(loginButton);
+
+    loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+    add(mainPanel);
 
     pack();
     setLocationRelativeTo(parent);
