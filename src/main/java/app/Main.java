@@ -1,16 +1,13 @@
-package fireapi;
+package app;
+
+import fireapi.dataAccess;
+import fireapi.getData;
 
 import java.util.HashMap;
 
-import java.io.BufferedReader;
-
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws getData.InvalidDataException {
 
         //delete later, for testing purposes
         String date = "2025-11-08";

@@ -1,7 +1,5 @@
 package fireapi;
 
-import java.sql.SQLOutput;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import java.io.BufferedReader;
@@ -14,7 +12,7 @@ public class dataAccess {
 
     /**
      * fireapi.dataAccess implementation that relies on the NRT VIIRS active fire API.
-     * Note that all failures get reported as DataNotFoundException
+     * Note that all failures get reported as InvalidDataException
      * exceptions to align with the requirements of the fireapi.dataAccess interface.
      */
 
@@ -27,23 +25,21 @@ public class dataAccess {
      *
      * @param dateRange an integer 1-10 specifying the number of days to fetch data for
      * @param date a start date from which to fetch data for
-     * @return dictionary with keys mapped to values needed (???)
+     * @return dataPoints a hashmap mapping each coordinate pair entry to values needed
 
      */
 
-    public static HashMap<float[], Object[]> getFireData(int dateRange, String date) {
+    public static HashMap<float[], Object[]> getFireData(int dateRange, String date)
+            throws getData.InvalidDataException {
         // the keys are an array of lat, long and the values are in order: brightTemp, confidence and daynight
-//        final OkHttpClient client = new OkHttpClient();
+
         final String request_url = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/" + MAP_KEY + "/" + SOURCE +
                 "/" + REGION + "/" + Integer.toString(dateRange) + "/" + date;
-//        final Request request = new Request.Builder().url(request_url).build();
 
         HashMap<float[], Object[]> dataPoints = new HashMap<>();
 
         // extract data from csv:
-
         try {
-            System.out.println(request_url);
             URL url = new URL(request_url);
             InputStream in = url.openStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -52,7 +48,7 @@ public class dataAccess {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] values = line.split(",");
-                System.out.println(Arrays.toString(values));
+
                 // process vals to array of floats for coords and array of obj for associated data
                 // only take vals that have nominal or high confidence (confidence == "n" or confidence == "h")
                 // String date, float brightTemp4, float brightTemp5, String confidence, String daynight
@@ -67,10 +63,8 @@ public class dataAccess {
             }
             reader.close();
         } catch (Exception e) {
-            // e.printStackTrace(); tb completed later
+            throw new getData.InvalidDataException();
         }
         return dataPoints;
     }
-
-
 }
