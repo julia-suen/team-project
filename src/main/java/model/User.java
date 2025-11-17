@@ -1,27 +1,28 @@
 package model;
 
 import org.jxmapviewer.viewer.GeoPosition;
+
 import java.util.HashSet;
 import java.util.Set;
 
 public class User {
-  private final String username;
-  private final Set<GeoPosition> favoriteLocations;
+	private final String username;
+	private final Set<GeoPosition> favoriteLocations;
 
-  public User(String username) {
-    this.username = username;
-    this.favoriteLocations = new HashSet<>();
-  }
+	public User(String username) {
+		this.username = username;
+		this.favoriteLocations = new HashSet<>();
+	}
 
-  public void addFavorite(GeoPosition location) {
-    this.favoriteLocations.add(location);
-  }
+	public void addFavorite(GeoPosition location) {
+		this.favoriteLocations.add(location);
+	}
 
-  public String getUsername() {
-    return username;
-  }
+	public String getUsername() {
+		return username;
+	}
 
-  public Set<GeoPosition> getFavoriteLocations() {
-    return favoriteLocations;
-  }
+	public Set<GeoPosition> getFavoriteLocations() {
+		return favoriteLocations;
+	}
 }

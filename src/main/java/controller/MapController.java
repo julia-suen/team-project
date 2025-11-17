@@ -9,33 +9,35 @@ import java.util.List;
 
 public class MapController {
 
-  private final MapView mapView;
-  private final SidePanelView sidePanelView;
-  private final DataFetchController dataFetcher;
+	private final MapView mapView;
+	private final SidePanelView sidePanelView;
+	private final DataFetchController dataFetcher;
 
-  private final FilterSettings currentFilters = new FilterSettings();
+	private final FilterSettings currentFilters = new FilterSettings();
 
-  public MapController(MapView mapView, SidePanelView sidePanelView, DataFetchController dataFetcher) {
-    this.mapView = mapView;
-    this.sidePanelView = sidePanelView;
-    this.dataFetcher = dataFetcher;
+	public MapController(MapView mapView, SidePanelView sidePanelView, DataFetchController dataFetcher) {
+		this.mapView = mapView;
+		this.sidePanelView = sidePanelView;
+		this.dataFetcher = dataFetcher;
 
-    addListeners();
-  }
+		addListeners();
+	}
 
-  private void addListeners() {
-    sidePanelView.getLoadFiresButton().addActionListener(e -> onLoadFiresClicked());
-  }
+	private void addListeners() {
+		sidePanelView.getLoadFiresButton().addActionListener(e -> onLoadFiresClicked());
+	}
 
-  private void onLoadFiresClicked() {
-    String selectedProvince = (String) sidePanelView.getProvinceSelector().getSelectedItem();
+	private void onLoadFiresClicked() {
+		String selectedProvince = (String) sidePanelView.getProvinceSelector().getSelectedItem();
 
-    currentFilters.setProvince(selectedProvince);
+		currentFilters.setProvince(selectedProvince);
 
-    List<WildfireEvent> fires = dataFetcher.getFires(currentFilters);
+		List<WildfireEvent> fires = dataFetcher.getFires(currentFilters);
 
-    for (WildfireEvent fire : fires) {
-      mapView.addFireMarker(fire.getLocation());
-    }
-  }
+		mapView.clearFires();
+
+		for (WildfireEvent fire : fires) {
+			mapView.addFireMarker(fire.getLocation(), fire.getRadius());
+		}
+	}
 }
