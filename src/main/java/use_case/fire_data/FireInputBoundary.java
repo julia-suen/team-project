@@ -1,7 +1,7 @@
-package fire_data;
+package use_case.fire_data;
 /**
  * The fire data analysis use case
- * it receives the input data request from the user and then 
+ * it receives the input data request from the user and then
  */
 public interface FireInputBoundary {
     /**

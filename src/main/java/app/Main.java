@@ -1,9 +1,11 @@
 package app;
 
+import entities.Coordinate;
 import fireapi.dataAccess;
 import fireapi.getData;
 
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -13,7 +15,7 @@ public class Main {
         String date = "2025-11-08";
         int days = 1;
 
-        HashMap<float[], Object[]> data = dataAccess.getFireData(days, date);
+        List<Coordinate> data = dataAccess.getFireData(days, date);
 
         System.out.println(data);
 

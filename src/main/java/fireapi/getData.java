@@ -10,7 +10,7 @@ import java.util.List;
 public interface getData {
     /**
      * Fetch fire data.
-     * @return a hashmap of coordinates mapped to their given data
+     * @return a list of coordinates and their given data
      * @throws InvalidDataException if an issue occurs when parsing invalid data
      */
     List<String> dataAccess() throws InvalidDataException;
