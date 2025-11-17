@@ -1,10 +1,10 @@
 package entities;
-import fireapi.getData;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Methods to generate a list of Fires from an unsorted list of coordinates.
@@ -12,13 +12,12 @@ import java.util.List;
 
 public class FireFactory {
 
-    /** TO REPLACE WITH ACTUAL IMPLEMENTATION IF THE BELOW IS A GOOD IDEA ...
+    /**
+     * TO REPLACE WITH ACTUAL IMPLEMENTATION IF THE BELOW IS A GOOD IDEA ...
      * idea to further categorize fire data: there are many fire points for one single wildfire.
      * group up points likely to be single fires by checking for small discrepancies in coords into Fire entities
-     *
      * then group all of those coords into one (set but not acc set) and set the center of the fire to the average
      * of the lats and longs of the coords
-     *
      * the radius of the fire is the number of the points sqrted??? or scaled somehow in terms of the
      * number of data points attributed to that fire.
      */
@@ -27,56 +26,60 @@ public class FireFactory {
     private static final double RADIUS_SCALE = 10;
     private static final String INVALID_DATA = "n/a";
 
-    public static List<List<Coordinate>> bundleDataPoints(List<Coordinate> data_points) {
-        List<List<Coordinate>> pt_bundles = new ArrayList<>();
-        List<Coordinate> constituting_pts = new ArrayList<>();
+    public static List<List<Coordinate>> bundleDataPoints(List<Coordinate> dataPoints) {
 
-        //sorts by both lat and lon simultaneously
-        data_points.sort(Comparator.comparingDouble((Coordinate p) -> p.lat)
-                .thenComparingDouble(p -> p.lon));
+        final List<List<Coordinate>> ptBundles = new ArrayList<>();
+        List<Coordinate> constitutingPts = new ArrayList<>();
+
+        // sorts by both lat and lon simultaneously
+        dataPoints.sort(Comparator.comparingDouble((Coordinate point) -> point.getLat())
+                .thenComparingDouble(point -> point.getLon()));
 
         Coordinate previous = null;
-        for (Coordinate coord : data_points) {
+        for (Coordinate coord : dataPoints) {
             if (previous == null) {
-                constituting_pts.add(coord);
+                constitutingPts.add(coord);
             }
             else {
-                if (Math.abs(previous.lat - coord.lat) < THRESHOLD &&
-                        Math.abs(previous.lon - coord.lon) < THRESHOLD) {
-                    constituting_pts.add(coord);
+                if (Math.abs(previous.getLat() - coord.getLat()) < THRESHOLD
+                        &&
+                        Math.abs(previous.getLon() - coord.getLon()) < THRESHOLD) {
+                    constitutingPts.add(coord);
                 }
-                else { // lat/lon diff was above threshold
-                    pt_bundles.add(constituting_pts);
-                    constituting_pts = new ArrayList<>();
-                    constituting_pts.add(coord);
+                // lat/lon diff was above threshold
+                else {
+                    ptBundles.add(constitutingPts);
+                    constitutingPts = new ArrayList<>();
+                    constitutingPts.add(coord);
                 }
             }
             previous = coord;
         }
-        pt_bundles.add(constituting_pts);
+        ptBundles.add(constitutingPts);
         
-        return pt_bundles;
+        return ptBundles;
     }
 
-    public static List<Fire> makeFireList(List<List<Coordinate>> pt_bundles){
+    public static List<Fire> makeFireList(List<List<Coordinate>> pt_bundles) {
         // pt_bundles is now a list of bundled fire points
-        //need to add logic for each bundle in pt_bundles, to calculate the centerpoint
+        // need to add logic for each bundle in pt_bundles, to calculate the centerpoint
         // coordinate and set it all to list of fire entities
         // marker will likely only be for the average values and the date day brightness will be invalid
         // THIS SHIT DOESNT SORT BY DATE IM GONNA KMS
 
-        List<Fire> fires = new ArrayList<>();
+        final List<Fire> fires = new ArrayList<>();
 
         for (List<Coordinate> bundle: pt_bundles) {
-            Coordinate center = getAvgCoordinate(bundle);
+            final Coordinate center = getAvgCoordinate(bundle);
 
-            bundle.sort(Comparator.comparingDouble(p -> p.lat));
-            double lat_diff = Math.abs(bundle.get(0).lat - bundle.get(bundle.size() - 1).lat);
-            double lon_diff = Math.abs(bundle.get(0).lon - bundle.get(bundle.size() - 1).lon);
-            double avg_diameter = lat_diff + lon_diff/2;
-            double radius = (avg_diameter/2) * RADIUS_SCALE; //replace with some appropriate scale
+            bundle.sort(Comparator.comparingDouble(point -> point.getLat()));
+            final double latDiff = Math.abs(bundle.get(0).getLat() - bundle.get(bundle.size() - 1).getLat());
+            final double lonDiff = Math.abs(bundle.get(0).getLon() - bundle.get(bundle.size() - 1).getLon());
+            final double avgDiameter = latDiff + lonDiff / 2;
+            final double radius = (avgDiameter / 2) * RADIUS_SCALE;
 
-            /** ask what is an appropriate radius like prolly need to play
+            /**
+             * ask what is an appropriate radius like prolly need to play
             *   around what if its a single fire and a huge dot
             */
 
@@ -95,23 +98,21 @@ public class FireFactory {
          * the given bundle.
          */
 
-        int num_fires =  bundle.size();
-        double sum_lats = 0;
-        double sum_lons = 0;
-        double bright_4 = 0;
-        double bright_5 = 0;
+        final int numFires = bundle.size();
+        double sumLats = 0;
+        double sumLons = 0;
+        double bright4 = 0;
+        double bright5 = 0;
 
         for (Coordinate pt: bundle) {
-            sum_lats += pt.lat;
-            sum_lons += pt.lon;
-            bright_4 += pt.brightness[0];
-            bright_5 += pt.brightness[1];
+            sumLats += pt.getLat();
+            sumLons += pt.getLon();
+            bright4 += pt.getBrightness()[0];
+            bright5 += pt.getBrightness()[1];
         }
 
-        Coordinate center = new Coordinate(sum_lats/num_fires, sum_lons/num_fires,
+        return new Coordinate(sumLats / numFires, sumLons / numFires,
                 new String[] {INVALID_DATA, INVALID_DATA, INVALID_DATA},
-                new double[] {bright_4/num_fires, bright_5/num_fires});
-
-        return center;
+                new double[] {bright4 / numFires, bright5 / numFires});
     }
 }

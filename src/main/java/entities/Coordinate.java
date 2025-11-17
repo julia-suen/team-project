@@ -6,14 +6,14 @@ package entities;
 
 public class Coordinate {
 
-    public final double lat;
-    public final double lon;
-    public final String[] date_day_confidence;
-    public final double[] brightness;
     private static final int LAT_UP_BOUNDARY = 90;
     private static final int LAT_LOW_BOUNDARY = -90;
     private static final int LON_UP_BOUNDARY = 180;
     private static final int LON_LOW_BOUNDARY = -180;
+    private final double lat;
+    private final double lon;
+    private final String[] dateDayConfidence;
+    private final double[] brightness;
 
     /**
      * Creates a coordinate with the given latitude, longitude, and other data.
@@ -32,8 +32,23 @@ public class Coordinate {
         }
         this.lat = lat;
         this.lon = lon;
-        this.date_day_confidence = date_day_confidence;
+        this.dateDayConfidence = date_day_confidence;
         this.brightness = brightness;
     }
 
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public String[] getDateDayConfidence() {
+        return dateDayConfidence;
+    }
+
+    public double[] getBrightness() {
+        return brightness;
+    }
 }

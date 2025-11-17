@@ -8,8 +8,7 @@ import java.util.List;
  */
 
 public class Fire {
-
-    private final double radius; // consider making int (?) depends on how u calc
+    private final double radius;
     private final Coordinate center;
     private final List<Coordinate> coordinates;
 
@@ -41,6 +40,4 @@ public class Fire {
     public List<Coordinate> getCoordinates() {
         return coordinates;
     }
-
-
 }

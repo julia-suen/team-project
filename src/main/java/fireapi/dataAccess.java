@@ -1,13 +1,13 @@
 package fireapi;
 
-import entities.Coordinate;
-import java.util.List;
-import java.util.ArrayList;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import entities.Coordinate;
 
 public class dataAccess {
 
@@ -20,6 +20,11 @@ public class dataAccess {
     private static final String MAP_KEY = "2f1f3b83b749cc2829c806c0e8e8959c";
     private static final String SOURCE = "VIIRS_SNPP_NRT";
     private static final String REGION = "world";
+    private static final int BRIGHT4_INDEX = 2;
+    private static final int DATE_INDEX = 5;
+    private static final int CONFIDENCE_INDEX = 9;
+    private static final int BRIGHT5_INDEX = 11;
+    private static final int DAYNIGHT_INDEX = 13;
 
     /**
      * Fetch the data for the given date and date range from the NRT VIIRS API.
@@ -27,43 +32,44 @@ public class dataAccess {
      * @param dateRange an integer 1-10 specifying the number of days to fetch data for
      * @param date a start date from which to fetch data for
      * @return dataPoints a hashmap mapping each coordinate pair entry to values needed
-
      */
 
     public static List<Coordinate> getFireData(int dateRange, String date)
             throws getData.InvalidDataException {
         // the keys are an array of lat, long and the values are in order: brightTemp, confidence and daynight
 
-        final String request_url = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/" + MAP_KEY + "/" + SOURCE +
-                "/" + REGION + "/" + Integer.toString(dateRange) + "/" + date;
+        final String requestUrl = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/" + MAP_KEY + "/" + SOURCE
+                + "/" + REGION + "/" + Integer.toString(dateRange) + "/" + date;
 
-        List<Coordinate> dataPoints = new ArrayList<>();
+        final List<Coordinate> dataPoints = new ArrayList<>();
 
         // extract data from csv:
         try {
-            URL url = new URL(request_url);
-            InputStream in = url.openStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            final URL url = new URL(requestUrl);
+            final InputStream in = url.openStream();
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
             String line;
             reader.readLine();
             while ((line = reader.readLine()) != null) {
-                String[] values = line.split(",");
+                final String[] values = line.split(",");
 
                 // process vals to array of floats for coords and array of obj for associated data
                 // only take vals that have nominal or high confidence (confidence == "n" or confidence == "h")
                 // String date, float brightTemp4, float brightTemp5, String confidence, String daynight
 
-                if (values[9].equals("n") || values[9].equals("h")) {
-                    Coordinate coord = new Coordinate(Float.parseFloat(values[0]), Float.parseFloat(values[1]),
-                            new String[]{values[5], values[13], values[9]},
-                            new double[]{Float.parseFloat(values[2]), Float.parseFloat(values[11])});
+                if (values[CONFIDENCE_INDEX].equals("n") || values[CONFIDENCE_INDEX].equals("h")) {
+                    final Coordinate coord = new Coordinate(Float.parseFloat(values[0]), Float.parseFloat(values[1]),
+                            new String[]{values[DATE_INDEX], values[DAYNIGHT_INDEX], values[CONFIDENCE_INDEX]},
+                            new double[]{Float.parseFloat(values[BRIGHT4_INDEX]),
+                                    Float.parseFloat(values[BRIGHT5_INDEX])});
                     dataPoints.add(coord);
                 }
-
             }
             reader.close();
-        } catch (Exception e) {
+        }
+
+        catch (Exception exception) {
             throw new getData.InvalidDataException();
         }
         return dataPoints;
