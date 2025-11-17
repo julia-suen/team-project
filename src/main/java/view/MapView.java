@@ -1,39 +1,127 @@
 package view;
 
-import org.jxmapviewer.viewer.GeoPosition;
+import org.jxmapviewer.JXMapViewer;
+import org.jxmapviewer.viewer.*;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.JXMapKit;
-import org.jxmapviewer.viewer.DefaultTileFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.HashSet;
+import java.util.Set;
 
-public class MapView extends JFrame {
+public class MapView extends JPanel {
 
-    public MapView() {
-        super("JXMapKit - Canada");
+	private final JXMapKit mapKit;
+	private final Set<FireWaypoint> waypoints;
+	private final WaypointPainter<FireWaypoint> waypointPainter;
 
-        // Create JXMapKit
-        JXMapKit mapKit = new JXMapKit();
+	public MapView() {
+		// Initialize waypoint fields
+		waypoints = new HashSet<>();
+		waypointPainter = new WaypointPainter<>();
+		waypointPainter.setRenderer(new FireWaypointRenderer());
+		waypointPainter.setWaypoints(waypoints);
 
-        // Use OpenStreetMap tiles
-        OSMTileFactoryInfo info = new OSMTileFactoryInfo();
-        DefaultTileFactory tileFactory = new DefaultTileFactory(info);
-        mapKit.setTileFactory(tileFactory);
+		setLayout(new BorderLayout());
 
-        // Center the map on Canada
-        GeoPosition canada = new GeoPosition(56.1304, -106.3468);
-        mapKit.setAddressLocation(canada);
+		mapKit = new JXMapKit();
 
-        // Zoom level (0=world)
-        mapKit.setZoom(4);
+		// Use OpenStreetMap tiles
+		OSMTileFactoryInfo info = new OSMTileFactoryInfo();
+		DefaultTileFactory tileFactory = new DefaultTileFactory(info);
+		mapKit.setTileFactory(tileFactory);
 
-        // Add to window
-        add(mapKit, BorderLayout.CENTER);
+		// Set the painter as an overlay
+		mapKit.getMainMap().setOverlayPainter(waypointPainter);
 
-        setSize(900, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setVisible(true);
-    }
+		// Adjust buttons size for zoom in/out
+		Dimension buttonSize = new Dimension(40, 40);
+		JButton zoomIn = mapKit.getZoomInButton();
+		JButton zoomOut = mapKit.getZoomOutButton();
+		zoomIn.setPreferredSize(buttonSize);
+		zoomOut.setPreferredSize(buttonSize);
+
+		// Center the map on Canada
+		GeoPosition canada = new GeoPosition(56.1304, -106.3468);
+		mapKit.setAddressLocation(canada);
+		mapKit.setZoom(4);
+
+		// Add mapKit to this JPanel
+		add(mapKit, BorderLayout.CENTER);
+	}
+
+	public void addFireMarker(GeoPosition location, double radius) {
+		// Create the custom waypoint with the radius
+		waypoints.add(new FireWaypoint(location, radius));
+
+		// Update the painter and repaint the map
+		waypointPainter.setWaypoints(waypoints);
+		mapKit.getMainMap().repaint();
+	}
+
+	public void clearFires() {
+		waypoints.clear();
+		waypointPainter.setWaypoints(waypoints);
+		mapKit.getMainMap().repaint();
+	}
+
+	public JXMapKit getMapKit() {
+		return mapKit;
+	}
+
+	public static class FireWaypoint extends DefaultWaypoint {
+		private final double radius;
+
+		public FireWaypoint(GeoPosition coord, double radius) {
+			super(coord);
+			this.radius = radius;
+		}
+
+		public double getRadius() {
+			return radius;
+		}
+	}
+
+	/**
+	 * Custom Renderer to draw the Red Circle
+	 */
+	public class FireWaypointRenderer implements WaypointRenderer<FireWaypoint> {
+
+		@Override
+		public void paintWaypoint(Graphics2D g, JXMapViewer map, FireWaypoint wp) {
+			// Convert GeoPosition to a point on the screen
+			Point2D centerPoint = map.getTileFactory().geoToPixel(wp.getPosition(), map.getZoom());
+
+			double distanceDegrees = wp.getRadius();
+
+			GeoPosition northPoint = new GeoPosition(
+					wp.getPosition().getLatitude() + distanceDegrees,
+					wp.getPosition().getLongitude()
+			);
+
+			Point2D radiusPoint = map.getTileFactory().geoToPixel(northPoint, map.getZoom());
+			double pixelRadius = Math.abs(centerPoint.getY() - radiusPoint.getY());
+
+			int radius = (int) pixelRadius;
+
+			// Enforce minimum size for visibility
+			if (radius < 5) {
+				radius = 5;
+			}
+
+			int diameter = radius * 2;
+
+			int x = (int) (centerPoint.getX() - radius);
+			int y = (int) (centerPoint.getY() - radius);
+
+			g.setColor(new Color(255, 0, 0, 100)); // Red with transparency (Alpha 100)
+			g.fillOval(x, y, diameter, diameter);
+
+			g.setColor(Color.RED); // Solid red border
+			g.setStroke(new BasicStroke(2));
+			g.drawOval(x, y, diameter, diameter);
+		}
+	}
 }
