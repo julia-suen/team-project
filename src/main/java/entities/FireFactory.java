@@ -23,7 +23,6 @@ public class FireFactory {
      */
 
     private static final double THRESHOLD = 0.001;
-    private static final double RADIUS_SCALE = 10;
     private static final String INVALID_DATA = "n/a";
 
     public static List<List<Coordinate>> bundleDataPoints(List<Coordinate> dataPoints) {
@@ -76,12 +75,7 @@ public class FireFactory {
             final double latDiff = Math.abs(bundle.get(0).getLat() - bundle.get(bundle.size() - 1).getLat());
             final double lonDiff = Math.abs(bundle.get(0).getLon() - bundle.get(bundle.size() - 1).getLon());
             final double avgDiameter = latDiff + lonDiff / 2;
-            final double radius = (avgDiameter / 2) * RADIUS_SCALE;
-
-            /**
-             * ask what is an appropriate radius like prolly need to play
-            *   around what if its a single fire and a huge dot
-            */
+            final double radius = avgDiameter / 2;
 
             fires.add(new Fire(radius, center, bundle));
 
