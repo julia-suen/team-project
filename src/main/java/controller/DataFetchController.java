@@ -21,7 +21,7 @@ public class DataFetchController {
 			fakeFires.add(new WildfireEvent(
 					"AB-001",
 					new GeoPosition(51.04, -114.07), // Calgary
-					50000,
+					0.5,
 					LocalDate.now(),
 					true, 320.0, 50.0
 			));
@@ -30,7 +30,7 @@ public class DataFetchController {
 			fakeFires.add(new WildfireEvent(
 					"BC-001",
 					new GeoPosition(49.28, -123.12), // Vancouver
-					25000,
+					0.25,
 					LocalDate.now(),
 					true, 340.0, 80.0
 			));

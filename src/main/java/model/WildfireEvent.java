@@ -9,14 +9,14 @@ public class WildfireEvent {
 	// State of the object
 	private final String id;
 	private final GeoPosition location;
-	private final int radius;
+	private final double radius;
 	private final LocalDate acquisitionDate;
 	private final boolean isDay;
 	private final double brightness;
 	private final double frp; // Fire Radiative Power
 
 	// Assigns the initial values to the fields
-	public WildfireEvent(String id, GeoPosition location, int radius, LocalDate acquisitionDate,
+	public WildfireEvent(String id, GeoPosition location, double radius, LocalDate acquisitionDate,
 	                     boolean isDay, double brightness, double frp) {
 		this.id = id;
 		this.location = location;
@@ -36,7 +36,7 @@ public class WildfireEvent {
 		return location;
 	}
 
-	public int getRadius() {
+	public double getRadius() {
 		return radius;
 	}
 

@@ -52,9 +52,9 @@ public class MapView extends JPanel {
 		add(mapKit, BorderLayout.CENTER);
 	}
 
-	public void addFireMarker(GeoPosition location, double radiusInMeters) {
+	public void addFireMarker(GeoPosition location, double radius) {
 		// Create the custom waypoint with the radius
-		waypoints.add(new FireWaypoint(location, radiusInMeters));
+		waypoints.add(new FireWaypoint(location, radius));
 
 		// Update the painter and repaint the map
 		waypointPainter.setWaypoints(waypoints);
@@ -94,7 +94,7 @@ public class MapView extends JPanel {
 			// Convert GeoPosition to a point on the screen
 			Point2D centerPoint = map.getTileFactory().geoToPixel(wp.getPosition(), map.getZoom());
 
-			double distanceDegrees = wp.getRadius() / 111111.0;     // Approximation: 1 degree latitude ~ 111111 meters
+			double distanceDegrees = wp.getRadius();
 
 			GeoPosition northPoint = new GeoPosition(
 					wp.getPosition().getLatitude() + distanceDegrees,
@@ -105,14 +105,16 @@ public class MapView extends JPanel {
 			double pixelRadius = Math.abs(centerPoint.getY() - radiusPoint.getY());
 
 			int radius = (int) pixelRadius;
+
+			// Enforce minimum size for visibility
 			if (radius < 5) {
 				radius = 5;
 			}
-			int diameter = radius * 2;
-			Point2D localPoint = map.getTileFactory().geoToPixel(wp.getPosition(), map.getZoom());
 
-			int x = (int) (localPoint.getX() - radius);
-			int y = (int) (localPoint.getY() - radius);
+			int diameter = radius * 2;
+
+			int x = (int) (centerPoint.getX() - radius);
+			int y = (int) (centerPoint.getY() - radius);
 
 			g.setColor(new Color(255, 0, 0, 100)); // Red with transparency (Alpha 100)
 			g.fillOval(x, y, diameter, diameter);
