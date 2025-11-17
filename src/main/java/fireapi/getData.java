@@ -3,7 +3,7 @@ package fireapi;
 import java.util.List;
 
 /**
- *  Interface getting all high confidence fire data points for a given date and time range.
+ *  DAO Interface getting all high confidence fire data points for a given date and time range.
  *  Allows for flexibility in database used.
  */
 

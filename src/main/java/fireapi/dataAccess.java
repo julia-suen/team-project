@@ -1,9 +1,10 @@
 package fireapi;
 
-import java.util.HashMap;
+import entities.Coordinate;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.io.BufferedReader;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -29,14 +30,14 @@ public class dataAccess {
 
      */
 
-    public static HashMap<float[], Object[]> getFireData(int dateRange, String date)
+    public static List<Coordinate> getFireData(int dateRange, String date)
             throws getData.InvalidDataException {
         // the keys are an array of lat, long and the values are in order: brightTemp, confidence and daynight
 
         final String request_url = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/" + MAP_KEY + "/" + SOURCE +
                 "/" + REGION + "/" + Integer.toString(dateRange) + "/" + date;
 
-        HashMap<float[], Object[]> dataPoints = new HashMap<>();
+        List<Coordinate> dataPoints = new ArrayList<>();
 
         // extract data from csv:
         try {
@@ -54,10 +55,10 @@ public class dataAccess {
                 // String date, float brightTemp4, float brightTemp5, String confidence, String daynight
 
                 if (values[9].equals("n") || values[9].equals("h")) {
-                    float[] coords = {Float.parseFloat(values[0]), Float.parseFloat(values[1])};
-                    Object[] details = {values[5], Float.parseFloat(values[2]), Float.parseFloat(values[11]),
-                            values[9], values[13]};
-                    dataPoints.put(coords, details);
+                    Coordinate coord = new Coordinate(Float.parseFloat(values[0]), Float.parseFloat(values[1]),
+                            new String[]{values[5], values[13], values[9]},
+                            new double[]{Float.parseFloat(values[2]), Float.parseFloat(values[11])});
+                    dataPoints.add(coord);
                 }
 
             }
