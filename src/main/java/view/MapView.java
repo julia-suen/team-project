@@ -22,6 +22,12 @@ public class MapView extends JPanel {
     private final JXMapKit mapKit;
     private final Set<FireWaypoint> waypoints;
     private final WaypointPainter<FireWaypoint> waypointPainter;
+    static final int MIN_ZOOM = 0;
+    static final int MAX_ZOOM = 15;
+    static final double MIN_LAT = 25.0;
+    static final double MAX_LAT = 75.0;
+    static final double MIN_LON = -170.0;
+    static final double MAX_LON = -50.0;
 
     public MapView() {
         waypoints = new HashSet<>();
@@ -66,24 +72,24 @@ public class MapView extends JPanel {
         mapKit.setAddressLocation(toronto);
         mapKit.setZoom(12);
 
-        // Zoom and map boundary limits
-        final int MIN_ZOOM = 7;
-        final int MAX_ZOOM = 15;
-        final double MIN_LAT = 25.0;
-        final double MAX_LAT = 83.0;
-        final double MIN_LON = -170.0;
-        final double MAX_LON = -50.0;
-
         map.addPropertyChangeListener("zoom", evt -> {
             int before = (Integer) evt.getOldValue();
             int after = (Integer) evt.getNewValue();
 
+            // Enforce zoom limits
             if (after < MIN_ZOOM || after > MAX_ZOOM) {
                 map.setZoom(before);
                 return;
             }
 
-            GeoPosition pos = map.getCenterPosition();
+            // Compute the true center based on viewport to avoid projection drift
+            Rectangle viewport = map.getViewportBounds();
+            Point2D trueCenterPixel = new Point2D.Double(
+                    viewport.getX() + viewport.getWidth() / 2.0,
+                    viewport.getY() + viewport.getHeight() / 2.0
+            );
+
+            GeoPosition pos = map.getTileFactory().pixelToGeo(trueCenterPixel, after);
             double lat = pos.getLatitude();
             double lon = pos.getLongitude();
 
@@ -91,7 +97,8 @@ public class MapView extends JPanel {
             double clampedLon = Math.max(MIN_LON, Math.min(MAX_LON, lon));
 
             if (lat != clampedLat || lon != clampedLon) {
-                map.setCenterPosition(new GeoPosition(clampedLat, clampedLon));
+                GeoPosition corrected = new GeoPosition(clampedLat, clampedLon);
+                map.setCenterPosition(corrected);
             }
         });
 
@@ -110,6 +117,13 @@ public class MapView extends JPanel {
         zoomIn.addActionListener(ev -> {
             int current = map.getZoom();
             if (current < MAX_ZOOM) {
+
+                // Lock center BEFORE zoom to prevent Arctic jump
+                GeoPosition c = map.getCenterPosition();
+                double lat = Math.max(MIN_LAT, Math.min(MAX_LAT, c.getLatitude()));
+                double lon = Math.max(MIN_LON, Math.min(MAX_LON, c.getLongitude()));
+                map.setCenterPosition(new GeoPosition(lat, lon));
+
                 smoothSetZoom(map, current + 1);
             }
         });
@@ -117,6 +131,13 @@ public class MapView extends JPanel {
         zoomOut.addActionListener(ev -> {
             int current = map.getZoom();
             if (current > MIN_ZOOM) {
+
+                // Lock center BEFORE zoom to prevent Arctic jump
+                GeoPosition c = map.getCenterPosition();
+                double lat = Math.max(MIN_LAT, Math.min(MAX_LAT, c.getLatitude()));
+                double lon = Math.max(MIN_LON, Math.min(MAX_LON, c.getLongitude()));
+                map.setCenterPosition(new GeoPosition(lat, lon));
+
                 smoothSetZoom(map, current - 1);
             }
         });
