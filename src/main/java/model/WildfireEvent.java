@@ -1,8 +1,8 @@
 package model;
 
-import org.jxmapviewer.viewer.GeoPosition;
-
 import java.time.LocalDate;
+
+import org.jxmapviewer.viewer.GeoPosition;
 
 public class WildfireEvent {
 
@@ -13,7 +13,8 @@ public class WildfireEvent {
 	private final LocalDate acquisitionDate;
 	private final boolean isDay;
 	private final double brightness;
-	private final double frp; // Fire Radiative Power
+ // Fire Radiative Power
+	private final double frp;
 
 	// Assigns the initial values to the fields
 	public WildfireEvent(String id, GeoPosition location, double radius, LocalDate acquisitionDate,

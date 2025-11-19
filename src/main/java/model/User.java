@@ -1,9 +1,9 @@
 package model;
 
-import org.jxmapviewer.viewer.GeoPosition;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org.jxmapviewer.viewer.GeoPosition;
 
 public class User {
 	private final String username;

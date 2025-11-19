@@ -7,23 +7,31 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Methods to generate a list of Fires from an unsorted list of coordinates.
+ * Methods to generate a list of Fires from an unsorted list of coordinates contained in a FireFactory object.
  */
 
 public class FireFactory {
 
-    /**
-     * TO REPLACE WITH ACTUAL IMPLEMENTATION IF THE BELOW IS A GOOD IDEA ...
-     * idea to further categorize fire data: there are many fire points for one single wildfire.
-     * group up points likely to be single fires by checking for small discrepancies in coords into Fire entities
-     * then group all of those coords into one (set but not acc set) and set the center of the fire to the average
-     * of the lats and longs of the coords
-     * the radius of the fire is the number of the points sqrted??? or scaled somehow in terms of the
-     * number of data points attributed to that fire.
-     */
-
     private static final double THRESHOLD = 0.001;
     private static final String INVALID_DATA = "n/a";
+    private final List<Coordinate> dataPoints;
+
+    /**
+     * Creates a FireFactory using a set of unparsed data points which can be parsed using the methods contained in
+     * this class.
+     * @param dataPoints the dataPoints to be sorted into Fire objects
+     */
+
+    public FireFactory(List<Coordinate> dataPoints) {
+        this.dataPoints = dataPoints;
+    }
+
+    /**
+     * Sorts Coordinate objects into bundles based off of differences in their latitude and longitude which either
+     * make them part of a single fire, or separate ones.
+     * @param dataPoints the dataPoints to be sorted into bundles of data points
+     * @return a List of Coordinate Lists, with each Coordinate List representing the data points of a single fire
+     */
 
     public static List<List<Coordinate>> bundleDataPoints(List<Coordinate> dataPoints) {
 
@@ -55,20 +63,21 @@ public class FireFactory {
             previous = coord;
         }
         ptBundles.add(constitutingPts);
-        
+
         return ptBundles;
     }
 
-    public static List<Fire> makeFireList(List<List<Coordinate>> pt_bundles) {
-        // pt_bundles is now a list of bundled fire points
-        // need to add logic for each bundle in pt_bundles, to calculate the centerpoint
-        // coordinate and set it all to list of fire entities
-        // marker will likely only be for the average values and the date day brightness will be invalid
-        // THIS SHIT DOESNT SORT BY DATE IM GONNA KMS
+    /**
+     * Sorts bundles of coordinates into Fire objects by calculating their centerpoint and radius.
+     * @param ptBundles the List containing bundles of coordinates to be sorted into Fire objects
+     * @return a List of Fires recognized using the bundles of data points given
+     */
+
+    public static List<Fire> makeFireList(List<List<Coordinate>> ptBundles) {
 
         final List<Fire> fires = new ArrayList<>();
 
-        for (List<Coordinate> bundle: pt_bundles) {
+        for (List<Coordinate> bundle: ptBundles) {
             final Coordinate center = getAvgCoordinate(bundle);
 
             bundle.sort(Comparator.comparingDouble(point -> point.getLat()));
@@ -83,14 +92,17 @@ public class FireFactory {
         return fires;
     }
 
+    /**
+     * Calculates the center/average point from bundle, a list of coordinates given and instantiates a new
+     * Coordinate with the values. The date_day_confidence attribute of the returned coordinate contains invalid
+     * data, and the brightness attribute of the returned point is the average brightnesses across all points in
+     * the given bundle.
+     * @param bundle the bundle of points for which to calculate average stats for
+     * @return a Coordinate object containing the average data of the bundle
+     */
+
     @NotNull
     private static Coordinate getAvgCoordinate(List<Coordinate> bundle) {
-        /**
-         * Calculates the center/average point from bundle, a list of coordinates given and instantiates a new
-         * Coordinate with the values. The date_day_confidence attribute of the returned coordinate contains invalid
-         * data, and the brightness attribute of the returned point is the average brightnesses across all points in
-         * the given bundle.
-         */
 
         final int numFires = bundle.size();
         double sumLats = 0;
