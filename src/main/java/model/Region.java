@@ -1,8 +1,8 @@
 package model;
 
-import org.jxmapviewer.viewer.GeoPosition;
-
 import java.util.List;
+
+import org.jxmapviewer.viewer.GeoPosition;
 
 /**
  * Model class representing a geographical region, like a province.

@@ -1,11 +1,11 @@
 package controller;
 
+import java.util.List;
+
 import model.FilterSettings;
 import model.WildfireEvent;
 import view.MapView;
 import view.SidePanelView;
-
-import java.util.List;
 
 public class MapController {
 
@@ -24,15 +24,16 @@ public class MapController {
 	}
 
 	private void addListeners() {
-		sidePanelView.getLoadFiresButton().addActionListener(e -> onLoadFiresClicked());
+		sidePanelView.getLoadFiresButton()
+                .addActionListener(event -> onLoadFiresClicked());
 	}
 
 	private void onLoadFiresClicked() {
-		String selectedProvince = (String) sidePanelView.getProvinceSelector().getSelectedItem();
+		final String selectedProvince = (String) sidePanelView.getProvinceSelector().getSelectedItem();
 
 		currentFilters.setProvince(selectedProvince);
 
-		List<WildfireEvent> fires = dataFetcher.getFires(currentFilters);
+		final List<WildfireEvent> fires = dataFetcher.getFires(currentFilters);
 
 		mapView.clearFires();
 
