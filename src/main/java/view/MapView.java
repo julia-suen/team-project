@@ -3,16 +3,21 @@ package view;
 import org.jxmapviewer.JXMapKit;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
+import org.jxmapviewer.input.PanKeyListener;
+import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.DefaultWaypoint;
 import org.jxmapviewer.viewer.GeoPosition;
+import org.jxmapviewer.viewer.TileFactory;
 import org.jxmapviewer.viewer.WaypointPainter;
 import org.jxmapviewer.viewer.WaypointRenderer;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,15 +27,23 @@ public class MapView extends JPanel {
     private final JXMapKit mapKit;
     private final Set<FireWaypoint> waypoints;
     private final WaypointPainter<FireWaypoint> waypointPainter;
+
     static final int MIN_ZOOM = 0;
-    static final int MAX_ZOOM = 15;
+    static final int MAX_ZOOM = 16;
+
     static final double MIN_LAT = 25.0;
     static final double MAX_LAT = 75.0;
     static final double MIN_LON = -170.0;
     static final double MAX_LON = -50.0;
 
+    private int zoomAccumulator = 0;
+    private static final int ZOOM_THRESHOLD = 3;
+
+    private boolean isEnforcingBounds = false;
+
     public MapView() {
         waypoints = new HashSet<>();
+
         waypointPainter = new WaypointPainter<>();
         waypointPainter.setRenderer(new FireWaypointRenderer());
         waypointPainter.setWaypoints(waypoints);
@@ -41,124 +54,169 @@ public class MapView extends JPanel {
         mapKit.setZoomSliderVisible(false);
         mapKit.setZoomButtonsVisible(true);
 
-        // Use OpenStreetMap tiles
         OSMTileFactoryInfo info = new OSMTileFactoryInfo();
         DefaultTileFactory tileFactory = new DefaultTileFactory(info);
         mapKit.setTileFactory(tileFactory);
 
-        // Attach waypoint painter to the main map
         JXMapViewer map = mapKit.getMainMap();
 
-        // Continuous zoom effect (Google Earth-style)
-        map.addMouseWheelListener(e -> {
-            double factor = (e.getWheelRotation() < 0) ? 1.1 : 0.9;
-            map.setZoom(map.getZoom());
-            map.repaint();
-            map.getGraphics().translate(
-                    (int)((1 - factor) * map.getWidth() / 2),
-                    (int)((1 - factor) * map.getHeight() / 2)
-            );
+        map.setBackground(new Color(181, 208, 208));
+
+        map.setFocusable(true);
+        map.requestFocusInWindow();
+
+        map.addMouseWheelListener(new MouseAdapter() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                zoomAccumulator += e.getWheelRotation();
+
+                if (Math.abs(zoomAccumulator) >= ZOOM_THRESHOLD) {
+
+                    GeoPosition positionUnderMouse = map.convertPointToGeoPosition(e.getPoint());
+
+                    int direction = (zoomAccumulator > 0) ? 1 : -1;
+                    int newZoom = map.getZoom() + direction;
+
+                    if (newZoom >= MIN_ZOOM && newZoom <= MAX_ZOOM) {
+                        map.setZoom(newZoom);
+
+                        map.setCenterPosition(positionUnderMouse);
+                    }
+
+                    zoomAccumulator = 0;
+                }
+            }
+        });
+
+        PanKeyListener panListener = new PanKeyListener(map);
+        map.addKeyListener(panListener);
+
+        PanMouseInputListener mouseListener = new PanMouseInputListener(map);
+        map.addMouseListener(mouseListener);
+        map.addMouseMotionListener(mouseListener);
+
+        map.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+                    if (map.getZoom() > 0) {
+                        map.setZoom(map.getZoom() - 1);
+                        map.requestFocusInWindow();
+                    }
+                }
+            }
         });
 
         map.setOverlayPainter(waypointPainter);
-
-        Dimension buttonSize = new Dimension(40, 40);
-        JButton zoomIn = mapKit.getZoomInButton();
-        JButton zoomOut = mapKit.getZoomOutButton();
-        zoomIn.setPreferredSize(buttonSize);
-        zoomOut.setPreferredSize(buttonSize);
 
         GeoPosition toronto = new GeoPosition(43.6532, -79.3832);
         mapKit.setAddressLocation(toronto);
         mapKit.setZoom(12);
 
+        // Bounds Enforcement using invokeLater
         map.addPropertyChangeListener("zoom", evt -> {
-            int before = (Integer) evt.getOldValue();
-            int after = (Integer) evt.getNewValue();
+            SwingUtilities.invokeLater(() -> enforceBounds(map));
+        });
 
-            // Enforce zoom limits
-            if (after < MIN_ZOOM || after > MAX_ZOOM) {
-                map.setZoom(before);
+        map.addPropertyChangeListener("centerPosition", evt -> enforceBounds(map));
+
+        map.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                enforceBounds(map);
+            }
+        });
+
+        setupZoomButtons(mapKit);
+
+        add(mapKit, BorderLayout.CENTER);
+    }
+
+    private void enforceBounds(JXMapViewer map) {
+        if (isEnforcingBounds) return;
+        isEnforcingBounds = true;
+
+        try {
+            int zoom = map.getZoom();
+
+            if (zoom < MIN_ZOOM) {
+                map.setZoom(MIN_ZOOM);
+                return;
+            }
+            if (zoom > MAX_ZOOM) {
+                map.setZoom(MAX_ZOOM);
                 return;
             }
 
-            // Compute the true center based on viewport to avoid projection drift
             Rectangle viewport = map.getViewportBounds();
-            Point2D trueCenterPixel = new Point2D.Double(
-                    viewport.getX() + viewport.getWidth() / 2.0,
-                    viewport.getY() + viewport.getHeight() / 2.0
-            );
+            TileFactory tf = map.getTileFactory();
 
-            GeoPosition pos = map.getTileFactory().pixelToGeo(trueCenterPixel, after);
-            double lat = pos.getLatitude();
-            double lon = pos.getLongitude();
+            Point2D topLeftLimit = tf.geoToPixel(new GeoPosition(MAX_LAT, MIN_LON), zoom);
+            Point2D botRightLimit = tf.geoToPixel(new GeoPosition(MIN_LAT, MAX_LON), zoom);
 
-            double clampedLat = Math.max(MIN_LAT, Math.min(MAX_LAT, lat));
-            double clampedLon = Math.max(MIN_LON, Math.min(MAX_LON, lon));
+            double halfWidth = viewport.getWidth() / 2.0;
+            double halfHeight = viewport.getHeight() / 2.0;
 
-            if (lat != clampedLat || lon != clampedLon) {
-                GeoPosition corrected = new GeoPosition(clampedLat, clampedLon);
-                map.setCenterPosition(corrected);
+            double minCenterX = topLeftLimit.getX() + halfWidth;
+            double maxCenterX = botRightLimit.getX() - halfWidth;
+
+            double minCenterY = topLeftLimit.getY() + halfHeight;
+            double maxCenterY = botRightLimit.getY() - halfHeight;
+
+            Point2D currentCenter = tf.geoToPixel(map.getCenterPosition(), zoom);
+            double newX = currentCenter.getX();
+            double newY = currentCenter.getY();
+
+            // Horizontal Logic
+            if (minCenterX > maxCenterX) {
+                newX = (topLeftLimit.getX() + botRightLimit.getX()) / 2.0;
+            } else {
+                newX = Math.max(minCenterX, Math.min(maxCenterX, newX));
             }
-        });
 
-        int initial = map.getZoom();
-        if (initial < MIN_ZOOM) map.setZoom(MIN_ZOOM);
-        if (initial > MAX_ZOOM) map.setZoom(MAX_ZOOM);
+            // Vertical Logic
+            if (minCenterY > maxCenterY) {
+                newY = (topLeftLimit.getY() + botRightLimit.getY()) / 2.0;
+            } else {
+                newY = Math.max(minCenterY, Math.min(maxCenterY, newY));
+            }
 
-        for (ActionListener al : zoomIn.getActionListeners()) {
-            zoomIn.removeActionListener(al);
+            if (Math.abs(newX - currentCenter.getX()) > 1.0 || Math.abs(newY - currentCenter.getY()) > 1.0) {
+                GeoPosition newPos = tf.pixelToGeo(new Point2D.Double(newX, newY), zoom);
+                map.setCenterPosition(newPos);
+            }
+
+        } finally {
+            isEnforcingBounds = false;
         }
-        for (ActionListener al : zoomOut.getActionListeners()) {
-            zoomOut.removeActionListener(al);
-        }
+    }
 
-        // Button-based zoom control
+    private void setupZoomButtons(JXMapKit kit) {
+        JButton zoomIn = kit.getZoomInButton();
+        JButton zoomOut = kit.getZoomOutButton();
+
+        // Preserve previous styling
+        Dimension buttonSize = new Dimension(40, 40);
+        zoomIn.setPreferredSize(buttonSize);
+        zoomOut.setPreferredSize(buttonSize);
+
+        for (ActionListener al : zoomIn.getActionListeners()) zoomIn.removeActionListener(al);
+        for (ActionListener al : zoomOut.getActionListeners()) zoomOut.removeActionListener(al);
+
+        // Restore focus after button click
         zoomIn.addActionListener(ev -> {
-            int current = map.getZoom();
-            if (current < MAX_ZOOM) {
-
-                // Lock center BEFORE zoom to prevent Arctic jump
-                GeoPosition c = map.getCenterPosition();
-                double lat = Math.max(MIN_LAT, Math.min(MAX_LAT, c.getLatitude()));
-                double lon = Math.max(MIN_LON, Math.min(MAX_LON, c.getLongitude()));
-                map.setCenterPosition(new GeoPosition(lat, lon));
-
-                smoothSetZoom(map, current + 1);
+            if (kit.getMainMap().getZoom() < MAX_ZOOM) {
+                kit.getMainMap().setZoom(kit.getMainMap().getZoom() + 1);
             }
+            kit.getMainMap().requestFocusInWindow();
         });
 
         zoomOut.addActionListener(ev -> {
-            int current = map.getZoom();
-            if (current > MIN_ZOOM) {
-
-                // Lock center BEFORE zoom to prevent Arctic jump
-                GeoPosition c = map.getCenterPosition();
-                double lat = Math.max(MIN_LAT, Math.min(MAX_LAT, c.getLatitude()));
-                double lon = Math.max(MIN_LON, Math.min(MAX_LON, c.getLongitude()));
-                map.setCenterPosition(new GeoPosition(lat, lon));
-
-                smoothSetZoom(map, current - 1);
+            if (kit.getMainMap().getZoom() > MIN_ZOOM) {
+                kit.getMainMap().setZoom(kit.getMainMap().getZoom() - 1);
             }
+            kit.getMainMap().requestFocusInWindow();
         });
-
-        map.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            @Override
-            public void mouseDragged(java.awt.event.MouseEvent e) {
-                GeoPosition pos = map.getCenterPosition();
-                double lat = pos.getLatitude();
-                double lon = pos.getLongitude();
-
-                double clampedLat = Math.max(MIN_LAT, Math.min(MAX_LAT, lat));
-                double clampedLon = Math.max(MIN_LON, Math.min(MAX_LON, lon));
-
-                if (lat != clampedLat || lon != clampedLon) {
-                    map.setCenterPosition(new GeoPosition(clampedLat, clampedLon));
-                }
-            }
-        });
-
-        add(mapKit, BorderLayout.CENTER);
     }
 
     public void addFireMarker(GeoPosition location, double radius) {
@@ -179,36 +237,28 @@ public class MapView extends JPanel {
 
     public static class FireWaypoint extends DefaultWaypoint {
         private final double radius;
-
         public FireWaypoint(GeoPosition coord, double radius) {
             super(coord);
             this.radius = radius;
         }
-
-        public double getRadius() {
-            return radius;
-        }
+        public double getRadius() { return radius; }
     }
 
     public class FireWaypointRenderer implements WaypointRenderer<FireWaypoint> {
         @Override
         public void paintWaypoint(Graphics2D g, JXMapViewer map, FireWaypoint wp) {
             Point2D centerPoint = map.getTileFactory().geoToPixel(wp.getPosition(), map.getZoom());
-
             double distanceDegrees = wp.getRadius();
 
             GeoPosition northPoint = new GeoPosition(
                     wp.getPosition().getLatitude() + distanceDegrees,
                     wp.getPosition().getLongitude()
             );
-
             Point2D radiusPoint = map.getTileFactory().geoToPixel(northPoint, map.getZoom());
-            double pixelRadius = Math.abs(centerPoint.getY() - radiusPoint.getY());
 
+            double pixelRadius = Math.abs(centerPoint.getY() - radiusPoint.getY());
             int radius = (int) pixelRadius;
-            if (radius < 5) {
-                radius = 5;
-            }
+            if (radius < 5) radius = 5;
 
             int diameter = radius * 2;
             int x = (int) (centerPoint.getX() - radius);
@@ -221,13 +271,5 @@ public class MapView extends JPanel {
             g.setStroke(new BasicStroke(2));
             g.drawOval(x, y, diameter, diameter);
         }
-    }
-
-    // Simple stepped zoom change
-    private void smoothSetZoom(JXMapViewer map, int targetZoom) {
-        int z = map.getZoom();
-        if (z == targetZoom) return;
-        map.setZoom(targetZoom);
-        map.repaint();
     }
 }
