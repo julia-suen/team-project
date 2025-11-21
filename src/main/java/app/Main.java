@@ -1,22 +1,27 @@
 package app;
 
-import entities.Coordinate;
-import fireapi.DataAccess;
-import fireapi.GetData;
-
-import java.util.List;
+import controller.DataFetchController;
+import controller.MapController;
+import controller.UserController;
+import view.MainFrame;
+import javax.swing.SwingUtilities;
 
 public class Main {
+  public static void main(String[] args) {
+    SwingUtilities.invokeLater(() -> {
 
-    public static void main(String[] args) throws GetData.InvalidDataException {
+      MainFrame mainFrame = new MainFrame();
 
-        //delete later, for testing purposes
-        String date = "2025-11-08";
-        int days = 1;
+      DataFetchController dataFetcher = new DataFetchController();
+      MapController mapController = new MapController(
+        mainFrame.getMapView(),
+        mainFrame.getSidePanelView(),
+        dataFetcher
+      );
 
-        List<Coordinate> data = DataAccess.getFireData(days, date);
+      UserController userController = new UserController(mainFrame);
 
-        System.out.println(data);
-
-    }
+      mainFrame.setVisible(true);
+    });
+  }
 }

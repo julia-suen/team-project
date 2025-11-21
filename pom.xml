@@ -54,6 +54,12 @@
             <artifactId>jxmapviewer2</artifactId>
             <version>msteiger-patch-1-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.lgooddatepicker</groupId>
+            <artifactId>LGoodDatePicker</artifactId>
+            <version>11.2.1</version> <!-- or whatever version you pick -->
+        </dependency>
     </dependencies>
 
 </project>

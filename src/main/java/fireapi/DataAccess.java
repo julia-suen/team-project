@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entities.Coordinate;
+import entities.FireFactory;
 
-public class DataAccess {
+public class DataAccess implements GetData {
 
     /**
      * DataAccess implementation that relies on the NRT VIIRS active fire API.
@@ -27,6 +28,12 @@ public class DataAccess {
     private static final int BRIGHT5_INDEX = 11;
     private static final int DAYNIGHT_INDEX = 13;
 
+    private final FireFactory fireFactory;
+
+    public DataAccess(FireFactory fireFactory) {
+        this.fireFactory = fireFactory;
+    }
+
     /**
      * Fetch the data for the given date and date range from the NRT VIIRS API.
      *
@@ -35,7 +42,8 @@ public class DataAccess {
      * @return dataPoints a hashmap mapping each coordinate pair entry to values needed
      */
 
-    public static List<Coordinate> getFireData(int dateRange, String date)
+    @Override
+    public List<Coordinate> getFireData(int dateRange, String date)
             throws GetData.InvalidDataException {
 
         final String requestUrl = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/" + MAP_KEY + SL + SOURCE
