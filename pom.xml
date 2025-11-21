@@ -49,6 +49,21 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- org.json for JSON parsing -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+            <classifier>javadoc</classifier>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.github.msteiger</groupId>
             <artifactId>jxmapviewer2</artifactId>

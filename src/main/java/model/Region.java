@@ -2,6 +2,7 @@ package model;
 
 import org.jxmapviewer.viewer.GeoPosition;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -11,12 +12,12 @@ public class Region {
 
 	private final String provinceName;
 	private final List<GeoPosition> boundary;
-	private final double susceptibilityScore;
+	// private final double susceptibilityScore;
 
 	public Region(String provinceName, List<GeoPosition> boundary, double susceptibilityScore) {
 		this.provinceName = provinceName;
 		this.boundary = boundary;
-		this.susceptibilityScore = susceptibilityScore;
+		// this.susceptibilityScore = susceptibilityScore;
 	}
 
 	public String getProvinceName() {
@@ -27,7 +28,7 @@ public class Region {
 		return boundary;
 	}
 
-	public double getSusceptibilityScore() {
-		return susceptibilityScore;
-	}
+//	public double getSusceptibilityScore() {
+//		return susceptibilityScore;
+//	}
 }

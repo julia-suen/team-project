@@ -1,4 +1,4 @@
-package fireapi;
+package data_access;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -9,7 +9,7 @@ import java.util.List;
 
 import entities.Coordinate;
 
-public class dataAccess {
+public class FireDataAccess {
 
     /**
      * fireapi.dataAccess implementation that relies on the NRT VIIRS active fire API.
