@@ -1,8 +1,7 @@
-package model;
+package entities;
 
 import org.jxmapviewer.viewer.GeoPosition;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,8 +13,9 @@ public class Region {
 	private final List<GeoPosition> boundary;
 	// private final double susceptibilityScore;
 
-	public Region(String provinceName, List<GeoPosition> boundary, double susceptibilityScore) {
-		this.provinceName = provinceName;
+	// public Region(String provinceName, List<GeoPosition> boundary, double susceptibilityScore) {
+    public Region(String provinceName, List<GeoPosition> boundary) {
+        this.provinceName = provinceName;
 		this.boundary = boundary;
 		// this.susceptibilityScore = susceptibilityScore;
 	}
