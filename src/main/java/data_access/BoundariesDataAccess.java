@@ -13,13 +13,13 @@ import org.jxmapviewer.viewer.GeoPosition;
 
 
 public class BoundariesDataAccess {
-    private static String[] PROVINCES = {
+    private static final String[] PROVINCES = {
             "Ontario", "Quebec", "British Columbia", "Alberta", "Manitoba", "Saskatchewan",
             "Nova Scotia", "New Brunswick", "Prince Edward Island", "Newfoundland and Labrador",
             "Yukon", "Nunavut", "Northwest Territories"
     };
 
-    private static Map<String, String> provincesToApi = new HashMap<String, String>() {{
+    private static final Map<String, String> provincesToApi = new HashMap<>() {{
         put("Ontario", "ontario");
         put("Quebec", "quebec");
         put("British Columbia", "british+columbia");
@@ -43,22 +43,41 @@ public class BoundariesDataAccess {
     }
 
     public void loadProvinces() throws getData.InvalidDataException {
+        // When program starts, this method is used to fetch the boundaries for all 13 provinces
+        // Data is then stored in the HashMap provincesToRegionMap
+        // When we need to which province the fire belongs, use the HashMap instead of calling API again
         for(String prov : PROVINCES) {
-            List<GeoPosition> boundary = getBoundariesData(prov);
+            List<List<GeoPosition>> boundary = getBoundariesData(prov);
             Region region = new Region(prov, boundary);
             provincesToRegionMap.put(prov, region);
         }
     }
 
-    public List<GeoPosition> getBoundariesData(String provinceName) throws getData.InvalidDataException{
+    public List<List<GeoPosition>> getBoundariesData(String provinceName) throws getData.InvalidDataException{
+        // fetch provinces' boundaries data from Nominatim API
+        // returns boundaries/polygon(s) for one province
         String provinceNameAPI =  provincesToApi.get(provinceName);
         Request request = new Request.Builder().url("https://nominatim.openstreetmap.org/search?q="+provinceNameAPI+"+canada&format=json&polygon_geojson=1&polygon_threshold=0.1").build();
         try (Response response = client.newCall(request).execute()) {
             JSONArray responseArray = new JSONArray(response.body().string());
             // parse JSON response and return Java ArrayList
-            JSONObject polygonObj = responseArray.getJSONObject(0).getJSONObject("geojson");
-            JSONArray coordinatesArray = polygonObj.getJSONArray("coordinates").getJSONArray(0);
-            return parseJsonCoordinates(coordinatesArray);
+            List<List<GeoPosition>> boundaries = new ArrayList<>();
+            JSONObject geoJsonObj = responseArray.getJSONObject(0).getJSONObject("geojson");
+            String polygonType = geoJsonObj.getString("type");
+            JSONArray coords = geoJsonObj.getJSONArray("coordinates");
+            if (polygonType.equals("Polygon")){
+                JSONArray outerRing = coords.getJSONArray(0);
+                boundaries.add(parsePolygon(outerRing));
+            }else if(polygonType.equals("MultiPolygon")){
+                // MultiPolygon: the boundaries are made up of more than one polygon
+                // Example: BC, Nunavut
+                for (int i = 0; i < coords.length(); i++) {
+                    JSONArray Jsonpolygon = coords.getJSONArray(i);
+                    List<GeoPosition> polygon = parsePolygon(Jsonpolygon.getJSONArray(0));
+                    boundaries.add(polygon);
+                }
+            }
+            return boundaries;
         // throw InvalidDataException if any error occurs when fetching boundaries data from API
         }catch (Exception e) {
             throw new getData.InvalidDataException();
@@ -66,12 +85,12 @@ public class BoundariesDataAccess {
 
     }
 
-    // helper of getBoundariesData to parse JSON
-    public static List<GeoPosition> parseJsonCoordinates(JSONArray coordinatesArray){
+    private static List<GeoPosition> parsePolygon(JSONArray ringArray){
+        // helper of getBoundariesData to parse JSON
         List<GeoPosition> polygon = new ArrayList<>();
-        for(int i = 0; i < coordinatesArray.length(); i++){
-            double lon = coordinatesArray.getJSONArray(i).getDouble(0);
-            double lat = coordinatesArray.getJSONArray(i).getDouble(1);
+        for(int i = 0; i < ringArray.length(); i++){
+            double lon = ringArray.getJSONArray(i).getDouble(0);
+            double lat = ringArray.getJSONArray(i).getDouble(1);
             GeoPosition coord = new GeoPosition(lat, lon);
             polygon.add(coord);
         }

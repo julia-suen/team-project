@@ -10,11 +10,11 @@ import java.util.List;
 public class Region {
 
 	private final String provinceName;
-	private final List<GeoPosition> boundary;
+	private final List<List<GeoPosition>> boundary;
 	// private final double susceptibilityScore;
 
 	// public Region(String provinceName, List<GeoPosition> boundary, double susceptibilityScore) {
-    public Region(String provinceName, List<GeoPosition> boundary) {
+    public Region(String provinceName, List<List<GeoPosition>> boundary) {
         this.provinceName = provinceName;
 		this.boundary = boundary;
 		// this.susceptibilityScore = susceptibilityScore;
@@ -24,7 +24,7 @@ public class Region {
 		return provinceName;
 	}
 
-	public List<GeoPosition> getBoundary() {
+	public List<List<GeoPosition>> getBoundary() {
 		return boundary;
 	}
 
