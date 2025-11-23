@@ -92,7 +92,7 @@ public class SidePanelView extends JPanel {
         add(Box.createVerticalStrut(SPACING_MEDIUM));
 
         // Day Range
-        final JLabel rangeLabel = new JLabel("Day Range (Standard Only):");
+        final JLabel rangeLabel = new JLabel("Day Range:");
         rangeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(rangeLabel);
 
