@@ -7,8 +7,8 @@ package use_case.fire_data;
 import entities.Coordinate;
 import entities.Fire;
 import entities.FireFactory;
-import fireapi.DataAccess;
-import fireapi.GetData;
+import data_access.FireDataAccess;
+import data_access.GetData;
 
 import java.util.List;
 

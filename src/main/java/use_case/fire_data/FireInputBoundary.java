@@ -1,6 +1,6 @@
 package use_case.fire_data;
 
-import fireapi.GetData;
+import data_access.GetData;
 
 /**
  * The fire data analysis input interface which specifies the general format expected for user input data.
