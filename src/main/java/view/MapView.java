@@ -200,23 +200,8 @@ public class MapView extends JPanel {
         zoomIn.setPreferredSize(buttonSize);
         zoomOut.setPreferredSize(buttonSize);
 
-        for (ActionListener al : zoomIn.getActionListeners()) zoomIn.removeActionListener(al);
-        for (ActionListener al : zoomOut.getActionListeners()) zoomOut.removeActionListener(al);
-
-        // Restore focus after button click
-        zoomIn.addActionListener(ev -> {
-            if (kit.getMainMap().getZoom() < MAX_ZOOM) {
-                kit.getMainMap().setZoom(kit.getMainMap().getZoom() + 1);
-            }
-            kit.getMainMap().requestFocusInWindow();
-        });
-
-        zoomOut.addActionListener(ev -> {
-            if (kit.getMainMap().getZoom() > MIN_ZOOM) {
-                kit.getMainMap().setZoom(kit.getMainMap().getZoom() - 1);
-            }
-            kit.getMainMap().requestFocusInWindow();
-        });
+        zoomIn.addActionListener(ev -> kit.getMainMap().requestFocusInWindow());
+        zoomOut.addActionListener(ev -> kit.getMainMap().requestFocusInWindow());
     }
 
     public void addFireMarker(GeoPosition location, double radius) {
