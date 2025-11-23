@@ -13,7 +13,8 @@ public interface GetData {
      * @return a list of coordinates and their given data
      * @throws InvalidDataException if an issue occurs when parsing invalid data
      */
-    List<String> dataAccess() throws InvalidDataException;
+    // commented out temporary for merging
+    // List<String> dataAccess() throws InvalidDataException;
 
     class InvalidDataException extends Exception {
         public InvalidDataException() {
