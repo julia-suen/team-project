@@ -1,4 +1,4 @@
-package fireapi;
+package data_access;
 
 import entities.Coordinate;
 
