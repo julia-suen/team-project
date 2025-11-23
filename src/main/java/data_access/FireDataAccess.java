@@ -9,10 +9,14 @@ import java.util.List;
 
 import entities.Coordinate;
 
+<<<<<<<< HEAD:src/main/java/data_access/FireDataAccess.java
 public class FireDataAccess {
+========
+public class DataAccess {
+>>>>>>>> main:src/main/java/data_access/DataAccess.java
 
     /**
-     * fireapi.dataAccess implementation that relies on the NRT VIIRS active fire API.
+     * DataAccess implementation that relies on the NRT VIIRS active fire API.
      * Note that all failures get reported as InvalidDataException
      * exceptions to align with the requirements of the fireapi.dataAccess interface.
      */
@@ -20,6 +24,7 @@ public class FireDataAccess {
     private static final String MAP_KEY = "2f1f3b83b749cc2829c806c0e8e8959c";
     private static final String SOURCE = "VIIRS_SNPP_NRT";
     private static final String REGION = "world";
+    private static final String SL = "/";
     private static final int BRIGHT4_INDEX = 2;
     private static final int DATE_INDEX = 5;
     private static final int CONFIDENCE_INDEX = 9;
@@ -35,11 +40,11 @@ public class FireDataAccess {
      */
 
     public static List<Coordinate> getFireData(int dateRange, String date)
-            throws getData.InvalidDataException {
+            throws GetData.InvalidDataException {
         // the keys are an array of lat, long and the values are in order: brightTemp, confidence and daynight
 
-        final String requestUrl = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/" + MAP_KEY + "/" + SOURCE
-                + "/" + REGION + "/" + Integer.toString(dateRange) + "/" + date;
+        final String requestUrl = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/" + MAP_KEY + SL + SOURCE
+                + SL + REGION + SL + Integer.toString(dateRange) + SL + date;
 
         final List<Coordinate> dataPoints = new ArrayList<>();
 
@@ -70,7 +75,7 @@ public class FireDataAccess {
         }
 
         catch (Exception exception) {
-            throw new getData.InvalidDataException();
+            throw new GetData.InvalidDataException();
         }
         return dataPoints;
     }

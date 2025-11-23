@@ -1,12 +1,13 @@
 package controller;
 
-import model.FilterSettings;
-import model.WildfireEvent;
-import org.jxmapviewer.viewer.GeoPosition;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jxmapviewer.viewer.GeoPosition;
+
+import model.FilterSettings;
+import model.WildfireEvent;
 
 public class DataFetchController {
 
@@ -15,7 +16,7 @@ public class DataFetchController {
 
 	public List<WildfireEvent> getFires(FilterSettings filters) {
 
-		List<WildfireEvent> fakeFires = new ArrayList<>();
+		final List<WildfireEvent> fakeFires = new ArrayList<>();
 
 		if (filters.getProvince().equals("Alberta") || filters.getProvince().equals("All")) {
 			fakeFires.add(new WildfireEvent(

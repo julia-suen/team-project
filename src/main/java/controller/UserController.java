@@ -1,11 +1,11 @@
 package controller;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
 import model.User;
 import view.LoginView;
 import view.MainFrame;
-
-import javax.swing.JOptionPane;
-import javax.swing.JDialog;
 
 public class UserController {
 
@@ -21,17 +21,18 @@ public class UserController {
 	 * Creates and displays the modal login dialog.
 	 */
 	public void requestLogin() {
-		LoginView loginDialog = new LoginView(mainFrame);
+		final LoginView loginDialog = new LoginView(mainFrame);
 
-		loginDialog.getLoginButton().addActionListener(e -> {
-			String username = loginDialog.getUsername();
+		loginDialog.getLoginButton().addActionListener(event -> {
+			final String username = loginDialog.getUsername();
 
 			if (username != null && !username.trim().isEmpty()) {
 				this.currentUser = new User(username);
 				mainFrame.setTitle("Logged in as: " + this.currentUser.getUsername());
 
 				loginDialog.dispose();
-			} else {
+			}
+            else {
 				showErrorMessage(loginDialog, "Username cannot be empty.");
 			}
 		});

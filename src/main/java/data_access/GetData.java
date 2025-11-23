@@ -7,7 +7,7 @@ import java.util.List;
  *  Allows for flexibility in database used.
  */
 
-public interface getData {
+public interface GetData {
     /**
      * Fetch fire data.
      * @return a list of coordinates and their given data
