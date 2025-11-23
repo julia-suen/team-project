@@ -93,6 +93,7 @@ public class FireFactory {
     }
 
     /**
+     * Helper method for makeFireList.
      * Calculates the center/average point from bundle, a list of coordinates given and instantiates a new
      * Coordinate with the values. The date_day_confidence attribute of the returned coordinate contains invalid
      * data, and the brightness attribute of the returned point is the average brightnesses across all points in
@@ -120,5 +121,9 @@ public class FireFactory {
         return new Coordinate(sumLats / numFires, sumLons / numFires,
                 new String[] {INVALID_DATA, INVALID_DATA, INVALID_DATA},
                 new double[] {bright4 / numFires, bright5 / numFires});
+    }
+
+    public List<Coordinate> getDataPoints() {
+        return dataPoints;
     }
 }

@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entities.Coordinate;
+import entities.FireFactory;
 
-public class DataAccess {
+public class DataAccess implements GetData {
 
     /**
      * DataAccess implementation that relies on the NRT VIIRS active fire API.
@@ -27,6 +28,12 @@ public class DataAccess {
     private static final int BRIGHT5_INDEX = 11;
     private static final int DAYNIGHT_INDEX = 13;
 
+    private final FireFactory fireFactory;
+
+    public DataAccess(FireFactory fireFactory) {
+        this.fireFactory = fireFactory;
+    }
+
     /**
      * Fetch the data for the given date and date range from the NRT VIIRS API.
      *
@@ -35,16 +42,16 @@ public class DataAccess {
      * @return dataPoints a hashmap mapping each coordinate pair entry to values needed
      */
 
-    public static List<Coordinate> getFireData(int dateRange, String date)
+    @Override
+    public List<Coordinate> getFireData(int dateRange, String date)
             throws GetData.InvalidDataException {
-        // the keys are an array of lat, long and the values are in order: brightTemp, confidence and daynight
 
         final String requestUrl = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/" + MAP_KEY + SL + SOURCE
-                + SL + REGION + SL + Integer.toString(dateRange) + SL + date;
+                + SL + REGION + SL + dateRange + SL + date;
 
         final List<Coordinate> dataPoints = new ArrayList<>();
 
-        // extract data from csv:
+        // extract data from url:
         try {
             final URL url = new URL(requestUrl);
             final InputStream in = url.openStream();
@@ -55,10 +62,7 @@ public class DataAccess {
             while ((line = reader.readLine()) != null) {
                 final String[] values = line.split(",");
 
-                // process vals to array of floats for coords and array of obj for associated data
                 // only take vals that have nominal or high confidence (confidence == "n" or confidence == "h")
-                // String date, float brightTemp4, float brightTemp5, String confidence, String daynight
-
                 if (values[CONFIDENCE_INDEX].equals("n") || values[CONFIDENCE_INDEX].equals("h")) {
                     final Coordinate coord = new Coordinate(Float.parseFloat(values[0]), Float.parseFloat(values[1]),
                             new String[]{values[DATE_INDEX], values[DAYNIGHT_INDEX], values[CONFIDENCE_INDEX]},

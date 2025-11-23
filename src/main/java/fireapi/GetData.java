@@ -1,5 +1,7 @@
 package fireapi;
 
+import entities.Coordinate;
+
 import java.util.List;
 
 /**
@@ -8,12 +10,12 @@ import java.util.List;
  */
 
 public interface GetData {
+
     /**
      * Fetch fire data.
-     * @return a list of coordinates and their given data
      * @throws InvalidDataException if an issue occurs when parsing invalid data
      */
-    List<String> dataAccess() throws InvalidDataException;
+    List<Coordinate> getFireData(int dateRange, String date) throws InvalidDataException;
 
     class InvalidDataException extends Exception {
         public InvalidDataException() {
