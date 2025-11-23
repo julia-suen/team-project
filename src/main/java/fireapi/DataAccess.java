@@ -43,11 +43,16 @@ public class DataAccess implements GetData {
      */
 
     @Override
-    public List<Coordinate> getFireData(int dateRange, String date)
-            throws GetData.InvalidDataException {
+    public List<Coordinate> getFireData(int dateRange, String date) throws GetData.InvalidDataException {
+        return getFireData(dateRange, date, REGION);
+    }
+
+    @Override
+    public List<Coordinate> getFireData(int dateRange, String date, String boundingBox) throws InvalidDataException {
+        if (dateRange > 10) dateRange = 10;
 
         final String requestUrl = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/" + MAP_KEY + SL + SOURCE
-                + SL + REGION + SL + dateRange + SL + date;
+                + SL + boundingBox + SL + dateRange + SL + date;
 
         final List<Coordinate> dataPoints = new ArrayList<>();
 

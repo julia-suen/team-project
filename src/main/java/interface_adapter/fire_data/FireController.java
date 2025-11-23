@@ -1,9 +1,9 @@
 package interface_adapter.fire_data;
 
-import fireapi.GetData;
 import use_case.fire_data.FireInputBoundary;
 import use_case.fire_data.FireInputData;
-import use_case.fire_data.FireInteractor;
+
+import javax.swing.SwingWorker;
 
 /**
  * Controller for the fire analysis use case
@@ -15,15 +15,20 @@ public class FireController {
         this.fireInteractor = fireInteractor;
     }
 
-    /**
-     * Executes the Wildfire analysis use case.
-     * @param date the given date
-     * @param dateRange the day range requested
-     */
-
-    public void execute(String date, int dateRange) throws GetData.InvalidDataException {
-        final FireInputData fireInputData = new FireInputData(date, dateRange);
-
-        fireInteractor.execute(fireInputData);
+    public void execute(String date, int dateRange, boolean isNational) {
+        // Run on background thread to prevent UI freezing during multiple API calls
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                FireInputData inputData = new FireInputData(date, dateRange, isNational);
+                try {
+                    fireInteractor.execute(inputData);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        worker.execute();
     }
 }

@@ -1,44 +1,86 @@
 package controller;
 
+import entities.Fire;
+import interface_adapter.fire_data.FireController;
+import interface_adapter.fire_data.FireState;
+import interface_adapter.fire_data.FireViewModel;
+import view.MainFrame;
+
+import javax.swing.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import model.FilterSettings;
-import model.WildfireEvent;
-import view.MapView;
-import view.SidePanelView;
+public class MapController implements PropertyChangeListener {
 
-public class MapController {
+    private final MainFrame mainFrame;
+    private final FireController fireController;
+    private final FireViewModel fireViewModel;
 
-	private final MapView mapView;
-	private final SidePanelView sidePanelView;
-	private final DataFetchController dataFetcher;
+    public MapController(MainFrame mainFrame, FireController fireController, FireViewModel fireViewModel) {
+        this.mainFrame = mainFrame;
+        this.fireController = fireController;
+        this.fireViewModel = fireViewModel;
 
-	private final FilterSettings currentFilters = new FilterSettings();
+        this.fireViewModel.addPropertyChangeListener(this);
 
-	public MapController(MapView mapView, SidePanelView sidePanelView, DataFetchController dataFetcher) {
-		this.mapView = mapView;
-		this.sidePanelView = sidePanelView;
-		this.dataFetcher = dataFetcher;
+        addListeners();
+    }
 
-		addListeners();
-	}
+    private void addListeners() {
+        // Standard Load
+        mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(e -> loadFires(false));
 
-	private void addListeners() {
-		sidePanelView.getLoadFiresButton()
-                .addActionListener(event -> onLoadFiresClicked());
-	}
+        // National Overview
+        mainFrame.getSidePanelView().getNationalButton().addActionListener(e -> loadFires(true));
+    }
 
-	private void onLoadFiresClicked() {
-		final String selectedProvince = (String) sidePanelView.getProvinceSelector().getSelectedItem();
+    private void loadFires(boolean isNational) {
+        String date = mainFrame.getSidePanelView().getDatePickerComponent().getDateStringOrEmptyString();
+        Object selectedRange = mainFrame.getSidePanelView().getDayRangeSelector().getSelectedItem();
+        String rangeStr = selectedRange != null ? selectedRange.toString() : "1";
 
-		currentFilters.setProvince(selectedProvince);
+        if (date.isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame, "Please select a date.");
+            return;
+        }
 
-		final List<WildfireEvent> fires = dataFetcher.getFires(currentFilters);
+        int range;
+        try {
+            if ("All".equalsIgnoreCase(rangeStr)) {
+                range = 10;
+            } else {
+                range = Integer.parseInt(rangeStr);
+            }
+        } catch (NumberFormatException e) {
+            range = 1; // Fallback default
+        }
 
-		mapView.clearFires();
+        mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(false);
+        mainFrame.getSidePanelView().getNationalButton().setEnabled(false);
 
-		for (WildfireEvent fire : fires) {
-			mapView.addFireMarker(fire.getLocation(), fire.getRadius());
-		}
-	}
+        fireController.execute(date, range, isNational);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(true);
+        mainFrame.getSidePanelView().getNationalButton().setEnabled(true);
+
+        if ("state".equals(evt.getPropertyName())) {
+            FireState state = (FireState) evt.getNewValue();
+
+            if (state.getError() != null) {
+                JOptionPane.showMessageDialog(mainFrame, state.getError(), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Pass the whole list of fires to be displayed at once
+            List<Fire> fires = state.getFires();
+            mainFrame.getMapView().displayFires(fires);
+
+            // Update Graph
+            mainFrame.getGraphPanel().setData(state.getGraphData());
+        }
+    }
 }

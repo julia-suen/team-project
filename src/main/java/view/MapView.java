@@ -1,5 +1,6 @@
 package view;
 
+import entities.Fire;
 import org.jxmapviewer.JXMapKit;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
@@ -20,12 +21,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MapView extends JPanel {
 
     private final JXMapKit mapKit;
-    private final Set<FireWaypoint> waypoints;
+    private Set<FireWaypoint> waypoints;
     private final WaypointPainter<FireWaypoint> waypointPainter;
 
     static final int MIN_ZOOM = 0;
@@ -130,6 +132,21 @@ public class MapView extends JPanel {
         setupZoomButtons(mapKit);
 
         add(mapKit, BorderLayout.CENTER);
+    }
+
+    public void displayFires(List<Fire> fires) {
+        Set<FireWaypoint> newWaypoints = new HashSet<>();
+
+        if (fires != null) {
+            for (Fire fire : fires) {
+                newWaypoints.add(new FireWaypoint(fire.getCenter(), fire.getRadius()));
+            }
+        }
+
+        this.waypoints = newWaypoints;
+        waypointPainter.setWaypoints(newWaypoints);
+
+        mapKit.getMainMap().repaint();
     }
 
     private void enforceBounds(JXMapViewer map) {
@@ -237,11 +254,15 @@ public class MapView extends JPanel {
 
     public static class FireWaypoint extends DefaultWaypoint {
         private final double radius;
+
         public FireWaypoint(GeoPosition coord, double radius) {
             super(coord);
             this.radius = radius;
         }
-        public double getRadius() { return radius; }
+
+        public double getRadius() {
+            return radius;
+        }
     }
 
     public class FireWaypointRenderer implements WaypointRenderer<FireWaypoint> {

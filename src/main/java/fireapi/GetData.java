@@ -17,6 +17,12 @@ public interface GetData {
      */
     List<Coordinate> getFireData(int dateRange, String date) throws InvalidDataException;
 
+    /**
+     * Fetch fire data for a specific bounding box.
+     * @param boundingBox Format: "minLon,minLat,maxLon,maxLat"
+     */
+    List<Coordinate> getFireData(int dateRange, String date, String boundingBox) throws InvalidDataException;
+
     class InvalidDataException extends Exception {
         public InvalidDataException() {
             super("Invalid data is unable to be processed.");
