@@ -31,7 +31,8 @@ public class UserController {
                 mainFrame.setTitle("Logged in as: " + this.currentUser.getUsername());
 
                 loginDialog.dispose();
-            } else {
+            }
+            else {
                 showErrorMessage(loginDialog, "Username cannot be empty.");
             }
         });

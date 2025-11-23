@@ -20,7 +20,7 @@ public class FirePresenter implements FireOutputBoundary {
 
     @Override
     public void prepareSuccessView(FireOutputData response) {
-        FireState state = fireViewModel.getState();
+        final FireState state = fireViewModel.getState();
         state.setFires(response.getFires());
         state.setGraphData(response.getFireTrendData());
         state.setError(null);
@@ -31,7 +31,7 @@ public class FirePresenter implements FireOutputBoundary {
 
     @Override
     public void prepareFailView(String error) {
-        FireState state = fireViewModel.getState();
+        final FireState state = fireViewModel.getState();
         state.setError(error);
         fireViewModel.firePropertyChange();
     }

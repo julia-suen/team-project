@@ -1,17 +1,21 @@
 package controller;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
 import entities.Fire;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FireState;
 import interface_adapter.fire_data.FireViewModel;
 import view.MainFrame;
 
-import javax.swing.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
-
 public class MapController implements PropertyChangeListener {
+
+    private static final int DEFAULT_RANGE = 1;
+    private static final int MAX_RANGE_FOR_ALL = 10;
 
     private final MainFrame mainFrame;
     private final FireController fireController;
@@ -29,37 +33,47 @@ public class MapController implements PropertyChangeListener {
 
     private void addListeners() {
         // Standard Load
-        mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(e -> loadFires(false));
+        mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(evt -> loadFires(false));
 
         // National Overview
-        mainFrame.getSidePanelView().getNationalButton().addActionListener(e -> loadFires(true));
+        mainFrame.getSidePanelView().getNationalButton().addActionListener(evt -> loadFires(true));
     }
 
     private void loadFires(boolean isNational) {
-        String date = mainFrame.getSidePanelView().getDatePickerComponent().getDateStringOrEmptyString();
-        Object selectedRange = mainFrame.getSidePanelView().getDayRangeSelector().getSelectedItem();
-        String rangeStr = selectedRange != null ? selectedRange.toString() : "1";
+        final String date = mainFrame.getSidePanelView().getDatePickerComponent().getDateStringOrEmptyString();
+        final Object selectedRange = mainFrame.getSidePanelView().getDayRangeSelector().getSelectedItem();
+
+        final String rangeStr;
+        if (selectedRange != null) {
+            rangeStr = selectedRange.toString();
+        }
+        else {
+            rangeStr = "1";
+        }
 
         if (date.isEmpty()) {
             JOptionPane.showMessageDialog(mainFrame, "Please select a date.");
-            return;
         }
-
-        int range;
-        try {
-            if ("All".equalsIgnoreCase(rangeStr)) {
-                range = 10;
-            } else {
-                range = Integer.parseInt(rangeStr);
+        else {
+            int range;
+            try {
+                if ("All".equalsIgnoreCase(rangeStr)) {
+                    range = MAX_RANGE_FOR_ALL;
+                }
+                else {
+                    range = Integer.parseInt(rangeStr);
+                }
             }
-        } catch (NumberFormatException e) {
-            range = 1; // Fallback default
+            catch (NumberFormatException ex) {
+                // Fallback default
+                range = DEFAULT_RANGE;
+            }
+
+            mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(false);
+            mainFrame.getSidePanelView().getNationalButton().setEnabled(false);
+
+            fireController.execute(date, range, isNational);
         }
-
-        mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(false);
-        mainFrame.getSidePanelView().getNationalButton().setEnabled(false);
-
-        fireController.execute(date, range, isNational);
     }
 
     @Override
@@ -68,19 +82,19 @@ public class MapController implements PropertyChangeListener {
         mainFrame.getSidePanelView().getNationalButton().setEnabled(true);
 
         if ("state".equals(evt.getPropertyName())) {
-            FireState state = (FireState) evt.getNewValue();
+            final FireState state = (FireState) evt.getNewValue();
 
             if (state.getError() != null) {
                 JOptionPane.showMessageDialog(mainFrame, state.getError(), "Error", JOptionPane.ERROR_MESSAGE);
-                return;
             }
+            else {
+                // Pass the whole list of fires to be displayed at once
+                final List<Fire> fires = state.getFires();
+                mainFrame.getMapView().displayFires(fires);
 
-            // Pass the whole list of fires to be displayed at once
-            List<Fire> fires = state.getFires();
-            mainFrame.getMapView().displayFires(fires);
-
-            // Update Graph
-            mainFrame.getGraphPanel().setData(state.getGraphData());
+                // Update Graph
+                mainFrame.getGraphPanel().setData(state.getGraphData());
+            }
         }
     }
 }
