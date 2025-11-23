@@ -2,7 +2,7 @@ package use_case.fire_data;
 
 /**
  * The input data for the fire analytics use case.
- * think of as a request that a user makes to the program, giving it a date and a day range
+ * Represents a request that a user makes to the program by giving it a date and a day range
  */
 public class FireInputData {
 
