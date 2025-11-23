@@ -1,6 +1,6 @@
 package interface_adapter.fire_data;
 
-import fireapi.GetData;
+import data_access.GetData;
 import use_case.fire_data.FireInputBoundary;
 import use_case.fire_data.FireInputData;
 import use_case.fire_data.FireInteractor;

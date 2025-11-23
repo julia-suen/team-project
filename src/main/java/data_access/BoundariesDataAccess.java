@@ -42,7 +42,7 @@ public class BoundariesDataAccess {
         return provincesToRegionMap.get(provinceName);
     }
 
-    public void loadProvinces() throws getData.InvalidDataException {
+    public void loadProvinces() throws GetData.InvalidDataException {
         // When program starts, this method is used to fetch the boundaries for all 13 provinces
         // Data is then stored in the HashMap provincesToRegionMap
         // When we need to which province the fire belongs, use the HashMap instead of calling API again
@@ -53,7 +53,7 @@ public class BoundariesDataAccess {
         }
     }
 
-    public List<List<GeoPosition>> getBoundariesData(String provinceName) throws getData.InvalidDataException{
+    public List<List<GeoPosition>> getBoundariesData(String provinceName) throws GetData.InvalidDataException{
         // fetch provinces' boundaries data from Nominatim API
         // returns boundaries/polygon(s) for one province
         String provinceNameAPI =  provincesToApi.get(provinceName);
@@ -80,7 +80,7 @@ public class BoundariesDataAccess {
             return boundaries;
         // throw InvalidDataException if any error occurs when fetching boundaries data from API
         }catch (Exception e) {
-            throw new getData.InvalidDataException();
+            throw new GetData.InvalidDataException();
         }
 
     }
