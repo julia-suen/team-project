@@ -1,9 +1,9 @@
 package interface_adapter.fire_data;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import entities.Fire;
 
@@ -13,7 +13,7 @@ import entities.Fire;
  */
 public class FireState {
     private List<Fire> fires = new ArrayList<>();
-    private Map<Integer, Integer> graphData = new TreeMap<>();
+    private Map<String, Integer> graphData = new LinkedHashMap<>();
     private String error;
 
     /**
@@ -40,11 +40,11 @@ public class FireState {
         this.fires = fires;
     }
 
-    public Map<Integer, Integer> getGraphData() {
+    public Map<String, Integer> getGraphData() {
         return graphData;
     }
 
-    public void setGraphData(Map<Integer, Integer> graphData) {
+    public void setGraphData(Map<String, Integer> graphData) {
         this.graphData = graphData;
     }
 

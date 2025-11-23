@@ -12,16 +12,16 @@ import entities.Fire;
 public class FireOutputData {
     private final List<Fire> fires;
     /**
-     * Map of Year to Number of Fires.
+     * Map of Time Label (e.g., "AUG") to Number of Fires.
      */
-    private final Map<Integer, Integer> fireTrendData;
+    private final Map<String, Integer> fireTrendData;
 
     /**
      * Constructs a new FireOutputData.
      * @param fires the list of fires to display on the map
-     * @param fireTrendData the trend data for the graph (Year -> Count)
+     * @param fireTrendData the trend data for the graph (Label -> Count)
      */
-    public FireOutputData(List<Fire> fires, Map<Integer, Integer> fireTrendData) {
+    public FireOutputData(List<Fire> fires, Map<String, Integer> fireTrendData) {
         this.fires = fires;
         this.fireTrendData = fireTrendData;
     }
@@ -30,7 +30,7 @@ public class FireOutputData {
         return fires;
     }
 
-    public Map<Integer, Integer> getFireTrendData() {
+    public Map<String, Integer> getFireTrendData() {
         return fireTrendData;
     }
 }

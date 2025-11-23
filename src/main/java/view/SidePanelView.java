@@ -25,8 +25,8 @@ import com.github.lgooddatepicker.components.DatePickerSettings;
  */
 public class SidePanelView extends JPanel {
 
-    private static final int MIN_YEAR = 2018;
-    private static final int MIN_MONTH = 4;
+    private static final int MIN_YEAR = 2025;
+    private static final int MIN_MONTH = 8;
     private static final int MIN_DAY = 1;
 
     private static final int PANEL_WIDTH = 250;
@@ -38,7 +38,7 @@ public class SidePanelView extends JPanel {
     private static final int SPACING_LARGE = 30;
 
     private final JButton loadFiresButton = new JButton("Load Fires");
-    private final JButton nationalButton = new JButton("National Overview (4 Years)");
+    private final JButton nationalButton = new JButton("National Overview");
     private final JComboBox<String> provinceSelector = new JComboBox<>(
             new String[]{"All", "Alberta", "British Columbia", "Ontario"}
     );
@@ -48,6 +48,7 @@ public class SidePanelView extends JPanel {
     );
 
     private final DatePicker datePicker;
+    private final GraphPanel graphPanel;
 
     /**
      * Constructs the SidePanelView.
@@ -62,6 +63,10 @@ public class SidePanelView extends JPanel {
         datePicker = getDatePicker();
         datePicker.setMaximumSize(maxFieldSize);
         datePicker.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Initialize GraphPanel
+        graphPanel = new GraphPanel();
+        graphPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         addComponents(maxFieldSize);
     }
@@ -99,6 +104,14 @@ public class SidePanelView extends JPanel {
 
         // Buttons
         addButtonPanel();
+
+        add(Box.createVerticalStrut(SPACING_MEDIUM));
+
+        // Graph at the bottom
+        add(new JLabel("Trend Analysis:"));
+        add(Box.createVerticalStrut(5));
+        add(graphPanel);
+
         add(Box.createVerticalGlue());
     }
 
@@ -161,15 +174,15 @@ public class SidePanelView extends JPanel {
         return provinceSelector;
     }
 
-    public JComboBox<String> getdateSelector() {
-        return dayRangeSelector;
-    }
-
     public JComboBox<String> getDayRangeSelector() {
         return dayRangeSelector;
     }
 
     public DatePicker getDatePickerComponent() {
         return datePicker;
+    }
+
+    public GraphPanel getGraphPanel() {
+        return graphPanel;
     }
 }

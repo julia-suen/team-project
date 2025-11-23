@@ -31,10 +31,10 @@ public class Coordinate extends GeoPosition {
     public Coordinate(double lat, double lon, String[] date_day_confidence, double[] brightness) {
         super(lat, lon);     // Calls GeoPosition(double, double)
 
-        if (lat > LAT_UP_BOUNDARY || lat < LAT_LOW_BOUNDARY
-                || lon > LON_UP_BOUNDARY || lon < LON_LOW_BOUNDARY) {
-            throw new IllegalArgumentException("Invalid coordinates given.");
-        }
+//        if (lat > LAT_UP_BOUNDARY || lat < LAT_LOW_BOUNDARY
+//                || lon > LON_UP_BOUNDARY || lon < LON_LOW_BOUNDARY) {
+//            throw new IllegalArgumentException("Invalid coordinates given.");
+//        }
         this.lat = lat;
         this.lon = lon;
         this.dateDayConfidence = date_day_confidence;

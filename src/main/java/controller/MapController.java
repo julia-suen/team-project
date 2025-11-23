@@ -93,7 +93,7 @@ public class MapController implements PropertyChangeListener {
                 mainFrame.getMapView().displayFires(fires);
 
                 // Update Graph
-                mainFrame.getGraphPanel().setData(state.getGraphData());
+                mainFrame.getSidePanelView().getGraphPanel().setData(state.getGraphData());
             }
         }
     }
