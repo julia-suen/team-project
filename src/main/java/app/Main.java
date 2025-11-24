@@ -2,7 +2,7 @@ package app;
 
 import controller.MapController;
 import entities.FireFactory;
-import fireapi.DataAccess;
+import data_access.FireDataAccess;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FirePresenter;
@@ -24,7 +24,7 @@ public class Main {
 
             // Data Access
             FireFactory factory = new FireFactory(Collections.emptyList());
-            DataAccess dataAccess = new DataAccess(factory);
+            FireDataAccess dataAccess = new FireDataAccess(factory);
 
             FirePresenter firePresenter = new FirePresenter(fireViewModel, viewManagerModel);
             FireInteractor fireInteractor = new FireInteractor(dataAccess, firePresenter);

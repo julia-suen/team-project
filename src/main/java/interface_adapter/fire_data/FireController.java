@@ -2,7 +2,7 @@ package interface_adapter.fire_data;
 
 import javax.swing.SwingWorker;
 
-import fireapi.GetData;
+import data_access.GetData;
 import use_case.fire_data.FireInputBoundary;
 import use_case.fire_data.FireInputData;
 

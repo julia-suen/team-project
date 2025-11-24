@@ -10,7 +10,7 @@ import java.util.Map;
 import entities.Coordinate;
 import entities.Fire;
 import entities.FireFactory;
-import fireapi.GetData;
+import data_access.GetData;
 
 /**
  * Interactor for the Fire Data Use Case.
