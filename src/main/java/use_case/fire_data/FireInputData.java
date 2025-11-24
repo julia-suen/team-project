@@ -5,15 +5,20 @@ package use_case.fire_data;
  * Represents a request that a user makes to the program by giving it a date and a day range
  */
 public class FireInputData {
-
     private final String date;
     private final int dateRange;
     private final boolean isNationalOverview;
+    private final String province;
 
-    public FireInputData(String date, int dateRange, boolean isNationalOverview) {
+    public FireInputData(String date, int dateRange, boolean isNationalOverview, String province) {
         this.date = date;
         this.dateRange = dateRange;
         this.isNationalOverview = isNationalOverview;
+        this.province = province;
+    }
+
+    public String getProvince() {
+        return province;
     }
 
     public String getDate() {

@@ -2,10 +2,11 @@ package data_access;
 
 import entities.Region;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -13,6 +14,7 @@ import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jxmapviewer.viewer.GeoPosition;
+import java.util.ArrayList;
 
 /**
  * Data access object for fetching geographical boundary data from the Nominatim API.
@@ -26,27 +28,29 @@ public class BoundariesDataAccess {
     private static final String POLYGON_TYPE = "Polygon";
     private static final String MULTIPOLYGON_TYPE = "MultiPolygon";
 
-    private static final String[] PROVINCES = {
+    public static final String[] PROVINCES = {
             "Ontario", "Quebec", "British Columbia", "Alberta", "Manitoba", "Saskatchewan",
             "Nova Scotia", "New Brunswick", "Prince Edward Island", "Newfoundland and Labrador",
-            "Yukon", "Nunavut", "Northwest Territories"
+            "Yukon", "Nunavut", "Northwest Territories", "Canada"
     };
 
     private static final Map<String, String> PROVINCES_TO_API = new HashMap<>() { {
-            put("Ontario", "ontario");
-            put("Quebec", "quebec");
-            put("British Columbia", "british+columbia");
-            put("Alberta", "alberta");
-            put("Manitoba", "manitoba");
-            put("Saskatchewan", "saskatchewan");
-            put("Nova Scotia", "nova+scotia");
-            put("New Brunswick", "new+brunswick");
-            put("Prince Edward Island", "prince+edward+island");
-            put("Newfoundland and Labrador", "newfoundland+and+labrador");
-            put("Yukon", "yukon");
-            put("Nunavut", "nunavut");
-            put("Northwest Territories", "northwest+territories");
-        } };
+        put("Ontario", "ontario");
+        put("Quebec", "quebec");
+        put("British Columbia", "british+columbia");
+        put("Alberta", "alberta");
+        put("Manitoba", "manitoba");
+        put("Saskatchewan", "saskatchewan");
+        put("Nova Scotia", "nova+scotia");
+        put("New Brunswick", "new+brunswick");
+        put("Prince Edward Island", "prince+edward+island");
+        put("Newfoundland and Labrador", "newfoundland+and+labrador");
+        put("Yukon", "yukon");
+        put("Nunavut", "nunavut");
+        put("Northwest Territories", "northwest+territories");
+        put("Canada", "canada");
+    } };
+
 
     private final Map<String, Region> provincesToRegionMap = new HashMap<>();
     private final OkHttpClient client = new OkHttpClient();

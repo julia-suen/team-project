@@ -26,12 +26,12 @@ public class FireController {
      * @param dateRange the day range requested
      * @param isNational whether to fetch national overview data
      */
-    public void execute(String date, int dateRange, boolean isNational) {
+    public void execute(String date, int dateRange, boolean isNational, String province) {
         // Run on background thread to prevent UI freezing during multiple API calls
         final SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
-                final FireInputData inputData = new FireInputData(date, dateRange, isNational);
+                final FireInputData inputData = new FireInputData(date, dateRange, isNational, province);
                 try {
                     fireInteractor.execute(inputData);
                 }

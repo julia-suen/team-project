@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -19,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
+import data_access.BoundariesDataAccess;
 
 /**
  * The Side Panel View for user input and filtering.
@@ -39,9 +42,9 @@ public class SidePanelView extends JPanel {
 
     private final JButton loadFiresButton = new JButton("Load Fires");
     private final JButton nationalButton = new JButton("National Overview");
-    private final JComboBox<String> provinceSelector = new JComboBox<>(
-            new String[]{"All", "Alberta", "British Columbia", "Ontario"}
-    );
+
+    // Initialize province selector dynamically using the source of truth
+    private final JComboBox<String> provinceSelector;
 
     private final JComboBox<String> dayRangeSelector = new JComboBox<>(
             new String[]{"All", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
@@ -58,6 +61,9 @@ public class SidePanelView extends JPanel {
         setPreferredSize(new Dimension(PANEL_WIDTH, 0));
         setBorder(BorderFactory.createTitledBorder("Filters"));
 
+        // Initialize the Province Dropdown dynamically
+        this.provinceSelector = createProvinceComboBox();
+
         final Dimension maxFieldSize = new Dimension(Integer.MAX_VALUE, FIELD_HEIGHT);
 
         datePicker = getDatePicker();
@@ -69,6 +75,22 @@ public class SidePanelView extends JPanel {
         graphPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         addComponents(maxFieldSize);
+    }
+
+    /**
+     * Creates the province combo box populated from BoundariesDataAccess.
+     */
+    private JComboBox<String> createProvinceComboBox() {
+        List<String> provinces = new ArrayList<>();
+        provinces.add("All");
+
+        // Fetch from source of truth
+        provinces.addAll(Arrays.asList(BoundariesDataAccess.PROVINCES));
+
+        // Sort alphabetically for better UX (skipping "All" at index 0)
+        Collections.sort(provinces.subList(1, provinces.size()));
+
+        return new JComboBox<>(provinces.toArray(new String[0]));
     }
 
     private void addComponents(Dimension maxFieldSize) {

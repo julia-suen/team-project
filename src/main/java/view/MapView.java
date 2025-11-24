@@ -60,7 +60,12 @@ public class MapView extends JPanel {
      */
     public MapView() {
         this.waypoints = new HashSet<>();
-        this.regionSelectionHandler = new RegionSelectionHandler(this.regionRepo, this.provinceLabel, this);
+
+        // Initialize MapKit first so we can pass the JXMapViewer to the handler
+        this.mapKit = new JXMapKit();
+
+        // Pass the map viewer (JXMapViewer) instead of 'this' (MapView/JPanel)
+        this.regionSelectionHandler = new RegionSelectionHandler(this.regionRepo, this.provinceLabel, this.mapKit.getMainMap());
 
         this.waypointPainter = new WaypointPainter<>();
         this.waypointPainter.setRenderer(new FireWaypointRenderer());
@@ -74,7 +79,6 @@ public class MapView extends JPanel {
 
         this.setupProvinceLabel(layeredPane);
 
-        this.mapKit = new JXMapKit();
         this.setupMapKit(layeredPane);
 
         this.regionRepo.addOnLoadCallback(this::repaint);

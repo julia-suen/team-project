@@ -4,7 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import entities.Fire;
 import interface_adapter.fire_data.FireController;
@@ -45,21 +45,17 @@ public class MapController implements PropertyChangeListener {
 
         if (date.isEmpty()) {
             JOptionPane.showMessageDialog(mainFrame, "Please select a date.");
-        }
-        else {
+        } else {
             int range;
             try {
                 if ("All".equalsIgnoreCase(selectedRange.toString())) {
                     range = MAX_RANGE_FOR_ALL;
-                }
-                else if (selectedRange != null) {
+                } else if (selectedRange != null) {
                     range = Integer.parseInt(selectedRange.toString());
-                }
-                else {
+                } else {
                     range = DEFAULT_RANGE;
                 }
-            }
-            catch (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 // Fallback default
                 range = DEFAULT_RANGE;
             }
@@ -67,29 +63,40 @@ public class MapController implements PropertyChangeListener {
             mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(false);
             mainFrame.getSidePanelView().getNationalButton().setEnabled(false);
 
-            fireController.execute(date, range, isNational);
+            // Get the selected province
+            String province = (String) mainFrame.getSidePanelView().getProvinceSelector().getSelectedItem();
+            if (province == null) {
+                province = "All";
+            }
+
+            // Pass it to the controller
+            fireController.execute(date, range, isNational, province);
         }
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(true);
-        mainFrame.getSidePanelView().getNationalButton().setEnabled(true);
+        // These enable buttons immediately, which is generally safe, but safer inside invokeLater
+        SwingUtilities.invokeLater(() -> {
+            mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(true);
+            mainFrame.getSidePanelView().getNationalButton().setEnabled(true);
 
-        if ("state".equals(evt.getPropertyName())) {
-            final FireState state = (FireState) evt.getNewValue();
+            if ("state".equals(evt.getPropertyName())) {
+                final FireState state = (FireState) evt.getNewValue();
 
-            if (state.getError() != null) {
-                JOptionPane.showMessageDialog(mainFrame, state.getError(), "Error", JOptionPane.ERROR_MESSAGE);
+                if (state.getError() != null) {
+                    JOptionPane.showMessageDialog(mainFrame, state.getError(), "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    // Pass the whole list of fires to be displayed at once
+                    final List<Fire> fires = state.getFires();
+
+                    // Update MapView on the EDT to avoid ConcurrentModificationException
+                    mainFrame.getMapView().displayFires(fires);
+
+                    // Update Graph
+                    mainFrame.getSidePanelView().getGraphPanel().setData(state.getGraphData());
+                }
             }
-            else {
-                // Pass the whole list of fires to be displayed at once
-                final List<Fire> fires = state.getFires();
-                mainFrame.getMapView().displayFires(fires);
-
-                // Update Graph
-                mainFrame.getSidePanelView().getGraphPanel().setData(state.getGraphData());
-            }
-        }
+        });
     }
 }
