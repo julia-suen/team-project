@@ -21,6 +21,8 @@ public interface GetData {
      */
     List<Coordinate> getFireData(int dateRange, String date) throws InvalidDataException;
 
+    List<Coordinate> getFireData(int dateRange, String date, String boundingBox) throws InvalidDataException;
+
     /**
      * An exception thrown when there is an issue with fetching or processing data.
      * This could be due to an invalid API response, a network error, or corrupted data.
