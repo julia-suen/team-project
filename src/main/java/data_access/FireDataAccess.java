@@ -28,6 +28,8 @@ public class FireDataAccess implements GetData {
     private static final int BRIGHT5_INDEX = 11;
     private static final int DAYNIGHT_INDEX = 13;
 
+    private static final int API_THRESHOLD = 10;
+
     private final FireFactory fireFactory;
 
     public FireDataAccess(FireFactory fireFactory) {
@@ -43,11 +45,18 @@ public class FireDataAccess implements GetData {
      */
 
     @Override
-    public List<Coordinate> getFireData(int dateRange, String date)
-            throws GetData.InvalidDataException {
+    public List<Coordinate> getFireData(int dateRange, String date) throws GetData.InvalidDataException {
+        return getFireData(dateRange, date, REGION);
+    }
+
+    @Override
+    public List<Coordinate> getFireData(int dateRange, String date, String boundingBox) throws InvalidDataException {
+        if (dateRange > API_THRESHOLD) {
+            dateRange = API_THRESHOLD;
+        }
 
         final String requestUrl = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/" + MAP_KEY + SL + SOURCE
-                + SL + REGION + SL + dateRange + SL + date;
+                + SL + boundingBox + SL + dateRange + SL + date;
 
         final List<Coordinate> dataPoints = new ArrayList<>();
 

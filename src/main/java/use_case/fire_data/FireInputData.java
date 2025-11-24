@@ -8,17 +8,23 @@ public class FireInputData {
 
     private final String date;
     private final int dateRange;
+    private final boolean isNationalOverview;
 
-    public FireInputData(String date, int dateRange) {
+    public FireInputData(String date, int dateRange, boolean isNationalOverview) {
         this.date = date;
         this.dateRange = dateRange;
+        this.isNationalOverview = isNationalOverview;
     }
 
-    String getDate() {
+    public String getDate() {
         return date;
     }
 
-    int getdateRange() {
+    public int getDateRange() {
         return dateRange;
+    }
+
+    public boolean isNationalOverview() {
+        return isNationalOverview;
     }
 }

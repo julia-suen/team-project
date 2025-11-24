@@ -1,10 +1,12 @@
 package entities;
 
+import org.jxmapviewer.viewer.GeoPosition;
+
 /**
  * A simple entity representing a coordinate with a latitude and longitude.
  */
 
-public class Coordinate {
+public class Coordinate extends GeoPosition {
 
     private static final int LAT_UP_BOUNDARY = 90;
     private static final int LAT_LOW_BOUNDARY = -90;
@@ -17,15 +19,18 @@ public class Coordinate {
 
     /**
      * Creates a coordinate with the given latitude, longitude, and other data.
-     * @param lat the latitude of the coordinate
-     * @param lon the longitude of the coordinate
+     *
+     * @param lat                 the latitude of the coordinate
+     * @param lon                 the longitude of the coordinate
      * @param date_day_confidence the date, day/night value, and confidence value of a given coordinate.
      *                            may be set to "n/a" as appropriate.
-     * @param brightness the 2 brightness values of the given coordinate
+     * @param brightness          the 2 brightness values of the given coordinate
      * @throws IllegalArgumentException if the input values are not valid coordinates
      */
-
+    @SuppressWarnings("checkstyle:TrailingComment")
     public Coordinate(double lat, double lon, String[] date_day_confidence, double[] brightness) {
+        super(lat, lon);     // Calls GeoPosition(double, double)
+
         if (lat > LAT_UP_BOUNDARY || lat < LAT_LOW_BOUNDARY
                 || lon > LON_UP_BOUNDARY || lon < LON_LOW_BOUNDARY) {
             throw new IllegalArgumentException("Invalid coordinates given.");

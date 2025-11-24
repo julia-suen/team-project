@@ -1,0 +1,58 @@
+package interface_adapter.fire_data;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import entities.Fire;
+
+/**
+ * The state for the Fire ViewModel.
+ * Stores the list of fires, graph data, and any error messages.
+ */
+public class FireState {
+    private List<Fire> fires = new ArrayList<>();
+    private Map<String, Integer> graphData = new LinkedHashMap<>();
+    private String error;
+
+    /**
+     * Copy constructor.
+     * @param copy the state to copy from
+     */
+    public FireState(FireState copy) {
+        this.fires = copy.fires;
+        this.graphData = copy.graphData;
+        this.error = copy.error;
+    }
+
+    /**
+     * Default constructor.
+     */
+    public FireState() {
+    }
+
+    public List<Fire> getFires() {
+        return fires;
+    }
+
+    public void setFires(List<Fire> fires) {
+        this.fires = fires;
+    }
+
+    public Map<String, Integer> getGraphData() {
+        return graphData;
+    }
+
+    public void setGraphData(Map<String, Integer> graphData) {
+        this.graphData = graphData;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+}
