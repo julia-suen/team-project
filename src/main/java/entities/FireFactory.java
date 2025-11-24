@@ -13,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
 public class FireFactory {
 
     private static final double THRESHOLD = 0.001;
+    private static final double MIN_RADIUS_THRESHOLD = 0.0001;
+    private static final double DEFAULT_SAFETY_RADIUS = 0.01;
     private static final String INVALID_DATA = "n/a";
     private final List<Coordinate> dataPoints;
 
@@ -93,8 +95,8 @@ public class FireFactory {
             double radius = avgDiameter / 2;
 
             // Prevent crash for radius 0
-            if (radius <= 0.0001) {
-                radius = 0.01;
+            if (radius <= MIN_RADIUS_THRESHOLD) {
+                radius = DEFAULT_SAFETY_RADIUS;
             }
 
             fires.add(new Fire(radius, center, bundle));

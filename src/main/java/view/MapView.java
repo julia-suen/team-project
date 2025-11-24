@@ -198,27 +198,27 @@ public class MapView extends JPanel {
             final double maxCenterY = botRightLimit.getY() - halfHeight;
 
             final Point2D currentCenter = tf.geoToPixel(map.getCenterPosition(), zoom);
-            double newX = currentCenter.getX();
-            double newY = currentCenter.getY();
+            double currentCenterX = currentCenter.getX();
+            double currentCenterY = currentCenter.getY();
 
             // Horizontal Logic
             if (minCenterX > maxCenterX) {
-                newX = (topLeftLimit.getX() + botRightLimit.getX()) / 2.0;
+                currentCenterX = (topLeftLimit.getX() + botRightLimit.getX()) / 2.0;
             }
             else {
-                newX = Math.max(minCenterX, Math.min(maxCenterX, newX));
+                currentCenterX = Math.max(minCenterX, Math.min(maxCenterX, currentCenterX));
             }
 
             // Vertical Logic
             if (minCenterY > maxCenterY) {
-                newY = (topLeftLimit.getY() + botRightLimit.getY()) / 2.0;
+                currentCenterY = (topLeftLimit.getY() + botRightLimit.getY()) / 2.0;
             }
             else {
-                newY = Math.max(minCenterY, Math.min(maxCenterY, newY));
+                currentCenterY = Math.max(minCenterY, Math.min(maxCenterY, currentCenterY));
             }
 
-            if (Math.abs(newX - currentCenter.getX()) > 1.0 || Math.abs(newY - currentCenter.getY()) > 1.0) {
-                final GeoPosition newPos = tf.pixelToGeo(new Point2D.Double(newX, newY), zoom);
+            if (Math.abs(currentCenterX - currentCenter.getX()) > 1.0 || Math.abs(currentCenterY - currentCenter.getY()) > 1.0) {
+                final GeoPosition newPos = tf.pixelToGeo(new Point2D.Double(currentCenterX, currentCenterY), zoom);
                 map.setCenterPosition(newPos);
             }
 

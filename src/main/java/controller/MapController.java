@@ -43,25 +43,20 @@ public class MapController implements PropertyChangeListener {
         final String date = mainFrame.getSidePanelView().getDatePickerComponent().getDateStringOrEmptyString();
         final Object selectedRange = mainFrame.getSidePanelView().getDayRangeSelector().getSelectedItem();
 
-        final String rangeStr;
-        if (selectedRange != null) {
-            rangeStr = selectedRange.toString();
-        }
-        else {
-            rangeStr = "1";
-        }
-
         if (date.isEmpty()) {
             JOptionPane.showMessageDialog(mainFrame, "Please select a date.");
         }
         else {
             int range;
             try {
-                if ("All".equalsIgnoreCase(rangeStr)) {
+                if ("All".equalsIgnoreCase(selectedRange.toString())) {
                     range = MAX_RANGE_FOR_ALL;
                 }
+                else if (selectedRange != null) {
+                    range = Integer.parseInt(selectedRange.toString());
+                }
                 else {
-                    range = Integer.parseInt(rangeStr);
+                    range = DEFAULT_RANGE;
                 }
             }
             catch (NumberFormatException ex) {

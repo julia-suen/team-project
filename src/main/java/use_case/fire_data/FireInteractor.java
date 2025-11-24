@@ -18,9 +18,9 @@ import fireapi.GetData;
  */
 public class FireInteractor implements FireInputBoundary {
 
-    private static final int MAX_RANGE = 10;
-    private static final int MIN_RANGE = 1;
-    private static final int MONTHS_HISTORY = 3;
+    private static final int API_MAX_DAY_RANGE = 10;
+    private static final int API_MIN_DAY_RANGE = 1;
+    private static final int API_AVAILABLE_MONTHS = 3;
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String LABEL_FORMAT = "MMM"; // e.g., "Aug", "Sep"
 //    private static final String CANADA_BOUNDS = "-141,41,-52,83";
@@ -54,11 +54,11 @@ public class FireInteractor implements FireInputBoundary {
             final LocalDate inputDate = LocalDate.parse(inputDateStr, DateTimeFormatter.ofPattern(DATE_FORMAT));
 
             int range = fireInputData.getDateRange();
-            if (range > MAX_RANGE) {
-                range = MAX_RANGE;
+            if (range > API_MAX_DAY_RANGE) {
+                range = API_MAX_DAY_RANGE;
             }
-            if (range < MIN_RANGE) {
-                range = MIN_RANGE;
+            if (range < API_MIN_DAY_RANGE) {
+                range = API_MIN_DAY_RANGE;
             }
 
             if (fireInputData.isNationalOverview()) {
@@ -85,7 +85,7 @@ public class FireInteractor implements FireInputBoundary {
 
         // Loop 0 to MONTHS_HISTORY - 1.
         // We iterate backwards (i=2 to 0) to insert into Map in chronological order (Past -> Present)
-        for (int i = MONTHS_HISTORY - 1; i >= 0; i--) {
+        for (int i = API_AVAILABLE_MONTHS - 1; i >= 0; i--) {
             final LocalDate targetDate = inputDate.minusMonths(i);
             final String targetDateStr = targetDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
             final String label = targetDate.format(DateTimeFormatter.ofPattern(LABEL_FORMAT));
