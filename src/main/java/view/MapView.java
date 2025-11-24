@@ -1,16 +1,15 @@
 package view;
 
-import entities.Region;
 import interface_adapter.region.RegionRepository;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,22 +21,6 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import java.awt.Rectangle;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.geom.Point2D;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import org.jxmapviewer.JXMapKit;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
@@ -50,6 +33,7 @@ import org.jxmapviewer.viewer.DefaultWaypoint;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.WaypointPainter;
 import org.jxmapviewer.viewer.WaypointRenderer;
+import entities.Fire;
 
 /**
  * The main map view component for the application.
@@ -58,14 +42,18 @@ import org.jxmapviewer.viewer.WaypointRenderer;
  */
 public class MapView extends JPanel {
 
-    private final RegionRepository regionRepo = new RegionRepository(
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    private final transient RegionRepository regionRepo = new RegionRepository(
             new data_access.BoundariesDataAccess()
     );
 
     private final JLabel provinceLabel = new JLabel("Province: None");
     private final JXMapKit mapKit;
-    private final WaypointPainter<FireWaypoint> waypointPainter;
-    private final RegionSelectionHandler regionSelectionHandler;
+    private final transient Set<FireWaypoint> waypoints;
+    private final transient WaypointPainter<FireWaypoint> waypointPainter;
+    private final transient RegionSelectionHandler regionSelectionHandler;
 
     /**
      * Constructs the MapView panel.
@@ -90,6 +78,9 @@ public class MapView extends JPanel {
         this.setupMapKit(layeredPane);
 
         this.regionRepo.addOnLoadCallback(this::repaint);
+
+        // Schedule the initial layout update to fix component positions on startup.
+        SwingUtilities.invokeLater(this::updateChildBounds);
     }
 
     private void setupProvinceLabel(final JLayeredPane layeredPane) {
@@ -98,10 +89,6 @@ public class MapView extends JPanel {
         this.provinceLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         this.provinceLabel.setHorizontalAlignment(SwingConstants.CENTER);
         this.provinceLabel.setFont(MapViewConfig.LABEL_FONT);
-        this.provinceLabel.setBounds(
-                MapViewConfig.LABEL_X_OFFSET, MapViewConfig.LABEL_Y_OFFSET,
-                MapViewConfig.LABEL_WIDTH, MapViewConfig.LABEL_HEIGHT
-        );
         layeredPane.add(this.provinceLabel, JLayeredPane.PALETTE_LAYER);
     }
 
@@ -117,7 +104,6 @@ public class MapView extends JPanel {
         map.setBackground(MapViewConfig.MAP_BACKGROUND_COLOR);
         map.setFocusable(true);
         map.requestFocusInWindow();
-        map.setOverlayPainter(waypointPainter);
 
         this.addMouseListeners(map);
 
@@ -134,21 +120,24 @@ public class MapView extends JPanel {
         new MapBoundsEnforcer(map);
         this.setupZoomButtons(this.mapKit);
 
-        this.mapKit.setBounds(0, 0, MapViewConfig.INITIAL_WIDTH, MapViewConfig.INITIAL_HEIGHT);
         layeredPane.add(this.mapKit, JLayeredPane.DEFAULT_LAYER);
 
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override
             public void componentResized(final java.awt.event.ComponentEvent e) {
-                final int w = getWidth();
-                final int h = getHeight();
-                mapKit.setBounds(0, 0, w, h);
-                provinceLabel.setBounds(
-                        MapViewConfig.LABEL_X_OFFSET, MapViewConfig.LABEL_Y_OFFSET,
-                        MapViewConfig.LABEL_WIDTH, MapViewConfig.LABEL_HEIGHT
-                );
+                updateChildBounds();
             }
         });
+    }
+
+    private void updateChildBounds() {
+        final int w = getWidth();
+        final int h = getHeight();
+        mapKit.setBounds(0, 0, w, h);
+        provinceLabel.setBounds(
+                MapViewConfig.LABEL_X_OFFSET, MapViewConfig.LABEL_Y_OFFSET,
+                MapViewConfig.LABEL_WIDTH, MapViewConfig.LABEL_HEIGHT
+        );
     }
 
     private void addMouseListeners(final JXMapViewer map) {
@@ -167,7 +156,6 @@ public class MapView extends JPanel {
                 }
             }
         });
-    }
 
         final PanKeyListener panListener = new PanKeyListener(map);
         map.addKeyListener(panListener);
@@ -205,6 +193,23 @@ public class MapView extends JPanel {
         this.waypoints.clear();
         this.waypointPainter.setWaypoints(this.waypoints);
         this.mapKit.getMainMap().repaint();
+    }
+
+    /**
+     * Displays a list of fires on the map, clearing any previous fires.
+     * @param fires A list of {@link Fire} objects to display.
+     */
+    public void displayFires(final List<Fire> fires) {
+        this.clearFires();
+        for (final Fire fire : fires) {
+            if (fire.getCoordinates() != null && !fire.getCoordinates().isEmpty()) {
+                final GeoPosition geo = new GeoPosition(
+                        fire.getCoordinates().get(0).getLatitude(),
+                        fire.getCoordinates().get(0).getLongitude()
+                );
+                this.addFireMarker(geo, 0.1); // Assuming a default radius
+            }
+        }
     }
 
     /**
