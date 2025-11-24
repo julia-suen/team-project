@@ -3,6 +3,8 @@ package data_access;
 import entities.Coordinate;
 import java.util.List;
 
+import entities.Coordinate;
+
 /**
  * Defines the contract for a data access object (DAO) that retrieves fire data points.
  * This interface allows for flexibility in the data source implementation (e.g., API, database).

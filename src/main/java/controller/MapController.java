@@ -1,44 +1,95 @@
 package controller;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import model.FilterSettings;
-import model.WildfireEvent;
-import view.MapView;
-import view.SidePanelView;
+import javax.swing.JOptionPane;
 
-public class MapController {
+import entities.Fire;
+import interface_adapter.fire_data.FireController;
+import interface_adapter.fire_data.FireState;
+import interface_adapter.fire_data.FireViewModel;
+import view.MainFrame;
 
-	private final MapView mapView;
-	private final SidePanelView sidePanelView;
-	private final DataFetchController dataFetcher;
+public class MapController implements PropertyChangeListener {
 
-	private final FilterSettings currentFilters = new FilterSettings();
+    private static final int DEFAULT_RANGE = 1;
+    private static final int MAX_RANGE_FOR_ALL = 10;
 
-	public MapController(MapView mapView, SidePanelView sidePanelView, DataFetchController dataFetcher) {
-		this.mapView = mapView;
-		this.sidePanelView = sidePanelView;
-		this.dataFetcher = dataFetcher;
+    private final MainFrame mainFrame;
+    private final FireController fireController;
+    private final FireViewModel fireViewModel;
 
-		addListeners();
-	}
+    public MapController(MainFrame mainFrame, FireController fireController, FireViewModel fireViewModel) {
+        this.mainFrame = mainFrame;
+        this.fireController = fireController;
+        this.fireViewModel = fireViewModel;
 
-	private void addListeners() {
-		sidePanelView.getLoadFiresButton()
-                .addActionListener(event -> onLoadFiresClicked());
-	}
+        this.fireViewModel.addPropertyChangeListener(this);
 
-	private void onLoadFiresClicked() {
-		final String selectedProvince = (String) sidePanelView.getProvinceSelector().getSelectedItem();
+        addListeners();
+    }
 
-		currentFilters.setProvince(selectedProvince);
+    private void addListeners() {
+        // Standard Load
+        mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(evt -> loadFires(false));
 
-		final List<WildfireEvent> fires = dataFetcher.getFires(currentFilters);
+        // National Overview
+        mainFrame.getSidePanelView().getNationalButton().addActionListener(evt -> loadFires(true));
+    }
 
-		mapView.clearFires();
+    private void loadFires(boolean isNational) {
+        final String date = mainFrame.getSidePanelView().getDatePickerComponent().getDateStringOrEmptyString();
+        final Object selectedRange = mainFrame.getSidePanelView().getDayRangeSelector().getSelectedItem();
 
-		for (WildfireEvent fire : fires) {
-			mapView.addFireMarker(fire.getLocation(), fire.getRadius());
-		}
-	}
+        if (date.isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame, "Please select a date.");
+        }
+        else {
+            int range;
+            try {
+                if ("All".equalsIgnoreCase(selectedRange.toString())) {
+                    range = MAX_RANGE_FOR_ALL;
+                }
+                else if (selectedRange != null) {
+                    range = Integer.parseInt(selectedRange.toString());
+                }
+                else {
+                    range = DEFAULT_RANGE;
+                }
+            }
+            catch (NumberFormatException ex) {
+                // Fallback default
+                range = DEFAULT_RANGE;
+            }
+
+            mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(false);
+            mainFrame.getSidePanelView().getNationalButton().setEnabled(false);
+
+            fireController.execute(date, range, isNational);
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(true);
+        mainFrame.getSidePanelView().getNationalButton().setEnabled(true);
+
+        if ("state".equals(evt.getPropertyName())) {
+            final FireState state = (FireState) evt.getNewValue();
+
+            if (state.getError() != null) {
+                JOptionPane.showMessageDialog(mainFrame, state.getError(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            else {
+                // Pass the whole list of fires to be displayed at once
+                final List<Fire> fires = state.getFires();
+                mainFrame.getMapView().displayFires(fires);
+
+                // Update Graph
+                mainFrame.getSidePanelView().getGraphPanel().setData(state.getGraphData());
+            }
+        }
+    }
 }

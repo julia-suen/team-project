@@ -22,6 +22,22 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import java.awt.Rectangle;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.geom.Point2D;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
 import org.jxmapviewer.JXMapKit;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
@@ -48,7 +64,6 @@ public class MapView extends JPanel {
 
     private final JLabel provinceLabel = new JLabel("Province: None");
     private final JXMapKit mapKit;
-    private final Set<FireWaypoint> waypoints;
     private final WaypointPainter<FireWaypoint> waypointPainter;
     private final RegionSelectionHandler regionSelectionHandler;
 
@@ -102,6 +117,7 @@ public class MapView extends JPanel {
         map.setBackground(MapViewConfig.MAP_BACKGROUND_COLOR);
         map.setFocusable(true);
         map.requestFocusInWindow();
+        map.setOverlayPainter(waypointPainter);
 
         this.addMouseListeners(map);
 
@@ -151,6 +167,7 @@ public class MapView extends JPanel {
                 }
             }
         });
+    }
 
         final PanKeyListener panListener = new PanKeyListener(map);
         map.addKeyListener(panListener);

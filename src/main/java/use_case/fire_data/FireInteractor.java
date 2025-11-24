@@ -1,65 +1,141 @@
 package use_case.fire_data;
 
-/**
- *  The Fire Interactor.
- */
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import entities.Coordinate;
 import entities.Fire;
 import entities.FireFactory;
-import data_access.FireDataAccess;
 import data_access.GetData;
 
-import java.util.List;
-
-import static entities.FireFactory.bundleDataPoints;
-import static entities.FireFactory.makeFireList;
-
+/**
+ * Interactor for the Fire Data Use Case.
+ * Orchestrates data fetching, aggregation, and preparation for the presenter.
+ */
 public class FireInteractor implements FireInputBoundary {
+
+    private static final int API_MAX_DAY_RANGE = 10;
+    private static final int API_MIN_DAY_RANGE = 1;
+    private static final int API_AVAILABLE_MONTHS = 3;
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String LABEL_FORMAT = "MMM"; // e.g., "Aug", "Sep"
+//    private static final String CANADA_BOUNDS = "-141,41,-52,83";
+    private static final String WORLD_BOUNDS = "-180,-90,180,90";
+
     private final GetData dataAccessInterface;
     private final FireOutputBoundary firePresenter;
 
-    public FireInteractor(GetData dataAccessInterface,
-                          FireOutputBoundary fireOutputBoundary) {
-        this.firePresenter = fireOutputBoundary;
+    /**
+     * Constructs a FireInteractor.
+     * @param dataAccessInterface the data access object
+     * @param fireOutputBoundary the presenter
+     */
+    public FireInteractor(GetData dataAccessInterface, FireOutputBoundary fireOutputBoundary) {
         this.dataAccessInterface = dataAccessInterface;
+        this.firePresenter = fireOutputBoundary;
     }
 
-    /**
-     * Executes the use case for analyzing fire data based off a day, date range and province provided. If no province
-     * is provided, parse and display all data available.
-     * @param fireInputData the input data for this use case
-     */
-
     @Override
-    public void execute(FireInputData fireInputData) throws GetData.InvalidDataException {
-        final String date = fireInputData.getDate();
-        final int dateRange = fireInputData.getdateRange();
+    public void execute(FireInputData fireInputData) {
 
         try {
-            List<Coordinate> dataPoints = dataAccessInterface.getFireData(dateRange, date);
-            FireFactory fireFactory = new FireFactory(dataPoints);
-            List<List<Coordinate>> bundles = bundleDataPoints(fireFactory.getDataPoints());
-            List<Fire> fires = makeFireList(bundles);
+            final List<Fire> allFires = new ArrayList<>();
+            // Use LinkedHashMap to preserve order (Month 1, Month 2, Month 3)
+            final Map<String, Integer> trendData = new LinkedHashMap<>();
 
-            final FireOutputData fireOutputData = new FireOutputData(fires);
+            String inputDateStr = fireInputData.getDate();
+            if (inputDateStr == null || inputDateStr.isEmpty()) {
+                inputDateStr = LocalDate.now().toString();
+            }
+            final LocalDate inputDate = LocalDate.parse(inputDateStr, DateTimeFormatter.ofPattern(DATE_FORMAT));
+
+            int range = fireInputData.getDateRange();
+            if (range > API_MAX_DAY_RANGE) {
+                range = API_MAX_DAY_RANGE;
+            }
+            if (range < API_MIN_DAY_RANGE) {
+                range = API_MIN_DAY_RANGE;
+            }
+
+            if (fireInputData.isNationalOverview()) {
+                processNationalOverview(inputDate, range, allFires, trendData);
+            } else {
+                processStandardView(inputDateStr, inputDate, range, allFires, trendData);
+            }
+
+            final FireOutputData fireOutputData = new FireOutputData(allFires, trendData);
             firePresenter.prepareSuccessView(fireOutputData);
+
+        } catch (GetData.InvalidDataException ex) {
+            firePresenter.prepareFailView("Error fetching data: " + ex.getMessage());
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
+            firePresenter.prepareFailView("Unexpected error: " + ex.getMessage());
         }
-        catch (GetData.InvalidDataException error) {
-            firePresenter.prepareFailView(String.valueOf(error));
+    }
+
+    private void processNationalOverview(LocalDate inputDate, int range,
+                                         List<Fire> allFires, Map<String, Integer> trendData)
+            throws GetData.InvalidDataException {
+        final String canadaBoundingBox = getBoundariesForCountry("Canada");
+
+        // Loop 0 to MONTHS_HISTORY - 1.
+        // We iterate backwards (i=2 to 0) to insert into Map in chronological order (Past -> Present)
+        for (int i = API_AVAILABLE_MONTHS - 1; i >= 0; i--) {
+            final LocalDate targetDate = inputDate.minusMonths(i);
+            final String targetDateStr = targetDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+            final String label = targetDate.format(DateTimeFormatter.ofPattern(LABEL_FORMAT));
+
+            // Fetch data
+            List<Coordinate> points = dataAccessInterface.getFireData(range, targetDateStr, canadaBoundingBox);
+
+            if (points == null) {
+                points = new ArrayList<>();
+            }
+
+            // Add to trend map (e.g., "Aug" -> 150)
+            trendData.put(label, points.size());
+
+            // Accumulate fires for the map
+            if (!points.isEmpty()) {
+                final FireFactory fireFactory = new FireFactory(points);
+                final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
+                final List<Fire> monthFires = FireFactory.makeFireList(bundles);
+                allFires.addAll(monthFires);
+            }
         }
+    }
 
+    private void processStandardView(String inputDateStr, LocalDate inputDate, int range,
+                                     List<Fire> allFires, Map<String, Integer> trendData)
+            throws GetData.InvalidDataException {
 
-        // there's no return for this function! except should there be... NO it gets passed to presenter apparently
-        // enter in julia data parse using the fire bundles to narrow down the list to a list of fire in the province IF
-        // province is selected. otherwise, just use the fires variable on its own
+        final List<Coordinate> points = dataAccessInterface.getFireData(range, inputDateStr);
+        final String label = inputDate.format(DateTimeFormatter.ofPattern(LABEL_FORMAT));
 
-        // and then insert a bunch of calls to like controllers and shi.... or like output views and like the output
-        // boundaries to communicate the output info idk
+        if (points != null && !points.isEmpty()) {
+            final FireFactory fireFactory = new FireFactory(points);
+            final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
+            final List<Fire> fires = FireFactory.makeFireList(bundles);
+            allFires.addAll(fires);
+            trendData.put(label, points.size());
+        } else {
+            trendData.put(label, 0);
+        }
+    }
 
-
-
-
-
+    // TODO: Will be replaced
+    private String getBoundariesForCountry(String countryName) {
+        final String bounds;
+        if ("Canada".equalsIgnoreCase(countryName)) {
+            bounds = WORLD_BOUNDS;
+        } else {
+            bounds = WORLD_BOUNDS;
+        }
+        return bounds;
     }
 }
