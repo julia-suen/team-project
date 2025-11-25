@@ -1,7 +1,5 @@
 package view;
 
-import entities.Region;
-import interface_adapter.region.RegionRepository;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -11,16 +9,22 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.List;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.painter.Painter;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactory;
 
+import entities.Region;
+import interface_adapter.region.RegionRepository;
+
 /**
  * Handles region selection logic and painting.
  */
+
 class RegionSelectionHandler {
     private final RegionRepository regionRepo;
     private final JLabel provinceLabel;
@@ -60,7 +64,8 @@ class RegionSelectionHandler {
 
         if (found) {
             this.provinceLabel.setText("Province: " + this.currentSelectedRegion.getProvinceName());
-        } else {
+        }
+        else {
             this.currentSelectedRegion = null;
             this.provinceLabel.setText("Province: None");
         }
@@ -95,7 +100,8 @@ class RegionSelectionHandler {
                 if (first) {
                     path.moveTo(pt.getX(), pt.getY());
                     first = false;
-                } else {
+                }
+                else {
                     path.lineTo(pt.getX(), pt.getY());
                 }
             }
@@ -114,7 +120,7 @@ class RegionSelectionHandler {
      * @return A {@link Painter} for the region boundary.
      */
     public Painter<JXMapViewer> getRegionPainter() {
-        return (g, map, w, h) -> {
+        return (graphics, map, width, height) -> {
             if (this.currentSelectedRegion == null) {
                 return;
             }
@@ -123,7 +129,7 @@ class RegionSelectionHandler {
                 return;
             }
 
-            final Graphics2D g2 = (Graphics2D) g.create();
+            final Graphics2D g2 = (Graphics2D) graphics.create();
             try {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -138,28 +144,33 @@ class RegionSelectionHandler {
                 final int zoom = map.getZoom();
                 final TileFactory tf = map.getTileFactory();
 
-                for (final List<GeoPosition> poly : boundaries) {
-                    if (poly.size() < 2) {
-                        continue;
-                    }
-
-                    final Path2D path = new Path2D.Double();
-                    boolean first = true;
-                    for (final GeoPosition gp : poly) {
-                        final Point2D pt = tf.geoToPixel(gp, zoom);
-                        if (first) {
-                            path.moveTo(pt.getX(), pt.getY());
-                            first = false;
-                        } else {
-                            path.lineTo(pt.getX(), pt.getY());
-                        }
-                    }
-                    path.closePath();
-                    g2.draw(path);
-                }
+                drawBoundary(boundaries, tf, zoom, g2);
             } finally {
                 g2.dispose();
             }
         };
+    }
+
+    private static void drawBoundary(List<List<GeoPosition>> boundaries, TileFactory tileFactory,
+                                     int zoom, Graphics2D graphics) {
+        for (final List<GeoPosition> poly : boundaries) {
+            if (poly.size() < 2) {
+                continue;
+            }
+
+            final Path2D path = new Path2D.Double();
+            boolean first = true;
+            for (final GeoPosition gp : poly) {
+                final Point2D pt = tileFactory.geoToPixel(gp, zoom);
+                if (first) {
+                    path.moveTo(pt.getX(), pt.getY());
+                    first = false;
+                } else {
+                    path.lineTo(pt.getX(), pt.getY());
+                }
+            }
+            path.closePath();
+            graphics.draw(path);
+        }
     }
 }

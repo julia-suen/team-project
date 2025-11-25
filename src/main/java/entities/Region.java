@@ -1,8 +1,8 @@
 package entities;
 
-import org.jxmapviewer.viewer.GeoPosition;
-
 import java.util.List;
+
+import org.jxmapviewer.viewer.GeoPosition;
 
 /**
  * Model class representing a geographical region, like a province.
@@ -28,7 +28,7 @@ public class Region {
 		return boundary;
 	}
 
-//	public double getSusceptibilityScore() {
-//		return susceptibilityScore;
-//	}
+    //	public double getSusceptibilityScore() {
+    //		return susceptibilityScore;
+    //	}
 }

@@ -2,7 +2,9 @@ package view;
 
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
+
 import javax.swing.SwingUtilities;
+
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactory;
@@ -11,6 +13,9 @@ import org.jxmapviewer.viewer.TileFactory;
  * Handles the logic for enforcing map boundaries.
  */
 class MapBoundsEnforcer {
+
+    private static final int MIN_ZOOM = 0;
+    private static final int MAX_ZOOM = 16;
     private boolean isEnforcing;
 
     /**
@@ -31,8 +36,8 @@ class MapBoundsEnforcer {
 
         try {
             final int zoom = map.getZoom();
-            if (zoom > 16 || zoom < 0) {
-                map.setZoom(Math.max(0, Math.min(16, zoom)));
+            if (zoom > MAX_ZOOM || zoom < MIN_ZOOM) {
+                map.setZoom(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom)));
                 return;
             }
 
@@ -52,7 +57,8 @@ class MapBoundsEnforcer {
                 final GeoPosition newPos = tf.pixelToGeo(new Point2D.Double(newX, newY), zoom);
                 map.setCenterPosition(newPos);
             }
-        } finally {
+        }
+        finally {
             this.isEnforcing = false;
         }
     }
@@ -64,7 +70,8 @@ class MapBoundsEnforcer {
 
         if (minCenter > maxCenter) {
             return (min + max) / 2.0;
-        } else {
+        }
+        else {
             return Math.max(minCenter, Math.min(maxCenter, value));
         }
     }

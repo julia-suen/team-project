@@ -4,7 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -22,7 +21,7 @@ import javax.swing.JPanel;
  */
 public class GraphPanel extends JPanel {
 
-    private static final int PADDING = 25; // Reduced padding for smaller view
+    private static final int PADDING = 25;
     private static final int PREF_WIDTH = 230;
     private static final int PREF_HEIGHT = 180;
     private static final int TITLE_HEIGHT = 25;
@@ -75,23 +74,24 @@ public class GraphPanel extends JPanel {
 
         if (data == null || data.isEmpty()) {
             drawEmptyState(g2, w, h);
-        } else {
+        }
+        else {
             drawGraphContent(g2, w, h);
         }
     }
 
-    private void drawTitle(Graphics2D g2, int width) {
-        g2.setColor(TITLE_BG);
-        g2.fillRect(0, 0, width, TITLE_HEIGHT);
-        g2.setColor(BORDER_COLOR);
-        g2.drawLine(0, TITLE_HEIGHT, width, TITLE_HEIGHT);
+    private void drawTitle(Graphics2D graphics, int width) {
+        graphics.setColor(TITLE_BG);
+        graphics.fillRect(0, 0, width, TITLE_HEIGHT);
+        graphics.setColor(BORDER_COLOR);
+        graphics.drawLine(0, TITLE_HEIGHT, width, TITLE_HEIGHT);
 
-        g2.setColor(Color.BLACK);
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, TITLE_FONT_SIZE));
+        graphics.setColor(Color.BLACK);
+        graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, TITLE_FONT_SIZE));
         // Centered title
         final String title = "3-Month Trend";
-        final int strWidth = g2.getFontMetrics().stringWidth(title);
-        g2.drawString(title, (width - strWidth) / 2, 17);
+        final int strWidth = graphics.getFontMetrics().stringWidth(title);
+        graphics.drawString(title, (width - strWidth) / 2, 17);
     }
 
     private void drawEmptyState(Graphics2D g2, int width, int height) {

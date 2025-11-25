@@ -36,6 +36,7 @@ public class SidePanelView extends JPanel {
     private static final int BUTTON_WIDTH = 200;
     private static final int BUTTON_HEIGHT = 35;
     private static final int FIELD_HEIGHT = 30;
+    private static final int BOX_SPACE = 5;
     private static final int SPACING_SMALL = 10;
     private static final int SPACING_MEDIUM = 15;
     private static final int SPACING_LARGE = 30;
@@ -79,9 +80,10 @@ public class SidePanelView extends JPanel {
 
     /**
      * Creates the province combo box populated from BoundariesDataAccess.
+     * @return all province combo box to be added in the GUI
      */
     private JComboBox<String> createProvinceComboBox() {
-        List<String> provinces = new ArrayList<>();
+        final List<String> provinces = new ArrayList<>();
         provinces.add("All");
 
         // Fetch from source of truth
@@ -131,7 +133,7 @@ public class SidePanelView extends JPanel {
 
         // Graph at the bottom
         add(new JLabel("Trend Analysis:"));
-        add(Box.createVerticalStrut(5));
+        add(Box.createVerticalStrut(BOX_SPACE));
         add(graphPanel);
 
         add(Box.createVerticalGlue());
