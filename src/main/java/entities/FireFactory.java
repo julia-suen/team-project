@@ -54,7 +54,8 @@ public class FireFactory {
         for (Coordinate coord : dataPoints) {
             if (previous == null) {
                 constitutingPts.add(coord);
-            } else {
+            }
+            else {
                 if (Math.abs(previous.getLat() - coord.getLat()) < THRESHOLD
                         &&
                         Math.abs(previous.getLon() - coord.getLon()) < THRESHOLD) {

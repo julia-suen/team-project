@@ -27,9 +27,9 @@ public class Coordinate extends GeoPosition {
      * @param brightness          the 2 brightness values of the given coordinate
      * @throws IllegalArgumentException if the input values are not valid coordinates
      */
-    @SuppressWarnings("checkstyle:TrailingComment")
+
     public Coordinate(double lat, double lon, String[] date_day_confidence, double[] brightness) {
-        super(lat, lon);     // Calls GeoPosition(double, double)
+        super(lat, lon);
 
         if (lat > LAT_UP_BOUNDARY || lat < LAT_LOW_BOUNDARY
                 || lon > LON_UP_BOUNDARY || lon < LON_LOW_BOUNDARY) {

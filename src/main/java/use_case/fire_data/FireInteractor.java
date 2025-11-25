@@ -27,7 +27,8 @@ public class FireInteractor implements FireInputBoundary {
     private static final int API_MIN_DAY_RANGE = 1;
     private static final int API_AVAILABLE_MONTHS = 3;
     private static final String DATE_FORMAT = "yyyy-MM-dd";
-    private static final String LABEL_FORMAT = "MMM"; // e.g., "Aug", "Sep"
+    private static final String LABEL_FORMAT = "MMM";
+    // e.g., "Aug", "Sep"
     private static final String WORLD_BOUNDS = "-180,-90,180,90";
 
     private final GetData dataAccessInterface;
@@ -76,7 +77,8 @@ public class FireInteractor implements FireInputBoundary {
 
             if (fireInputData.isNationalOverview()) {
                 processNationalOverview(inputDate, range, allFires, trendData);
-            } else {
+            }
+            else {
                 processStandardView(inputDateStr, inputDate, range, allFires, trendData, province);
             }
 
@@ -180,6 +182,9 @@ public class FireInteractor implements FireInputBoundary {
 
     /**
      * Generic helper to filter points by a specific boundary list.
+     * @param points the points to filter
+     * @param boundaries the boundary to use to filter the points given
+     * @return filtered coordinates within the boundary
      */
     private List<Coordinate> filterPointsByBoundary(List<Coordinate> points, List<List<GeoPosition>> boundaries) {
         final List<Coordinate> filtered = new ArrayList<>();
@@ -198,7 +203,9 @@ public class FireInteractor implements FireInputBoundary {
      * @return true if the point is inside the region, false otherwise.
      */
     private boolean isPointInRegion(Coordinate point, List<List<GeoPosition>> boundaries) {
-        if (boundaries == null) return false;
+        if (boundaries == null) {
+            return false;
+        }
 
         for (List<GeoPosition> polygon : boundaries) {
             // Use Path2D for polygon inclusion test
@@ -208,7 +215,8 @@ public class FireInteractor implements FireInputBoundary {
                 if (first) {
                     path.moveTo(gp.getLongitude(), gp.getLatitude());
                     first = false;
-                } else {
+                }
+                else {
                     path.lineTo(gp.getLongitude(), gp.getLatitude());
                 }
             }

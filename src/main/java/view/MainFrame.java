@@ -9,6 +9,8 @@ import javax.swing.JFrame;
  */
 public class MainFrame extends JFrame {
 
+    private static final int FRAME_WIDTH = 1000;
+    private static final int FRAME_HEIGHT = 800;
     private final MapView mapView;
     private final SidePanelView sidePanelView;
 
@@ -26,7 +28,7 @@ public class MainFrame extends JFrame {
         add(mapView, BorderLayout.CENTER);
         add(sidePanelView, BorderLayout.EAST);
 
-        setSize(1000, 800);
+        setSize(FRAME_WIDTH, FRAME_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
     }

@@ -24,6 +24,7 @@ public class FireController {
      * Executes the Wildfire analysis use case.
      * @param date the given date
      * @param dateRange the day range requested
+     * @param province the province chosen
      * @param isNational whether to fetch national overview data
      */
     public void execute(String date, int dateRange, boolean isNational, String province) {

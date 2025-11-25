@@ -5,7 +5,7 @@ package interface_adapter;
  * An initial state of "" is used.
  */
 
-public class ViewManagerModel extends ViewModel<String>{
+public class ViewManagerModel extends ViewModel<String> {
     public ViewManagerModel() {
         super("view manager");
     }

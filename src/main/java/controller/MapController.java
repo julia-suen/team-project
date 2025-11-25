@@ -45,17 +45,21 @@ public class MapController implements PropertyChangeListener {
 
         if (date.isEmpty()) {
             JOptionPane.showMessageDialog(mainFrame, "Please select a date.");
-        } else {
+        }
+        else {
             int range;
             try {
                 if ("All".equalsIgnoreCase(selectedRange.toString())) {
                     range = MAX_RANGE_FOR_ALL;
-                } else if (selectedRange != null) {
+                }
+                else if (selectedRange != null) {
                     range = Integer.parseInt(selectedRange.toString());
-                } else {
+                }
+                else {
                     range = DEFAULT_RANGE;
                 }
-            } catch (NumberFormatException ex) {
+            }
+            catch (NumberFormatException ex) {
                 // Fallback default
                 range = DEFAULT_RANGE;
             }
@@ -86,7 +90,8 @@ public class MapController implements PropertyChangeListener {
 
                 if (state.getError() != null) {
                     JOptionPane.showMessageDialog(mainFrame, state.getError(), "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
+                }
+                else {
                     // Pass the whole list of fires to be displayed at once
                     final List<Fire> fires = state.getFires();
 

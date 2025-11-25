@@ -14,6 +14,10 @@ public class User {
         this.favoriteLocations = new HashSet<>();
     }
 
+    /**
+     * Adds the given location to a ser's list of favorites.
+     * @param location the location to be added
+     */
     public void addFavorite(GeoPosition location) {
         this.favoriteLocations.add(location);
     }

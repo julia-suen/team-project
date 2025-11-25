@@ -10,6 +10,7 @@ public interface FireInputBoundary {
     /**
      * Execute the fire data analysis use case.
      * @param fireInputData the input data for this use case
+     * @throws GetData.InvalidDataException if an error is encountered during data parsing
      */
 
     void execute(FireInputData fireInputData) throws GetData.InvalidDataException;
