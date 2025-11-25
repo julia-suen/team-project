@@ -8,12 +8,19 @@ public class FireInputData {
     private final String date;
     private final int dateRange;
     private final boolean isNationalOverview;
+    private final boolean resetFilter;
+    private final boolean isMedSeverity;
+    private final boolean isHighSeverity;
     private final String province;
 
-    public FireInputData(String date, int dateRange, boolean isNationalOverview, String province) {
+    public FireInputData(String province, String date, int dateRange, boolean isNationalOverview, boolean resetFilter,
+                         boolean medSeverity, boolean highSeverity) {
         this.date = date;
         this.dateRange = dateRange;
         this.isNationalOverview = isNationalOverview;
+        this.resetFilter = resetFilter;
+        this.isMedSeverity = medSeverity;
+        this.isHighSeverity = highSeverity;
         this.province = province;
     }
 
@@ -31,5 +38,13 @@ public class FireInputData {
 
     public boolean isNationalOverview() {
         return isNationalOverview;
+    }
+
+    public boolean isResetFilter() { return resetFilter; }
+
+    public boolean isMedSeverity() { return isMedSeverity; }
+
+    public boolean isHighSeverity() {
+        return isHighSeverity;
     }
 }

@@ -33,13 +33,27 @@ public class MapController implements PropertyChangeListener {
 
     private void addListeners() {
         // Standard Load
-        mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(evt -> loadFires(false));
+        mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(evt ->
+                loadFires(false, false, false, false));
 
         // National Overview
-        mainFrame.getSidePanelView().getNationalButton().addActionListener(evt -> loadFires(true));
+        mainFrame.getSidePanelView().getNationalButton().addActionListener(evt ->
+                loadFires(true, false, false, false));
+
+        // Reset
+        mainFrame.getSidePanelView().getResetButton().addActionListener(evt ->
+                loadFires(false, false, false, false));
+
+        // Medium Severity
+        mainFrame.getSidePanelView().getMedSeverityButton().addActionListener(evt ->
+                loadFires(false, false, true, false));
+
+        // High Severity
+        mainFrame.getSidePanelView().getHighSeverityButton().addActionListener(evt ->
+                loadFires(false, false, false, true));
     }
 
-    private void loadFires(boolean isNational) {
+    private void loadFires(boolean isNational, boolean isReset, boolean isMedSeverity, boolean isHighSeverity) {
         final String date = mainFrame.getSidePanelView().getDatePickerComponent().getDateStringOrEmptyString();
         final Object selectedRange = mainFrame.getSidePanelView().getDayRangeSelector().getSelectedItem();
 
@@ -66,6 +80,9 @@ public class MapController implements PropertyChangeListener {
 
             mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(false);
             mainFrame.getSidePanelView().getNationalButton().setEnabled(false);
+            mainFrame.getSidePanelView().getResetButton().setEnabled(false);
+            mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(false);
+            mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(false);
 
             // Get the selected province
             String province = (String) mainFrame.getSidePanelView().getProvinceSelector().getSelectedItem();
@@ -74,7 +91,7 @@ public class MapController implements PropertyChangeListener {
             }
 
             // Pass it to the controller
-            fireController.execute(date, range, isNational, province);
+            fireController.execute(province, date, range, isNational, isReset, isMedSeverity, isHighSeverity);
         }
     }
 
@@ -84,6 +101,9 @@ public class MapController implements PropertyChangeListener {
         SwingUtilities.invokeLater(() -> {
             mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(true);
             mainFrame.getSidePanelView().getNationalButton().setEnabled(true);
+            mainFrame.getSidePanelView().getResetButton().setEnabled(true);
+            mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(true);
+            mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(true);
 
             if ("state".equals(evt.getPropertyName())) {
                 final FireState state = (FireState) evt.getNewValue();

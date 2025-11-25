@@ -22,17 +22,23 @@ public class FireController {
 
     /**
      * Executes the Wildfire analysis use case.
-     * @param date the given date
-     * @param dateRange the day range requested
-     * @param province the province chosen
-     * @param isNational whether to fetch national overview data
+     *
+     * @param province       the province chosen
+     * @param date           the given date
+     * @param dateRange      the day range requested
+     * @param isNational     whether to fetch national overview data
+     * @param resetFilter    whether to reset severity filters
+     * @param medSeverity    whether to apply medium severity filter
+     * @param highSeverity   whether to apply high severity filter
      */
-    public void execute(String date, int dateRange, boolean isNational, String province) {
+    public void execute(String province, String date, int dateRange, boolean isNational, boolean resetFilter,
+                        boolean medSeverity, boolean highSeverity) {
         // Run on background thread to prevent UI freezing during multiple API calls
         final SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
-                final FireInputData inputData = new FireInputData(date, dateRange, isNational, province);
+                final FireInputData inputData = new FireInputData(province, date, dateRange, isNational, resetFilter,
+                        medSeverity, highSeverity);
                 try {
                     fireInteractor.execute(inputData);
                 }

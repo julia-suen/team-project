@@ -15,6 +15,8 @@ public class FireFactory {
     private static final double THRESHOLD = 0.001;
     private static final double MIN_RADIUS_THRESHOLD = 0.0001;
     private static final double DEFAULT_SAFETY_RADIUS = 0.01;
+    private static final double MED_SEVERITY_THRESHOLD = 3;
+    private static final double HIGH_SEVERITY_THRESHOLD = 5;
     private static final String INVALID_DATA = "n/a";
     private final List<Coordinate> dataPoints;
 
@@ -107,6 +109,45 @@ public class FireFactory {
     }
 
     /**
+     * Sorts bundles of coordinates into Fire objects with greater FRP than
+     * @param ptBundles an unfiltered collection of fires
+     * @return a filtered fire list based off of their severity as determined by FRP
+     */
+    public static List<Fire> makeFilteredFireList(List<List<Coordinate>> ptBundles, boolean medSev, boolean highSev) {
+        final List<Fire> fires = new ArrayList<>();
+        double severity;
+        double radius;
+
+        if (medSev) {
+            severity = MED_SEVERITY_THRESHOLD;
+        }
+        else {
+            severity = HIGH_SEVERITY_THRESHOLD;
+        }
+
+        for (List<Coordinate> bundle : ptBundles) {
+            final Coordinate center = getAvgCoordinate(bundle);
+
+            if (center.getFrp() >= severity) {
+                bundle.sort(Comparator.comparingDouble(point -> point.getLat()));
+                final double latDiff = Math.abs(bundle.get(0).getLat() - bundle.get(bundle.size() - 1).getLat());
+                final double lonDiff = Math.abs(bundle.get(0).getLon() - bundle.get(bundle.size() - 1).getLon());
+                final double avgDiameter = latDiff + lonDiff / 2;
+                radius = avgDiameter / 2;
+
+                // Prevent crash for radius 0
+                if (radius <= MIN_RADIUS_THRESHOLD) {
+                    radius = DEFAULT_SAFETY_RADIUS;
+                }
+
+                fires.add(new Fire(radius, center, bundle));
+
+            }
+        }
+        return fires;
+    }
+
+    /**
      * Helper method for makeFireList.
      * Calculates the center/average point from bundle, a list of coordinates given and instantiates a new
      * Coordinate with the values. The date_day_confidence attribute of the returned coordinate contains invalid
@@ -125,17 +166,20 @@ public class FireFactory {
         double sumLons = 0;
         double bright4 = 0;
         double bright5 = 0;
+        double frp = 0;
 
         for (Coordinate pt : bundle) {
             sumLats += pt.getLat();
             sumLons += pt.getLon();
             bright4 += pt.getBrightness()[0];
             bright5 += pt.getBrightness()[1];
+            frp += pt.getFrp();
         }
 
         return new Coordinate(sumLats / numFires, sumLons / numFires,
                 new String[]{INVALID_DATA, INVALID_DATA, INVALID_DATA},
-                new double[]{bright4 / numFires, bright5 / numFires});
+                new double[]{bright4 / numFires, bright5 / numFires},
+                frp / numFires);
     }
 
     public List<Coordinate> getDataPoints() {

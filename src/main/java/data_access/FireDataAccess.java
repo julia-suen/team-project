@@ -26,6 +26,7 @@ public class FireDataAccess implements GetData {
     private static final int DATE_INDEX = 5;
     private static final int CONFIDENCE_INDEX = 9;
     private static final int BRIGHT5_INDEX = 11;
+    private static final int FRP_INDEX = 12;
     private static final int DAYNIGHT_INDEX = 13;
 
     private static final int API_THRESHOLD = 10;
@@ -76,7 +77,7 @@ public class FireDataAccess implements GetData {
                     final Coordinate coord = new Coordinate(Float.parseFloat(values[0]), Float.parseFloat(values[1]),
                             new String[]{values[DATE_INDEX], values[DAYNIGHT_INDEX], values[CONFIDENCE_INDEX]},
                             new double[]{Float.parseFloat(values[BRIGHT4_INDEX]),
-                                    Float.parseFloat(values[BRIGHT5_INDEX])});
+                                    Float.parseFloat(values[BRIGHT5_INDEX])}, Float.parseFloat(values[FRP_INDEX]));
                     dataPoints.add(coord);
                 }
             }

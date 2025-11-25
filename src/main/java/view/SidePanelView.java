@@ -9,13 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -39,10 +33,12 @@ public class SidePanelView extends JPanel {
     private static final int BOX_SPACE = 5;
     private static final int SPACING_SMALL = 10;
     private static final int SPACING_MEDIUM = 15;
-    private static final int SPACING_LARGE = 30;
 
     private final JButton loadFiresButton = new JButton("Load Fires");
     private final JButton nationalButton = new JButton("National Overview");
+    private final JButton resetButton = new JButton("Reset");
+    private final JButton medSeverityButton = new JButton("Medium");
+    private final JButton highSeverityButton = new JButton("High");
 
     // Initialize province selector dynamically using the source of truth
     private final JComboBox<String> provinceSelector;
@@ -124,10 +120,20 @@ public class SidePanelView extends JPanel {
         dayRangeSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(dayRangeSelector);
 
-        add(Box.createVerticalStrut(SPACING_LARGE));
+        add(Box.createVerticalStrut(SPACING_MEDIUM));
 
-        // Buttons
+        // Load and National Buttons
         addButtonPanel();
+
+        // Severity
+        final JLabel severityLabel = new JLabel("Severity Filter:");
+        severityLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        add(severityLabel);
+
+        add(Box.createVerticalStrut(SPACING_MEDIUM));
+
+        // Severity Buttons
+        addSeverityPanel();
 
         add(Box.createVerticalStrut(SPACING_MEDIUM));
 
@@ -153,6 +159,30 @@ public class SidePanelView extends JPanel {
         buttonPanel.add(loadFiresButton);
         buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
         buttonPanel.add(nationalButton);
+        buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
+
+        add(buttonPanel);
+    }
+
+    private void addSeverityPanel() {
+        final JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        resetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        resetButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+
+        medSeverityButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        medSeverityButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+
+        highSeverityButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        highSeverityButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+
+        buttonPanel.add(resetButton);
+        buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
+        buttonPanel.add(medSeverityButton);
+        buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
+        buttonPanel.add(highSeverityButton);
 
         add(buttonPanel);
     }
@@ -194,6 +224,18 @@ public class SidePanelView extends JPanel {
         return nationalButton;
     }
 
+    public JButton getResetButton() {
+        return resetButton;
+    }
+
+    public JButton getMedSeverityButton() {
+        return medSeverityButton;
+    }
+
+    public JButton getHighSeverityButton() {
+        return highSeverityButton;
+    }
+
     public JComboBox<String> getProvinceSelector() {
         return provinceSelector;
     }
@@ -209,4 +251,6 @@ public class SidePanelView extends JPanel {
     public GraphPanel getGraphPanel() {
         return graphPanel;
     }
+
 }
+
