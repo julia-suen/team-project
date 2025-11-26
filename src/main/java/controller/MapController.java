@@ -3,10 +3,12 @@ package controller;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.*;
 
 import entities.Fire;
+import entities.SeverityFilter;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FireState;
 import interface_adapter.fire_data.FireViewModel;
@@ -33,13 +35,27 @@ public class MapController implements PropertyChangeListener {
 
     private void addListeners() {
         // Standard Load
-        mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(evt -> loadFires(false));
+        mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(evt ->
+                loadFires(false, SeverityFilter.RESET));
 
         // National Overview
-        mainFrame.getSidePanelView().getNationalButton().addActionListener(evt -> loadFires(true));
+        mainFrame.getSidePanelView().getNationalButton().addActionListener(evt ->
+                loadFires(true, SeverityFilter.RESET));
+
+        // Reset
+        mainFrame.getSidePanelView().getResetButton().addActionListener(evt ->
+                loadFires(false, SeverityFilter.RESET));
+
+        // Medium Severity
+        mainFrame.getSidePanelView().getMedSeverityButton().addActionListener(evt ->
+                loadFires(false, SeverityFilter.MEDIUM));
+
+        // High Severity
+        mainFrame.getSidePanelView().getHighSeverityButton().addActionListener(evt ->
+                loadFires(false, SeverityFilter.HIGH));
     }
 
-    private void loadFires(boolean isNational) {
+    private void loadFires(boolean isNational, SeverityFilter severityFilter) {
         final String date = mainFrame.getSidePanelView().getDatePickerComponent().getDateStringOrEmptyString();
         final Object selectedRange = mainFrame.getSidePanelView().getDayRangeSelector().getSelectedItem();
 
@@ -49,10 +65,11 @@ public class MapController implements PropertyChangeListener {
         else {
             int range;
             try {
+                assert selectedRange != null;
                 if ("All".equalsIgnoreCase(selectedRange.toString())) {
                     range = MAX_RANGE_FOR_ALL;
                 }
-                else if (selectedRange != null) {
+                else if (!Objects.equals(selectedRange.toString(), "All")) {
                     range = Integer.parseInt(selectedRange.toString());
                 }
                 else {
@@ -66,6 +83,9 @@ public class MapController implements PropertyChangeListener {
 
             mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(false);
             mainFrame.getSidePanelView().getNationalButton().setEnabled(false);
+            mainFrame.getSidePanelView().getResetButton().setEnabled(false);
+            mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(false);
+            mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(false);
 
             // Get the selected province
             String province = (String) mainFrame.getSidePanelView().getProvinceSelector().getSelectedItem();
@@ -74,7 +94,7 @@ public class MapController implements PropertyChangeListener {
             }
 
             // Pass it to the controller
-            fireController.execute(date, range, isNational, province);
+            fireController.execute(province, date, range, isNational, severityFilter);
         }
     }
 
@@ -84,6 +104,9 @@ public class MapController implements PropertyChangeListener {
         SwingUtilities.invokeLater(() -> {
             mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(true);
             mainFrame.getSidePanelView().getNationalButton().setEnabled(true);
+            mainFrame.getSidePanelView().getResetButton().setEnabled(true);
+            mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(true);
+            mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(true);
 
             if ("state".equals(evt.getPropertyName())) {
                 final FireState state = (FireState) evt.getNewValue();

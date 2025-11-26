@@ -2,8 +2,8 @@ package app;
 
 import controller.MapController;
 import data_access.BoundariesDataAccess;
-import entities.FireFactory;
 import data_access.FireDataAccess;
+import entities.FireFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FirePresenter;

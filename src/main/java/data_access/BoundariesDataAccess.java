@@ -89,8 +89,8 @@ public class BoundariesDataAccess {
      * @throws GetData.InvalidDataException if the API call fails or the response is invalid.
      */
     public List<List<GeoPosition>> getBoundariesData(final String provinceName) throws GetData.InvalidDataException {
-        final String provinceNameApi = PROVINCES_TO_API.get(provinceName);
-        final String url = String.format(API_URL_TEMPLATE, provinceNameApi);
+        final String provinceNameAPI = PROVINCES_TO_API.get(provinceName);
+        final String url = String.format(API_URL_TEMPLATE, provinceNameAPI);
         final Request request = new Request.Builder().url(url).build();
 
         try (Response response = this.client.newCall(request).execute()) {

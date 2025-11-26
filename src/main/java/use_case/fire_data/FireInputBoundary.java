@@ -14,6 +14,5 @@ public interface FireInputBoundary {
      */
 
     void execute(FireInputData fireInputData) throws GetData.InvalidDataException;
-    // idk wtf this shi doing frfr like what does the fire interactor have to be implementing w this idk
 
 }

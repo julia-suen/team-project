@@ -3,19 +3,15 @@ package use_case.fire_data;
 import java.awt.geom.Path2D;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import entities.*;
 import org.jxmapviewer.viewer.GeoPosition;
 
 import data_access.BoundariesDataAccess;
 import data_access.GetData;
-import entities.Coordinate;
-import entities.Fire;
-import entities.FireFactory;
-import entities.Region;
+
+import static entities.FireFactory.filterFires;
 
 /**
  * Interactor for the Fire Data Use Case.
@@ -30,7 +26,6 @@ public class FireInteractor implements FireInputBoundary {
     private static final String LABEL_FORMAT = "MMM";
     // e.g., "Aug", "Sep"
     private static final String WORLD_BOUNDS = "-180,-90,180,90";
-
     private final GetData dataAccessInterface;
     private final FireOutputBoundary firePresenter;
     private final BoundariesDataAccess boundariesDataAccess;
@@ -75,11 +70,15 @@ public class FireInteractor implements FireInputBoundary {
                 province = "All";
             }
 
+            // get filters
+            final SeverityFilter severityFilter = fireInputData.getSeverityFilter();
+
             if (fireInputData.isNationalOverview()) {
-                processNationalOverview(inputDate, range, allFires, trendData);
+                processNationalOverview(inputDate, range, allFires, trendData, severityFilter);
+
             }
             else {
-                processStandardView(inputDateStr, inputDate, range, allFires, trendData, province);
+                processStandardView(inputDateStr, inputDate, range, allFires, trendData, province, severityFilter);
             }
 
             final FireOutputData fireOutputData = new FireOutputData(allFires, trendData);
@@ -96,11 +95,11 @@ public class FireInteractor implements FireInputBoundary {
     }
 
     private void processNationalOverview(LocalDate inputDate, int range,
-                                         List<Fire> allFires, Map<String, Integer> trendData)
+                                         List<Fire> allFires, Map<String, Integer> trendData,
+                                         SeverityFilter severityFilter)
             throws GetData.InvalidDataException {
 
         // For National Overview, we fetch world data but FILTER for Canada using boundaries
-        final String bounds = WORLD_BOUNDS;
         final Region canadaRegion = boundariesDataAccess.getRegion("Canada");
 
         // Loop backwards (e.g. Month -2, Month -1, Current Month)
@@ -108,9 +107,10 @@ public class FireInteractor implements FireInputBoundary {
             final LocalDate targetDate = inputDate.minusMonths(i);
             final String targetDateStr = targetDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
             final String label = targetDate.format(DateTimeFormatter.ofPattern(LABEL_FORMAT));
+            List<Fire> monthFires;
 
             // Fetch data
-            List<Coordinate> points = dataAccessInterface.getFireData(range, targetDateStr, bounds);
+            List<Coordinate> points = dataAccessInterface.getFireData(range, targetDateStr, WORLD_BOUNDS);
 
             if (points == null) {
                 points = new ArrayList<>();
@@ -125,14 +125,16 @@ public class FireInteractor implements FireInputBoundary {
             if (!points.isEmpty()) {
                 final FireFactory fireFactory = new FireFactory(points);
                 final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
-                final List<Fire> monthFires = FireFactory.makeFireList(bundles);
+
+                monthFires = filterFires(bundles, severityFilter);
                 allFires.addAll(monthFires);
             }
         }
     }
 
     private void processStandardView(String inputDateStr, LocalDate inputDate, int range,
-                                     List<Fire> allFires, Map<String, Integer> trendData, String province)
+                                     List<Fire> allFires, Map<String, Integer> trendData, String province,
+                                     SeverityFilter severityFilter)
             throws GetData.InvalidDataException {
 
         // Fetch data for the whole world
@@ -148,12 +150,13 @@ public class FireInteractor implements FireInputBoundary {
             points = filterPointsByProvince(points, province);
         }
 
-        // Process filtered points
+        // Process points
         if (!points.isEmpty()) {
             final FireFactory fireFactory = new FireFactory(points);
             final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
-            final List<Fire> fires = FireFactory.makeFireList(bundles);
-            allFires.addAll(fires);
+
+            final List<Fire> monthFires = filterFires(bundles, severityFilter);
+            allFires.addAll(monthFires);
             trendData.put(label, points.size());
         }
         else {
