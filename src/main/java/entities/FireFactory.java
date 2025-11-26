@@ -16,7 +16,7 @@ public class FireFactory {
     private static final double MIN_RADIUS_THRESHOLD = 0.0001;
     private static final double DEFAULT_SAFETY_RADIUS = 0.01;
     private static final double MED_SEVERITY_THRESHOLD = 3;
-    private static final double HIGH_SEVERITY_THRESHOLD = 5;
+    private static final double HIGH_SEVERITY_THRESHOLD = 7;
     private static final String INVALID_DATA = "n/a";
     private final List<Coordinate> dataPoints;
 
@@ -49,8 +49,8 @@ public class FireFactory {
         List<Coordinate> constitutingPts = new ArrayList<>();
 
         // sorts by both lat and lon simultaneously
-        dataPoints.sort(Comparator.comparingDouble((Coordinate point) -> point.getLat())
-                .thenComparingDouble(point -> point.getLon()));
+        dataPoints.sort(Comparator.comparingDouble(Coordinate::getLat)
+                .thenComparingDouble(Coordinate::getLon));
 
         Coordinate previous = null;
         for (Coordinate coord : dataPoints) {
@@ -91,7 +91,7 @@ public class FireFactory {
         for (List<Coordinate> bundle : ptBundles) {
             final Coordinate center = getAvgCoordinate(bundle);
 
-            bundle.sort(Comparator.comparingDouble(point -> point.getLat()));
+            bundle.sort(Comparator.comparingDouble(Coordinate::getLat));
             final double latDiff = Math.abs(bundle.get(0).getLat() - bundle.get(bundle.size() - 1).getLat());
             final double lonDiff = Math.abs(bundle.get(0).getLon() - bundle.get(bundle.size() - 1).getLon());
             final double avgDiameter = latDiff + lonDiff / 2;
@@ -129,7 +129,7 @@ public class FireFactory {
             final Coordinate center = getAvgCoordinate(bundle);
 
             if (center.getFrp() >= severity) {
-                bundle.sort(Comparator.comparingDouble(point -> point.getLat()));
+                bundle.sort(Comparator.comparingDouble(Coordinate::getLat));
                 final double latDiff = Math.abs(bundle.get(0).getLat() - bundle.get(bundle.size() - 1).getLat());
                 final double lonDiff = Math.abs(bundle.get(0).getLon() - bundle.get(bundle.size() - 1).getLon());
                 final double avgDiameter = latDiff + lonDiff / 2;
@@ -180,6 +180,14 @@ public class FireFactory {
                 new String[]{INVALID_DATA, INVALID_DATA, INVALID_DATA},
                 new double[]{bright4 / numFires, bright5 / numFires},
                 frp / numFires);
+    }
+
+    public static List<Fire> filterFires(List<List<Coordinate>> bundles, SeverityFilter severityFilter) {
+        return switch (severityFilter) {
+            case MEDIUM -> FireFactory.makeFilteredFireList(bundles, true, false);
+            case HIGH -> FireFactory.makeFilteredFireList(bundles, false, true);
+            default -> FireFactory.makeFireList(bundles);
+        };
     }
 
     public List<Coordinate> getDataPoints() {

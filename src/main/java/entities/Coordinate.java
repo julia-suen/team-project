@@ -23,14 +23,14 @@ public class Coordinate extends GeoPosition {
      *
      * @param lat                 the latitude of the coordinate
      * @param lon                 the longitude of the coordinate
-     * @param date_day_confidence the date, day/night value, and confidence value of a given coordinate.
+     * @param dateDayConfidence   the date, day/night value, and confidence value of a given coordinate.
      *                            may be set to "n/a" as appropriate.
      * @param brightness          the 2 brightness values of the given coordinate
      * @param frp                 the fire radiative power of the coordinate in megawatts (MW)
      * @throws IllegalArgumentException if the input values are not valid coordinates
      */
 
-    public Coordinate(double lat, double lon, String[] date_day_confidence, double[] brightness, double frp) {
+    public Coordinate(double lat, double lon, String[] dateDayConfidence, double[] brightness, double frp) {
         super(lat, lon);
 
         if (lat > LAT_UP_BOUNDARY || lat < LAT_LOW_BOUNDARY
@@ -39,7 +39,7 @@ public class Coordinate extends GeoPosition {
         }
         this.lat = lat;
         this.lon = lon;
-        this.dateDayConfidence = date_day_confidence;
+        this.dateDayConfidence = dateDayConfidence;
         this.brightness = brightness;
         this.frp = frp;
     }

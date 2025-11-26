@@ -44,7 +44,7 @@ public class MapView extends JPanel {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
+    private static final double MIN_RADIUS = 0.1;
     private final transient RegionRepository regionRepo = new RegionRepository(
             new data_access.BoundariesDataAccess()
     );
@@ -65,7 +65,8 @@ public class MapView extends JPanel {
         this.mapKit = new JXMapKit();
 
         // Pass the map viewer (JXMapViewer) instead of 'this' (MapView/JPanel)
-        this.regionSelectionHandler = new RegionSelectionHandler(this.regionRepo, this.provinceLabel, this.mapKit.getMainMap());
+        this.regionSelectionHandler = new RegionSelectionHandler(this.regionRepo, this.provinceLabel,
+                this.mapKit.getMainMap());
 
         this.waypointPainter = new WaypointPainter<>();
         this.waypointPainter.setRenderer(new FireWaypointRenderer());
@@ -146,6 +147,7 @@ public class MapView extends JPanel {
 
     private void addMouseListeners(final JXMapViewer map) {
         map.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mouseClicked(final MouseEvent e) {
                 if (!regionRepo.isLoaded()) {
@@ -154,7 +156,8 @@ public class MapView extends JPanel {
 
                 if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
                     regionSelectionHandler.handleRegionSelection(e.getPoint(), map);
-                } else if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e) && map.getZoom() > 0) {
+                }
+                else if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e) && map.getZoom() > 0) {
                     map.setZoom(map.getZoom() - 1);
                     map.requestFocusInWindow();
                 }
@@ -211,7 +214,8 @@ public class MapView extends JPanel {
                         fire.getCoordinates().get(0).getLatitude(),
                         fire.getCoordinates().get(0).getLongitude()
                 );
-                this.addFireMarker(geo, 0.1); // Assuming a default radius
+
+                this.addFireMarker(geo, MIN_RADIUS); // Assuming a default radius
             }
         }
     }

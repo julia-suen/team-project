@@ -24,6 +24,7 @@ public class FireViewModel extends ViewModel<FireState> {
     /**
      * Fires a property change event to notify listeners that the state has changed.
      */
+    @Override
     public void firePropertyChange() {
         support.firePropertyChange("state", null, this.getState());
     }
@@ -32,6 +33,7 @@ public class FireViewModel extends ViewModel<FireState> {
      * Adds a PropertyChangeListener to this ViewModel.
      * @param listener the listener to add
      */
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }

@@ -3,10 +3,12 @@ package controller;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.*;
 
 import entities.Fire;
+import entities.SeverityFilter;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FireState;
 import interface_adapter.fire_data.FireViewModel;
@@ -34,26 +36,26 @@ public class MapController implements PropertyChangeListener {
     private void addListeners() {
         // Standard Load
         mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(evt ->
-                loadFires(false, false, false, false));
+                loadFires(false, SeverityFilter.RESET));
 
         // National Overview
         mainFrame.getSidePanelView().getNationalButton().addActionListener(evt ->
-                loadFires(true, false, false, false));
+                loadFires(true, SeverityFilter.RESET));
 
         // Reset
         mainFrame.getSidePanelView().getResetButton().addActionListener(evt ->
-                loadFires(false, false, false, false));
+                loadFires(false, SeverityFilter.RESET));
 
         // Medium Severity
         mainFrame.getSidePanelView().getMedSeverityButton().addActionListener(evt ->
-                loadFires(false, false, true, false));
+                loadFires(false, SeverityFilter.MEDIUM));
 
         // High Severity
         mainFrame.getSidePanelView().getHighSeverityButton().addActionListener(evt ->
-                loadFires(false, false, false, true));
+                loadFires(false, SeverityFilter.HIGH));
     }
 
-    private void loadFires(boolean isNational, boolean isReset, boolean isMedSeverity, boolean isHighSeverity) {
+    private void loadFires(boolean isNational, SeverityFilter severityFilter) {
         final String date = mainFrame.getSidePanelView().getDatePickerComponent().getDateStringOrEmptyString();
         final Object selectedRange = mainFrame.getSidePanelView().getDayRangeSelector().getSelectedItem();
 
@@ -63,10 +65,11 @@ public class MapController implements PropertyChangeListener {
         else {
             int range;
             try {
+                assert selectedRange != null;
                 if ("All".equalsIgnoreCase(selectedRange.toString())) {
                     range = MAX_RANGE_FOR_ALL;
                 }
-                else if (selectedRange != null) {
+                else if (!Objects.equals(selectedRange.toString(), "All")) {
                     range = Integer.parseInt(selectedRange.toString());
                 }
                 else {
@@ -91,7 +94,7 @@ public class MapController implements PropertyChangeListener {
             }
 
             // Pass it to the controller
-            fireController.execute(province, date, range, isNational, isReset, isMedSeverity, isHighSeverity);
+            fireController.execute(province, date, range, isNational, severityFilter);
         }
     }
 

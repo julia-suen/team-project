@@ -145,7 +145,8 @@ class RegionSelectionHandler {
                 final TileFactory tf = map.getTileFactory();
 
                 drawBoundary(boundaries, tf, zoom, g2);
-            } finally {
+            }
+            finally {
                 g2.dispose();
             }
         };
@@ -165,7 +166,8 @@ class RegionSelectionHandler {
                 if (first) {
                     path.moveTo(pt.getX(), pt.getY());
                     first = false;
-                } else {
+                }
+                else {
                     path.lineTo(pt.getX(), pt.getY());
                 }
             }

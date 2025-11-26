@@ -1,26 +1,24 @@
 package use_case.fire_data;
 
+import entities.SeverityFilter;
+
 /**
  * The input data for the fire analytics use case.
  * Represents a request that a user makes to the program by giving it a date and a day range
  */
 public class FireInputData {
+    private final String province;
     private final String date;
     private final int dateRange;
     private final boolean isNationalOverview;
-    private final boolean resetFilter;
-    private final boolean isMedSeverity;
-    private final boolean isHighSeverity;
-    private final String province;
+    private final SeverityFilter severityFilter;
 
-    public FireInputData(String province, String date, int dateRange, boolean isNationalOverview, boolean resetFilter,
-                         boolean medSeverity, boolean highSeverity) {
+    public FireInputData(String province, String date, int dateRange, boolean isNationalOverview,
+                         SeverityFilter severityFilter) {
         this.date = date;
         this.dateRange = dateRange;
+        this.severityFilter = severityFilter;
         this.isNationalOverview = isNationalOverview;
-        this.resetFilter = resetFilter;
-        this.isMedSeverity = medSeverity;
-        this.isHighSeverity = highSeverity;
         this.province = province;
     }
 
@@ -40,11 +38,6 @@ public class FireInputData {
         return isNationalOverview;
     }
 
-    public boolean isResetFilter() { return resetFilter; }
+    public SeverityFilter getSeverityFilter() { return severityFilter; }
 
-    public boolean isMedSeverity() { return isMedSeverity; }
-
-    public boolean isHighSeverity() {
-        return isHighSeverity;
-    }
 }
