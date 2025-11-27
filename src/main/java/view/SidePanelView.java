@@ -9,13 +9,21 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import data_access.BoundariesDataAccess;
+import view.components.JComboCheckBox;
 
 /**
  * The Side Panel View for user input and filtering.
@@ -42,6 +50,7 @@ public class SidePanelView extends JPanel {
 
     // Initialize province selector dynamically using the source of truth
     private final JComboBox<String> provinceSelector;
+    private final JComboCheckBox provinceComboCheckBox;
 
     private final JComboBox<String> dayRangeSelector = new JComboBox<>(
             new String[]{"All", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
@@ -60,6 +69,7 @@ public class SidePanelView extends JPanel {
 
         // Initialize the Province Dropdown dynamically
         this.provinceSelector = createProvinceComboBox();
+        this.provinceComboCheckBox = createProvinceComboCheckBox();
 
         final Dimension maxFieldSize = new Dimension(Integer.MAX_VALUE, FIELD_HEIGHT);
 
@@ -91,6 +101,34 @@ public class SidePanelView extends JPanel {
         return new JComboBox<>(provinces.toArray(new String[0]));
     }
 
+    /**
+     * Creates the province combo check box populated from BoundariesDataAccess.
+     * @return all province combo check box to be added in the GUI
+     */
+    private JComboCheckBox createProvinceComboCheckBox() {
+        final List<JCheckBox> checkBoxList = new ArrayList<>();
+
+        final List<String> provinces = new ArrayList<>();
+        provinces.add("All");
+
+        // Fetch from source of truth
+        provinces.addAll(Arrays.asList(BoundariesDataAccess.PROVINCES));
+
+        // Sort alphabetically for better UX (skipping "All" at index 0)
+        Collections.sort(provinces.subList(1, provinces.size()));
+
+        for (String province: provinces) {
+            final JCheckBox provinceCheckBox = new JCheckBox(province);
+            provinceCheckBox.setSelected(false);
+
+            checkBoxList.add(provinceCheckBox);
+        }
+
+        final JCheckBox[] checkBoxItems = checkBoxList.toArray(new JCheckBox[0]);
+
+        return new JComboCheckBox(checkBoxItems);
+    }
+
     private void addComponents(Dimension maxFieldSize) {
         // Province
         final JLabel provinceLabel = new JLabel("Province:");
@@ -100,6 +138,10 @@ public class SidePanelView extends JPanel {
         provinceSelector.setMaximumSize(maxFieldSize);
         provinceSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(provinceSelector);
+
+        provinceComboCheckBox.setMaximumSize(maxFieldSize);
+        provinceComboCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        add(provinceComboCheckBox);
 
         add(Box.createVerticalStrut(SPACING_MEDIUM));
 
@@ -238,6 +280,10 @@ public class SidePanelView extends JPanel {
 
     public JComboBox<String> getProvinceSelector() {
         return provinceSelector;
+    }
+
+    public JComboCheckBox getProvinceComboCheckBox() {
+        return provinceComboCheckBox;
     }
 
     public JComboBox<String> getDayRangeSelector() {
