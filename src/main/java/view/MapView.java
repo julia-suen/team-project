@@ -1,14 +1,18 @@
 package view;
 
+import entities.Fire;
 import interface_adapter.region.RegionRepository;
-import java.awt.BasicStroke;
+import interface_adapter.select_region.MapCoordinateConverter;
+import interface_adapter.select_region.SelectRegionController;
+import interface_adapter.select_region.SelectRegionPresenter;
+import interface_adapter.select_region.SelectRegionViewModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,48 +33,53 @@ import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.painter.CompoundPainter;
 import org.jxmapviewer.painter.Painter;
 import org.jxmapviewer.viewer.DefaultTileFactory;
-import org.jxmapviewer.viewer.DefaultWaypoint;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.WaypointPainter;
-import org.jxmapviewer.viewer.WaypointRenderer;
-import entities.Fire;
+import use_case.select_region.CoordinateConverter;
+import use_case.select_region.SelectRegionInteractor;
 
 /**
  * The main map view component for the application.
  * Handles rendering the map, fire data, and region boundaries,
  * as well as user interactions like panning, zooming, and selecting provinces.
  */
-public class MapView extends JPanel {
+public class MapView extends JPanel implements PropertyChangeListener {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    private static final double MIN_RADIUS = 0.1;
-    private final transient RegionRepository regionRepo = new RegionRepository(
-            new data_access.BoundariesDataAccess()
-    );
 
+    private final transient RegionRepository regionRepo;
     private final JLabel provinceLabel = new JLabel("Province: None");
     private final JXMapKit mapKit;
     private final transient Set<FireWaypoint> waypoints;
     private final transient WaypointPainter<FireWaypoint> waypointPainter;
-    private final transient RegionSelectionHandler regionSelectionHandler;
+    private final transient SelectRegionController selectRegionController;
+    private final transient RegionBoundaryPainter regionBoundaryPainter;
 
     /**
      * Constructs the MapView panel.
      */
     public MapView() {
         this.waypoints = new HashSet<>();
-
-        // Initialize MapKit first so we can pass the JXMapViewer to the handler
-        this.mapKit = new JXMapKit();
-
-        // Pass the map viewer (JXMapViewer) instead of 'this' (MapView/JPanel)
-        this.regionSelectionHandler = new RegionSelectionHandler(this.regionRepo, this.provinceLabel,
-                this.mapKit.getMainMap());
+        this.regionRepo = new RegionRepository(new data_access.BoundariesDataAccess());
 
         this.waypointPainter = new WaypointPainter<>();
         this.waypointPainter.setRenderer(new FireWaypointRenderer());
         this.waypointPainter.setWaypoints(this.waypoints);
+
+        this.mapKit = new JXMapKit();
+        final JXMapViewer map = this.mapKit.getMainMap();
+
+        final SelectRegionViewModel selectRegionViewModel = new SelectRegionViewModel();
+        selectRegionViewModel.addPropertyChangeListener(this);
+        final SelectRegionPresenter selectRegionPresenter = new SelectRegionPresenter(selectRegionViewModel);
+        final CoordinateConverter coordinateConverter = new MapCoordinateConverter(map);
+        final SelectRegionInteractor selectRegionInteractor = new SelectRegionInteractor(
+                this.regionRepo, selectRegionPresenter, coordinateConverter
+        );
+        this.selectRegionController = new SelectRegionController(selectRegionInteractor);
+
+        this.regionBoundaryPainter = new RegionBoundaryPainter();
 
         this.setLayout(new BorderLayout());
 
@@ -79,12 +88,10 @@ public class MapView extends JPanel {
         this.add(layeredPane, BorderLayout.CENTER);
 
         this.setupProvinceLabel(layeredPane);
-
         this.setupMapKit(layeredPane);
 
         this.regionRepo.addOnLoadCallback(this::repaint);
 
-        // Schedule the initial layout update to fix component positions on startup.
         SwingUtilities.invokeLater(this::updateChildBounds);
     }
 
@@ -113,7 +120,7 @@ public class MapView extends JPanel {
         this.addMouseListeners(map);
 
         final List<Painter<JXMapViewer>> painters = new ArrayList<>();
-        painters.add(this.regionSelectionHandler.getRegionPainter());
+        painters.add(this.regionBoundaryPainter);
         painters.add(this.waypointPainter);
 
         final CompoundPainter<JXMapViewer> compoundPainter = new CompoundPainter<>(painters);
@@ -138,8 +145,8 @@ public class MapView extends JPanel {
     private void updateChildBounds() {
         final int w = getWidth();
         final int h = getHeight();
-        mapKit.setBounds(0, 0, w, h);
-        provinceLabel.setBounds(
+        this.mapKit.setBounds(0, 0, w, h);
+        this.provinceLabel.setBounds(
                 MapViewConfig.LABEL_X_OFFSET, MapViewConfig.LABEL_Y_OFFSET,
                 MapViewConfig.LABEL_WIDTH, MapViewConfig.LABEL_HEIGHT
         );
@@ -147,7 +154,6 @@ public class MapView extends JPanel {
 
     private void addMouseListeners(final JXMapViewer map) {
         map.addMouseListener(new MouseAdapter() {
-
             @Override
             public void mouseClicked(final MouseEvent e) {
                 if (!regionRepo.isLoaded()) {
@@ -155,9 +161,9 @@ public class MapView extends JPanel {
                 }
 
                 if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
-                    regionSelectionHandler.handleRegionSelection(e.getPoint(), map);
-                }
-                else if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e) && map.getZoom() > 0) {
+                    final GeoPosition clickPos = map.convertPointToGeoPosition(e.getPoint());
+                    selectRegionController.execute(clickPos);
+                } else if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e) && map.getZoom() > 0) {
                     map.setZoom(map.getZoom() - 1);
                     map.requestFocusInWindow();
                 }
@@ -180,6 +186,17 @@ public class MapView extends JPanel {
         zoomOut.setPreferredSize(buttonSize);
         zoomIn.addActionListener(event -> kit.getMainMap().requestFocusInWindow());
         zoomOut.addActionListener(event -> kit.getMainMap().requestFocusInWindow());
+    }
+
+    @Override
+    public void propertyChange(final PropertyChangeEvent evt) {
+        if ("selectedProvince".equals(evt.getPropertyName())) {
+            final String newProvince = (String) evt.getNewValue();
+            this.provinceLabel.setText(SelectRegionViewModel.PROVINCE_LABEL + newProvince);
+            final entities.Region selectedRegion = this.regionRepo.getRegion(newProvince);
+            this.regionBoundaryPainter.setRegion(selectedRegion);
+            this.repaint();
+        }
     }
 
     /**
@@ -214,64 +231,8 @@ public class MapView extends JPanel {
                         fire.getCoordinates().get(0).getLatitude(),
                         fire.getCoordinates().get(0).getLongitude()
                 );
-
-                this.addFireMarker(geo, MIN_RADIUS); // Assuming a default radius
+                this.addFireMarker(geo, MapViewConfig.DEFAULT_FIRE_RADIUS);
             }
-        }
-    }
-
-    /**
-     * A custom waypoint representing a fire, with a specific radius.
-     */
-    public static class FireWaypoint extends DefaultWaypoint {
-        private final double radius;
-
-        /**
-         * Constructs a FireWaypoint.
-         * @param coord The geographical coordinate.
-         * @param radius The radius of the fire.
-         */
-        public FireWaypoint(final GeoPosition coord, final double radius) {
-            super(coord);
-            this.radius = radius;
-        }
-
-        /**
-         * Gets the radius of the fire.
-         * @return the radius.
-         */
-        public double getRadius() {
-            return this.radius;
-        }
-    }
-
-    /**
-     * A renderer for painting FireWaypoint objects on the map.
-     */
-    public static class FireWaypointRenderer implements WaypointRenderer<FireWaypoint> {
-        @Override
-        public void paintWaypoint(final Graphics2D g, final JXMapViewer map, final FireWaypoint wp) {
-            final Point2D centerPoint = map.getTileFactory().geoToPixel(wp.getPosition(), map.getZoom());
-            final GeoPosition northPoint = new GeoPosition(
-                    wp.getPosition().getLatitude() + wp.getRadius(),
-                    wp.getPosition().getLongitude()
-            );
-            final Point2D radiusPoint = map.getTileFactory().geoToPixel(northPoint, map.getZoom());
-
-            final double pixelRadius = Math.abs(centerPoint.getY() - radiusPoint.getY());
-            int radius = (int) pixelRadius;
-            if (radius < MapViewConfig.MIN_FIRE_RADIUS) {
-                radius = MapViewConfig.MIN_FIRE_RADIUS;
-            }
-            final int diameter = radius * 2;
-            final int x = (int) (centerPoint.getX() - radius);
-            final int y = (int) (centerPoint.getY() - radius);
-
-            g.setColor(MapViewConfig.FIRE_FILL_COLOR);
-            g.fillOval(x, y, diameter, diameter);
-            g.setColor(Color.RED);
-            g.setStroke(new BasicStroke(MapViewConfig.FIRE_STROKE_WIDTH));
-            g.drawOval(x, y, diameter, diameter);
         }
     }
 }

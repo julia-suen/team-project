@@ -91,19 +91,14 @@ public class RegionRepository {
         protected Void doInBackground() throws Exception {
             try {
                 dataAccess.loadProvinces();
-            } catch (Exception e) {
-                System.err.println("Failed to load province boundaries: " + e.getMessage());
-            }
-
-            for (String name : PROVINCES) {
-                try {
-                    Region region = dataAccess.getRegion(name);
+                for (final String name : PROVINCES) {
+                    final Region region = dataAccess.getRegion(name);
                     if (region != null) {
                         regionMap.put(name, region);
                     }
-                } catch (Exception e) {
-                    System.err.println("Failed to load region " + name + ": " + e.getMessage());
                 }
+            } catch (final Exception e) {
+                System.err.println("Failed to load province boundaries: " + e.getMessage());
             }
             return null;
         }
@@ -112,7 +107,7 @@ public class RegionRepository {
         protected void done() {
             isLoaded = true;
             System.out.println("All region data loaded.");
-            for (Runnable callback : onLoadCallbacks) {
+            for (final Runnable callback : onLoadCallbacks) {
                 callback.run();
             }
         }
