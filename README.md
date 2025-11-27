@@ -19,7 +19,7 @@ The goal of this project is to create an interactive software that allows users 
 ### API Information
 -   `FIRMS` : This project uses the NASA Fire Information for Resource Management System (`FIRMS`) with Near Real-Time (NRT) active fire data for the US and Canada, specifically data collected by the NOAA-20 polar-orbiting weather satellite
   - https://firms.modaps.eosdis.nasa.gov/api/
-- `nomatim` : For boundaries
+- `nominatim` : For boundaries
 
 ### Working Demo
 - screenshots or animations demonstrating current functionality
