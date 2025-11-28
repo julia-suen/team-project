@@ -39,6 +39,7 @@ public class SidePanelView extends JPanel {
     private final JButton resetButton = new JButton("Reset");
     private final JButton medSeverityButton = new JButton("Medium");
     private final JButton highSeverityButton = new JButton("High");
+    private final JButton addFavouriteButton = new JButton("+ Add Favourite");
 
     // Initialize province selector dynamically using the source of truth
     private final JComboBox<String> provinceSelector;
@@ -46,6 +47,10 @@ public class SidePanelView extends JPanel {
     private final JComboBox<String> dayRangeSelector = new JComboBox<>(
             new String[]{"All", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
     );
+
+    private final JComboBox<String> favouriteSelector;
+
+    private final DefaultComboBoxModel<String> favouriteModel;
 
     private final DatePicker datePicker;
     private final GraphPanel graphPanel;
@@ -70,6 +75,11 @@ public class SidePanelView extends JPanel {
         // Initialize GraphPanel
         graphPanel = new GraphPanel();
         graphPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Initialise FavouritePanel
+        favouriteModel = new DefaultComboBoxModel<>();
+        favouriteModel.addElement("No favourites added yet");
+        favouriteSelector = new JComboBox<>(favouriteModel);
 
         addComponents(maxFieldSize);
     }
@@ -137,6 +147,14 @@ public class SidePanelView extends JPanel {
 
         add(Box.createVerticalStrut(SPACING_MEDIUM));
 
+        // Favourites panel
+        final JLabel favouritesLabel = new JLabel("Favourites: ");
+        favouritesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        add(favouritesLabel);
+        add(Box.createVerticalStrut(BOX_SPACE));
+
+        add(Box.createVerticalStrut(SPACING_MEDIUM));
+
         // Graph at the bottom
         add(new JLabel("Trend Analysis:"));
         add(Box.createVerticalStrut(BOX_SPACE));
@@ -166,7 +184,7 @@ public class SidePanelView extends JPanel {
 
     private void addSeverityPanel() {
         final JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         resetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -185,6 +203,35 @@ public class SidePanelView extends JPanel {
         buttonPanel.add(highSeverityButton);
 
         add(buttonPanel);
+    }
+
+    /**
+     * Adds favourites panel to UI
+     * @param maxFieldSize the maximum field size for components
+     */
+    private void addFavouritesPanel(Dimension maxFieldSize) {
+        final JPanel favouritesPanel = new JPanel();
+        favouritesPanel.setLayout(new BoxLayout(favouritesPanel, BoxLayout.Y_AXIS));
+        favouritesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        //Adding Favourites Button
+        addFavouriteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        addFavouriteButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        favouritesPanel.add(addFavouriteButton);
+
+        favouritesPanel.add(Box.createVerticalStrut(SPACING_SMALL));
+
+        // Favourite Dropdown Label
+        final JLabel favouriteDropdownLabel = new JLabel("Saved Favourites: ");
+        favouriteDropdownLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        favouritesPanel.add(favouriteDropdownLabel);
+
+        //Favourites Dropdown
+        favouriteSelector.setMaximumSize(maxFieldSize);
+        favouriteSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
+        favouritesPanel.add(favouriteSelector);
+
+        add(favouritesPanel);
     }
 
     /**
