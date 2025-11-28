@@ -263,6 +263,22 @@ public class SidePanelView extends JPanel {
         return datePicker;
     }
 
+    /**
+     * To update UI from presenter.
+     * @param favourites - list of Favourite Provinces
+     */
+    public void updateFavouritesList(List<String> favourites) {
+        favouriteModel.removeAllElements();
+        if (favourites.isEmpty()) {
+            favouriteModel.addElement("No favourites yet");
+        }
+        else {
+            for (String favourite : favourites) {
+                favouriteModel.addElement(favourite);
+            }
+        }
+    }
+
     public JButton getLoadFiresButton() {
         return loadFiresButton;
     }
@@ -283,12 +299,20 @@ public class SidePanelView extends JPanel {
         return highSeverityButton;
     }
 
+    public JButton getAddFavouritesButton() {
+        return addFavouriteButton;
+    }
+
     public JComboBox<String> getProvinceSelector() {
         return provinceSelector;
     }
 
     public JComboBox<String> getDayRangeSelector() {
         return dayRangeSelector;
+    }
+
+    public JComboBox<String> getFavouriteSelector() {
+        return favouriteSelector;
     }
 
     public DatePicker getDatePickerComponent() {
