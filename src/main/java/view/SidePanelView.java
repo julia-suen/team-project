@@ -152,7 +152,7 @@ public class SidePanelView extends JPanel {
         favouritesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(favouritesLabel);
         add(Box.createVerticalStrut(BOX_SPACE));
-
+        addFavouritesPanel(maxFieldSize);
         add(Box.createVerticalStrut(SPACING_MEDIUM));
 
         // Graph at the bottom

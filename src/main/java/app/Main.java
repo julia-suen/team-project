@@ -27,6 +27,14 @@ public class Main {
             final FireViewModel fireViewModel = new FireViewModel();
             final ViewManagerModel viewManagerModel = new ViewManagerModel();
 
+            final FavouritesManager favouritesManager = new FavouritesManager();
+
+            final FavouritesPresenter favouritesPresenter = new FavouritesPresenter();
+
+            final AddFavouriteInteractor addFavouriteInteractor = new AddFavouriteInteractor(favouritesManager, favouritesPresenter);
+
+            final FavouritesController favouritesController = new FavouritesController(addFavouriteInteractor);
+
             // Initialize Shared Data Access
             // Created once and shared so Interactor sees what Repo loads
             final BoundariesDataAccess boundariesAccess = new BoundariesDataAccess();
