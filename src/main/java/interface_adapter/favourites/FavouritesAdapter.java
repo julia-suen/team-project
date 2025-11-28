@@ -1,24 +1,25 @@
-package use_case.favourites;
+package interface_adapter.favourites;
 
-import entities.ProvinceMapper;
-import entities.User;
-import org.jxmapviewer.viewer.GeoPosition;
+import use_case.favourites.AddFavouriteOutputBoundary;
+import view.MainFrame;
+import view.SidePanelView;
+import controller.UserController;
 
-import java.util.ArrayList;
+import javax.swing.*;
 import java.util.List;
 
-public class AddFavouriteInteractor implements AddFavouriteInputBoundary {
-    private final AddFavouriteOutputBoundary outputBoundary;
-    private User currentUser;
+public class FavouritesPresenter implements AddFavouriteOutputBoundary {
+    private final SidePanelView sidePanelView;
+    private final MainFrame mainFrame;
+    private final UserController userController;
 
     public AddFavouriteInteractor(AddFavouriteOutputBoundary outputBoundary) {
         this.outputBoundary = outputBoundary;
     }
 
     /**
-     * For the current logged-in user.
-     * Should be called by UserController after login.
-     *
+     * Sets the current logged-in user.
+     * Should be called by UserController after successful login.
      * @param user the logged-in user
      */
     public void setCurrentUser(User user) {
