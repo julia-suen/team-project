@@ -215,7 +215,7 @@ public class MapView extends JPanel {
                         fire.getCoordinates().get(0).getLongitude()
                 );
 
-                this.addFireMarker(geo, MIN_RADIUS); // Assuming a default radius
+                this.addFireMarker(geo, fire.getRadius());
             }
         }
     }
