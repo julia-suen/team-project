@@ -152,4 +152,48 @@ public class BoundariesDataAccess {
         }
         return polygon;
     }
+
+    private static final Map<String, GeoPosition> PROVINCE_CENTERS = new HashMap<>() {
+        {
+            put("Alberta", new GeoPosition(53.9333, -116.5765));
+            put("British Columbia", new GeoPosition(53.7267, -127.6476));
+            put("Manitoba", new GeoPosition(53.7609, -98.8139));
+            put("New Brunswick", new GeoPosition(46.5653, -66.4619));
+            put("Newfoundland and Labrador", new GeoPosition(53.1355, -57.6604));
+            put("Northwest Territories", new GeoPosition(64.8255, -124.8457));
+            put("Nova Scotia", new GeoPosition(44.6820, -63.7443));
+            put("Nunavut", new GeoPosition(70.2998, -83.1076));
+            put("Ontario", new GeoPosition(51.2538, -85.3232));
+            put("Prince Edward Island", new GeoPosition(46.5107, -63.4168));
+            put("Quebec", new GeoPosition(52.9399, -73.5491));
+            put("Saskatchewan", new GeoPosition(52.9399, -106.4509));
+            put("Yukon", new GeoPosition(64.2823, -135.0000));
+            put("Canada", new GeoPosition(56.1304, -106.3468));
+        }
+    };
+
+    /**
+     * Get province centre for marking favourites.
+     * @param provinceName for name of Province
+     */
+    public static GeoPosition getProvinceCentre(String provinceName) {
+        return PROVINCE_CENTERS.get(provinceName);
+    }
+
+    /**
+     * Get province name from GeoPosition.
+     * @param position for geoposition
+     * @return null if position not found
+     */
+    public static String getProvinceName(GeoPosition position) {
+        final double tolerance = 0.0001;
+        for (Map.Entry<String, GeoPosition> entry : PROVINCE_CENTERS.entrySet()) {
+            final GeoPosition centre = entry.getValue();
+            if (Math.abs(centre.getLatitude() - position.getLatitude()) < tolerance
+                    && Math.abs(centre.getLongitude() - position.getLongitude()) < tolerance) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
 }

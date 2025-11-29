@@ -1,14 +1,18 @@
 package app;
 
 import controller.MapController;
+import controller.UserController;
 import data_access.BoundariesDataAccess;
 import data_access.FireDataAccess;
 import entities.FireFactory;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.favourites.FavouritesController;
+import interface_adapter.favourites.FavouritesPresenter;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FirePresenter;
 import interface_adapter.fire_data.FireViewModel;
 import interface_adapter.region.RegionRepository;
+import use_case.favourites.AddFavouriteInteractor;
 import use_case.fire_data.FireInteractor;
 import view.MainFrame;
 
@@ -26,14 +30,6 @@ public class Main {
             final MainFrame mainFrame = new MainFrame();
             final FireViewModel fireViewModel = new FireViewModel();
             final ViewManagerModel viewManagerModel = new ViewManagerModel();
-
-            final FavouritesManager favouritesManager = new FavouritesManager();
-
-            final FavouritesPresenter favouritesPresenter = new FavouritesPresenter();
-
-            final AddFavouriteInteractor addFavouriteInteractor = new AddFavouriteInteractor(favouritesManager, favouritesPresenter);
-
-            final FavouritesController favouritesController = new FavouritesController(addFavouriteInteractor);
 
             // Initialize Shared Data Access
             // Created once and shared so Interactor sees what Repo loads
@@ -54,10 +50,21 @@ public class Main {
             // Initialize Controllers
             final FireController fireController = new FireController(fireInteractor);
 
+            // Initialising Favourites Controller, interactor & presenter
+            final AddFavouriteInteractor favouritesInteractor = new AddFavouriteInteractor(null);
+            final FavouritesController favouritesController = new FavouritesController(favouritesInteractor);
+            final UserController userController = new UserController(mainFrame, favouritesInteractor);
+            final FavouritesPresenter favouritesPresenter = new FavouritesPresenter(mainFrame.getSidePanelView(),
+                    mainFrame,
+                    userController);
+            // Setting presenter in the interactor
+            favouritesInteractor.setOutputBoundary(favouritesPresenter);
+
             final MapController mapController = new MapController(
                     mainFrame,
                     fireController,
-                    fireViewModel
+                    fireViewModel,
+                    favouritesController
             );
 
             mainFrame.setVisible(true);

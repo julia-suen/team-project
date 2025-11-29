@@ -1,130 +1,150 @@
-    package controller;
+package controller;
 
-    import java.beans.PropertyChangeEvent;
-    import java.beans.PropertyChangeListener;
-    import java.util.List;
-    import java.util.Objects;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.Objects;
 
-    import javax.swing.*;
+import javax.swing.*;
 
-    import entities.Fire;
-    import entities.SeverityFilter;
-    import interface_adapter.fire_data.FireController;
-    import interface_adapter.fire_data.FireState;
-    import interface_adapter.fire_data.FireViewModel;
-    import view.MainFrame;
+import entities.Fire;
+import entities.SeverityFilter;
+import interface_adapter.favourites.FavouritesController;
+import interface_adapter.fire_data.FireController;
+import interface_adapter.fire_data.FireState;
+import interface_adapter.fire_data.FireViewModel;
+import view.MainFrame;
+import view.SidePanelView;
 
-    public class MapController implements PropertyChangeListener {
+public class MapController implements PropertyChangeListener {
 
-        private static final int DEFAULT_RANGE = 1;
-        private static final int MAX_RANGE_FOR_ALL = 10;
+    private static final int DEFAULT_RANGE = 1;
+    private static final int MAX_RANGE_FOR_ALL = 10;
 
-        private final MainFrame mainFrame;
-        private final FireController fireController;
-        private final FireViewModel fireViewModel;
+    private final MainFrame mainFrame;
+    private final FavouritesController favouritesController;
+    private final FireController fireController;
+    private final FireViewModel fireViewModel;
 
-        public MapController(MainFrame mainFrame, FireController fireController, FireViewModel fireViewModel) {
-            this.mainFrame = mainFrame;
-            this.fireController = fireController;
-            this.fireViewModel = fireViewModel;
+    public MapController(MainFrame mainFrame, FireController fireController, FireViewModel fireViewModel, FavouritesController favouritesController) {
+        this.mainFrame = mainFrame;
+        this.favouritesController = favouritesController;
+        this.fireController = fireController;
+        this.fireViewModel = fireViewModel;
 
-            this.fireViewModel.addPropertyChangeListener(this);
+        this.fireViewModel.addPropertyChangeListener(this);
 
-            addListeners();
-        }
+        addListeners();
+    }
 
-        private void addListeners() {
-            // Standard Load
-            mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(evt ->
-                    loadFires(false, SeverityFilter.RESET));
+    private void addListeners() {
+        // Standard Load
+        mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(evt ->
+                loadFires(false, SeverityFilter.RESET));
 
-            // National Overview
-            mainFrame.getSidePanelView().getNationalButton().addActionListener(evt ->
-                    loadFires(true, SeverityFilter.RESET));
+        // National Overview
+        mainFrame.getSidePanelView().getNationalButton().addActionListener(evt ->
+                loadFires(true, SeverityFilter.RESET));
 
-            // Reset
-            mainFrame.getSidePanelView().getResetButton().addActionListener(evt ->
-                    loadFires(false, SeverityFilter.RESET));
+        // Reset
+        mainFrame.getSidePanelView().getResetButton().addActionListener(evt ->
+                loadFires(false, SeverityFilter.RESET));
 
-            // Medium Severity
-            mainFrame.getSidePanelView().getMedSeverityButton().addActionListener(evt ->
-                    loadFires(false, SeverityFilter.MEDIUM));
+        // Medium Severity
+        mainFrame.getSidePanelView().getMedSeverityButton().addActionListener(evt ->
+                loadFires(false, SeverityFilter.MEDIUM));
 
-            // High Severity
-            mainFrame.getSidePanelView().getHighSeverityButton().addActionListener(evt ->
-                    loadFires(false, SeverityFilter.HIGH));
-        }
+        // High Severity
+        mainFrame.getSidePanelView().getHighSeverityButton().addActionListener(evt ->
+                loadFires(false, SeverityFilter.HIGH));
 
-        private void loadFires(boolean isNational, SeverityFilter severityFilter) {
-            final String date = mainFrame.getSidePanelView().getDatePickerComponent().getDateStringOrEmptyString();
-            final Object selectedRange = mainFrame.getSidePanelView().getDayRangeSelector().getSelectedItem();
+        // Add to Favourites
+        mainFrame.getSidePanelView().getAddFavouritesButton().addActionListener(evt -> {
+            final String selectedProvince = (String)
+                    mainFrame.getSidePanelView().getFavouriteSelector().getSelectedItem();
+            favouritesController.addFavourite(selectedProvince);
+        });
 
-            if (date.isEmpty()) {
-                JOptionPane.showMessageDialog(mainFrame, "Please select a date.");
+        // Update side panel view after selection
+        mainFrame.getSidePanelView().getFavouriteSelector().addActionListener(evt -> {
+            String selected = (String) mainFrame.getSidePanelView().getFavouriteSelector().getSelectedItem();
+            if (selected != null && !selected.equals("No favourites yet")
+                    && !selected.equals("No favourites added yet")) {
+                mainFrame.getSidePanelView().getFavouriteSelector().setSelectedItem(selected);
             }
-            else {
-                int range;
-                try {
-                    assert selectedRange != null;
-                    if ("All".equalsIgnoreCase(selectedRange.toString())) {
-                        range = MAX_RANGE_FOR_ALL;
-                    }
-                    else if (!Objects.equals(selectedRange.toString(), "All")) {
-                        range = Integer.parseInt(selectedRange.toString());
-                    }
-                    else {
-                        range = DEFAULT_RANGE;
-                    }
+        });
+    }
+
+    private void loadFires(boolean isNational, SeverityFilter severityFilter) {
+        final String date = mainFrame.getSidePanelView().getDatePickerComponent().getDateStringOrEmptyString();
+        final Object selectedRange = mainFrame.getSidePanelView().getDayRangeSelector().getSelectedItem();
+
+        if (date.isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame, "Please select a date.");
+        }
+        else {
+            int range;
+            try {
+                assert selectedRange != null;
+                if ("All".equalsIgnoreCase(selectedRange.toString())) {
+                    range = MAX_RANGE_FOR_ALL;
                 }
-                catch (NumberFormatException ex) {
-                    // Fallback default
+                else if (!Objects.equals(selectedRange.toString(), "All")) {
+                    range = Integer.parseInt(selectedRange.toString());
+                }
+                else {
                     range = DEFAULT_RANGE;
                 }
-
-                mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(false);
-                mainFrame.getSidePanelView().getNationalButton().setEnabled(false);
-                mainFrame.getSidePanelView().getResetButton().setEnabled(false);
-                mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(false);
-                mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(false);
-
-                // Get the selected province
-                String province = (String) mainFrame.getSidePanelView().getProvinceSelector().getSelectedItem();
-                if (province == null) {
-                    province = "All";
-                }
-
-                // Pass it to the controller
-                fireController.execute(province, date, range, isNational, severityFilter);
             }
-        }
+            catch (NumberFormatException ex) {
+                // Fallback default
+                range = DEFAULT_RANGE;
+            }
 
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            // These enable buttons immediately, which is generally safe, but safer inside invokeLater
-            SwingUtilities.invokeLater(() -> {
-                mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(true);
-                mainFrame.getSidePanelView().getNationalButton().setEnabled(true);
-                mainFrame.getSidePanelView().getResetButton().setEnabled(true);
-                mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(true);
-                mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(true);
+            mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(false);
+            mainFrame.getSidePanelView().getNationalButton().setEnabled(false);
+            mainFrame.getSidePanelView().getResetButton().setEnabled(false);
+            mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(false);
+            mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(false);
 
-                if ("state".equals(evt.getPropertyName())) {
-                    final FireState state = (FireState) evt.getNewValue();
+            // Get the selected province
+            String province = (String) mainFrame.getSidePanelView().getProvinceSelector().getSelectedItem();
+            if (province == null) {
+                province = "All";
+            }
 
-                    if (state.getError() != null) {
-                        JOptionPane.showMessageDialog(mainFrame, state.getError(), "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                    else {
-                        // Pass the whole list of fires to be displayed at once
-                        final List<Fire> fires = state.getFires();
-
-                        // Update MapView on the EDT to avoid ConcurrentModificationException
-                        mainFrame.getMapView().displayFires(fires);
-
-                        // Update Graph
-                        mainFrame.getSidePanelView().getGraphPanel().setData(state.getGraphData());
-                    }
-                }
-            });
+            // Pass it to the controller
+            fireController.execute(province, date, range, isNational, severityFilter);
         }
     }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        // These enable buttons immediately, which is generally safe, but safer inside invokeLater
+        SwingUtilities.invokeLater(() -> {
+            mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(true);
+            mainFrame.getSidePanelView().getNationalButton().setEnabled(true);
+            mainFrame.getSidePanelView().getResetButton().setEnabled(true);
+            mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(true);
+            mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(true);
+
+            if ("state".equals(evt.getPropertyName())) {
+                final FireState state = (FireState) evt.getNewValue();
+
+                if (state.getError() != null) {
+                    JOptionPane.showMessageDialog(mainFrame, state.getError(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    // Pass the whole list of fires to be displayed at once
+                    final List<Fire> fires = state.getFires();
+
+                    // Update MapView on the EDT to avoid ConcurrentModificationException
+                    mainFrame.getMapView().displayFires(fires);
+
+                    // Update Graph
+                    mainFrame.getSidePanelView().getGraphPanel().setData(state.getGraphData());
+                }
+            }
+        });
+    }
+}

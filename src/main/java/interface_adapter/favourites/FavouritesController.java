@@ -10,6 +10,10 @@ public class FavouritesController {
         this.addFavouriteInteractor = addFavouriteInteractor;
     }
 
+    /**
+     * Adds new province to favourites list.
+     * @param province - New province being added
+     */
     public void addFavourite(String province) {
         addFavouriteInteractor.execute(new AddFavouriteInputData(province));
     }
