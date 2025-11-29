@@ -15,7 +15,6 @@ public class Region {
     public Region(String provinceName, List<List<GeoPosition>> boundary) {
         this.provinceName = provinceName;
 		this.boundary = boundary;
-		// this.susceptibilityScore = susceptibilityScore;
 	}
 
 	public String getProvinceName() {

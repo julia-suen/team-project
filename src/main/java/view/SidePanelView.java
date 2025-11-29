@@ -9,13 +9,22 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.DefaultComboBoxModel;
 
 import org.jetbrains.annotations.NotNull;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
-import data_access.BoundariesDataAccess;
+import entities.Province;
+import view.components.JComboCheckBox;
 
 /**
  * The Side Panel View for user input and filtering.
@@ -39,13 +48,19 @@ public class SidePanelView extends JPanel {
     private final JButton resetButton = new JButton("Reset");
     private final JButton medSeverityButton = new JButton("Medium");
     private final JButton highSeverityButton = new JButton("High");
+    private final JButton addFavouriteButton = new JButton("+ Add Favourite");
 
     // Initialize province selector dynamically using the source of truth
     private final JComboBox<String> provinceSelector;
+    private final JComboCheckBox provinceComboCheckBox;
 
     private final JComboBox<String> dayRangeSelector = new JComboBox<>(
             new String[]{"All", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
     );
+
+    private final JComboBox<String> favouriteSelector;
+
+    private final DefaultComboBoxModel<String> favouriteModel;
 
     private final DatePicker datePicker;
     private final GraphPanel graphPanel;
@@ -60,6 +75,7 @@ public class SidePanelView extends JPanel {
 
         // Initialize the Province Dropdown dynamically
         this.provinceSelector = createProvinceComboBox();
+        this.provinceComboCheckBox = createProvinceComboCheckBox();
 
         final Dimension maxFieldSize = new Dimension(Integer.MAX_VALUE, FIELD_HEIGHT);
 
@@ -70,6 +86,11 @@ public class SidePanelView extends JPanel {
         // Initialize GraphPanel
         graphPanel = new GraphPanel();
         graphPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Initialise FavouritePanel
+        favouriteModel = new DefaultComboBoxModel<>();
+        favouriteModel.addElement("No favourites added yet");
+        favouriteSelector = new JComboBox<>(favouriteModel);
 
         addComponents(maxFieldSize);
     }
@@ -83,12 +104,40 @@ public class SidePanelView extends JPanel {
         provinces.add("All");
 
         // Fetch from source of truth
-        provinces.addAll(Arrays.asList(BoundariesDataAccess.PROVINCES));
+        provinces.addAll(Arrays.asList(Province.ALL_PROVINCES));
 
         // Sort alphabetically for better UX (skipping "All" at index 0)
         Collections.sort(provinces.subList(1, provinces.size()));
 
         return new JComboBox<>(provinces.toArray(new String[0]));
+    }
+
+    /**
+     * Creates the province combo check box populated from BoundariesDataAccess.
+     * @return all province combo check box to be added in the GUI
+     */
+    private JComboCheckBox createProvinceComboCheckBox() {
+        final List<JCheckBox> checkBoxList = new ArrayList<>();
+
+        final List<String> provinces = new ArrayList<>();
+        provinces.add("All");
+
+        // Fetch from source of truth
+        provinces.addAll(Arrays.asList(Province.ALL_PROVINCES));
+
+        // Sort alphabetically for better UX (skipping "All" at index 0)
+        Collections.sort(provinces.subList(1, provinces.size()));
+
+        for (String province: provinces) {
+            final JCheckBox provinceCheckBox = new JCheckBox(province);
+            provinceCheckBox.setSelected(false);
+
+            checkBoxList.add(provinceCheckBox);
+        }
+
+        final JCheckBox[] checkBoxItems = checkBoxList.toArray(new JCheckBox[0]);
+
+        return new JComboCheckBox(checkBoxItems);
     }
 
     private void addComponents(Dimension maxFieldSize) {
@@ -100,6 +149,10 @@ public class SidePanelView extends JPanel {
         provinceSelector.setMaximumSize(maxFieldSize);
         provinceSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(provinceSelector);
+
+        provinceComboCheckBox.setMaximumSize(maxFieldSize);
+        provinceComboCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        add(provinceComboCheckBox);
 
         add(Box.createVerticalStrut(SPACING_MEDIUM));
 
@@ -137,6 +190,14 @@ public class SidePanelView extends JPanel {
 
         add(Box.createVerticalStrut(SPACING_MEDIUM));
 
+        // Favourites panel
+        final JLabel favouritesLabel = new JLabel("Favourites: ");
+        favouritesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        add(favouritesLabel);
+        add(Box.createVerticalStrut(BOX_SPACE));
+
+        add(Box.createVerticalStrut(SPACING_MEDIUM));
+
         // Graph at the bottom
         add(new JLabel("Trend Analysis:"));
         add(Box.createVerticalStrut(BOX_SPACE));
@@ -166,7 +227,7 @@ public class SidePanelView extends JPanel {
 
     private void addSeverityPanel() {
         final JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         resetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -185,6 +246,35 @@ public class SidePanelView extends JPanel {
         buttonPanel.add(highSeverityButton);
 
         add(buttonPanel);
+    }
+
+    /**
+     * Adds favourites panel to UI
+     * @param maxFieldSize the maximum field size for components
+     */
+    private void addFavouritesPanel(Dimension maxFieldSize) {
+        final JPanel favouritesPanel = new JPanel();
+        favouritesPanel.setLayout(new BoxLayout(favouritesPanel, BoxLayout.Y_AXIS));
+        favouritesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        //Adding Favourites Button
+        addFavouriteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        addFavouriteButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        favouritesPanel.add(addFavouriteButton);
+
+        favouritesPanel.add(Box.createVerticalStrut(SPACING_SMALL));
+
+        // Favourite Dropdown Label
+        final JLabel favouriteDropdownLabel = new JLabel("Saved Favourites: ");
+        favouriteDropdownLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        favouritesPanel.add(favouriteDropdownLabel);
+
+        //Favourites Dropdown
+        favouriteSelector.setMaximumSize(maxFieldSize);
+        favouriteSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
+        favouritesPanel.add(favouriteSelector);
+
+        add(favouritesPanel);
     }
 
     /**
@@ -240,6 +330,10 @@ public class SidePanelView extends JPanel {
         return provinceSelector;
     }
 
+    public JComboCheckBox getProvinceComboCheckBox() {
+        return provinceComboCheckBox;
+    }
+
     public JComboBox<String> getDayRangeSelector() {
         return dayRangeSelector;
     }
@@ -253,4 +347,3 @@ public class SidePanelView extends JPanel {
     }
 
 }
-
