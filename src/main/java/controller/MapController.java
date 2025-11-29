@@ -9,10 +9,12 @@ import javax.swing.*;
 
 import entities.Fire;
 import entities.SeverityFilter;
+import interface_adapter.favourites.FavouritesController;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FireState;
 import interface_adapter.fire_data.FireViewModel;
 import view.MainFrame;
+import view.SidePanelView;
 
 public class MapController implements PropertyChangeListener {
 
@@ -20,11 +22,13 @@ public class MapController implements PropertyChangeListener {
     private static final int MAX_RANGE_FOR_ALL = 10;
 
     private final MainFrame mainFrame;
+    private final FavouritesController favouritesController;
     private final FireController fireController;
     private final FireViewModel fireViewModel;
 
-    public MapController(MainFrame mainFrame, FireController fireController, FireViewModel fireViewModel) {
+    public MapController(MainFrame mainFrame, FireController fireController, FireViewModel fireViewModel, FavouritesController favouritesController) {
         this.mainFrame = mainFrame;
+        this.favouritesController = favouritesController;
         this.fireController = fireController;
         this.fireViewModel = fireViewModel;
 
@@ -53,6 +57,22 @@ public class MapController implements PropertyChangeListener {
         // High Severity
         mainFrame.getSidePanelView().getHighSeverityButton().addActionListener(evt ->
                 loadFires(false, SeverityFilter.HIGH));
+
+        // Add to Favourites
+        mainFrame.getSidePanelView().getAddFavouritesButton().addActionListener(evt -> {
+            final String selectedProvince = (String)
+                    mainFrame.getSidePanelView().getFavouriteSelector().getSelectedItem();
+            favouritesController.addFavourite(selectedProvince);
+        });
+
+        // Update side panel view after selection
+        mainFrame.getSidePanelView().getFavouriteSelector().addActionListener(evt -> {
+            String selected = (String) mainFrame.getSidePanelView().getFavouriteSelector().getSelectedItem();
+            if (selected != null && !selected.equals("No favourites yet")
+                    && !selected.equals("No favourites added yet")) {
+                mainFrame.getSidePanelView().getFavouriteSelector().setSelectedItem(selected);
+            }
+        });
     }
 
     private void loadFires(boolean isNational, SeverityFilter severityFilter) {

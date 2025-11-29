@@ -195,7 +195,7 @@ public class SidePanelView extends JPanel {
         favouritesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(favouritesLabel);
         add(Box.createVerticalStrut(BOX_SPACE));
-
+        addFavouritesPanel(maxFieldSize);
         add(Box.createVerticalStrut(SPACING_MEDIUM));
 
         // Graph at the bottom
@@ -306,6 +306,22 @@ public class SidePanelView extends JPanel {
         return datePicker;
     }
 
+    /**
+     * To update UI from presenter.
+     * @param favourites - list of Favourite Provinces
+     */
+    public void updateFavouritesList(List<String> favourites) {
+        favouriteModel.removeAllElements();
+        if (favourites.isEmpty()) {
+            favouriteModel.addElement("No favourites yet");
+        }
+        else {
+            for (String favourite : favourites) {
+                favouriteModel.addElement(favourite);
+            }
+        }
+    }
+
     public JButton getLoadFiresButton() {
         return loadFiresButton;
     }
@@ -326,6 +342,10 @@ public class SidePanelView extends JPanel {
         return highSeverityButton;
     }
 
+    public JButton getAddFavouritesButton() {
+        return addFavouriteButton;
+    }
+
     public JComboBox<String> getProvinceSelector() {
         return provinceSelector;
     }
@@ -336,6 +356,10 @@ public class SidePanelView extends JPanel {
 
     public JComboBox<String> getDayRangeSelector() {
         return dayRangeSelector;
+    }
+
+    public JComboBox<String> getFavouriteSelector() {
+        return favouriteSelector;
     }
 
     public DatePicker getDatePickerComponent() {
