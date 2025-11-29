@@ -46,6 +46,45 @@ class FireDataBundlingTest {
     }
 
     /**
+     * Tests if submitting an empty dataset to FireFactory.bundleDataPoints return an empty Array List.
+     */
+    @Test
+    void correctlyReturnsEmptyList() {
+
+        List<Coordinate> testPoints = new ArrayList<>();
+
+        FireFactory fireFactory = new FireFactory(testPoints);
+        List<List<Coordinate>> testFires = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
+
+        assertEquals(0,testFires.size());
+
+    }
+
+
+
+    /**
+     * Loads a set of simple coordinates.
+     * @param testFires the list to load the coordinates in
+     */
+    private static void loadSimpleDataPoints(List<Coordinate> testFires) {
+
+        testFires.add(new Coordinate(2,2,
+                new String[] {"2025-11-23","N","n"}, new double[]{2, 2}, 1));
+        testFires.add(new Coordinate(4,4,
+                new String[] {"2025-11-23","N","n"}, new double[]{4, 4}, 2));
+        testFires.add(new Coordinate(2,2,
+                new String[] {"2025-11-23","N","n"}, new double[]{2, 2}, 3));
+        testFires.add(new Coordinate(4,4,
+                new String[] {"2025-11-23","N","n"}, new double[]{4, 4}, 4));
+        testFires.add(new Coordinate(2,2,
+                new String[] {"2025-11-23","N","n"}, new double[]{2, 2}, 5));
+        testFires.add(new Coordinate(4,4,
+                new String[] {"2025-11-23","N","n"}, new double[]{4, 4}, 6));
+        testFires.add(new Coordinate(4,4,
+                new String[] {"2025-11-23","N","n"}, new double[]{4, 4}, 8));
+    }
+
+    /**
      * Loads a set of valid coordinates from the NASA Wildfire API with the date 2025-11-23 and day range 1.
      * @param testFires the list to load the coordinates in
      */

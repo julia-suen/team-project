@@ -3,6 +3,7 @@ package use_case.severity_filter;
 import java.util.ArrayList;
 import java.util.List;
 
+import data_access.GetData;
 import entities.Coordinate;
 import entities.Fire;
 import entities.FireFactory;
@@ -48,6 +49,7 @@ public class SeverityInteractor implements SeverityInputBoundary {
             severityOutputBoundary.prepareSuccessView(outputData);
 
         }
+        // not expecting any specific errors but as a failsafe :
         catch (Exception error) {
             severityOutputBoundary.prepareFailView("Unexpected error: " + error.getMessage());
         }
