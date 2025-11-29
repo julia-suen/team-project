@@ -60,6 +60,20 @@ class FireDataBundlingTest {
 
     }
 
+    /**
+     * Tests if bundles of fires are correctly sorted with high severity filters.
+     */
+    @Test
+    void testBundles() {
+
+        List<Coordinate> testCoords = new ArrayList<> ();
+        loadSimpleDataPoints(testCoords);
+
+        FireFactory fireFactory = new FireFactory(testCoords);
+        final List<List<Coordinate>> actualFires = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
+
+        //assertEquals(expectedCoord[0], .getLat());
+    }
 
 
     /**
