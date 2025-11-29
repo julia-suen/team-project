@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
-import data_access.BoundariesDataAccess;
+import entities.Province;
 import view.components.JComboCheckBox;
 
 /**
@@ -104,7 +104,7 @@ public class SidePanelView extends JPanel {
         provinces.add("All");
 
         // Fetch from source of truth
-        provinces.addAll(Arrays.asList(BoundariesDataAccess.PROVINCES));
+        provinces.addAll(Arrays.asList(Province.ALL_PROVINCES));
 
         // Sort alphabetically for better UX (skipping "All" at index 0)
         Collections.sort(provinces.subList(1, provinces.size()));
@@ -123,7 +123,7 @@ public class SidePanelView extends JPanel {
         provinces.add("All");
 
         // Fetch from source of truth
-        provinces.addAll(Arrays.asList(BoundariesDataAccess.PROVINCES));
+        provinces.addAll(Arrays.asList(Province.ALL_PROVINCES));
 
         // Sort alphabetically for better UX (skipping "All" at index 0)
         Collections.sort(provinces.subList(1, provinces.size()));
@@ -347,4 +347,3 @@ public class SidePanelView extends JPanel {
     }
 
 }
-

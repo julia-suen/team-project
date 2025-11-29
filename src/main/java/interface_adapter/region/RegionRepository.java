@@ -1,8 +1,8 @@
 package interface_adapter.region;
 
 import data_access.BoundariesDataAccess;
+import entities.Province;
 import entities.Region;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -16,15 +16,6 @@ import javax.swing.SwingWorker;
  * and provides access to the loaded {@link Region} objects.
  */
 public class RegionRepository {
-
-    /**
-     * A list of all 13 Canadian provinces and territories.
-     */
-    private static final List<String> PROVINCES = Arrays.asList(
-            "Ontario", "Quebec", "Nova Scotia", "New Brunswick", "Manitoba",
-            "British Columbia", "Prince Edward Island", "Saskatchewan", "Alberta",
-            "Newfoundland and Labrador", "Northwest Territories", "Yukon", "Nunavut"
-    );
 
     private final BoundariesDataAccess dataAccess;
     private final Map<String, Region> regionMap = new HashMap<>();
@@ -95,11 +86,11 @@ public class RegionRepository {
                 System.err.println("Failed to load province boundaries: " + e.getMessage());
             }
 
-            for (String name : PROVINCES) {
+            for (Province name : Province.values()) {
                 try {
-                    Region region = dataAccess.getRegion(name);
+                    Region region = dataAccess.getRegion(name.getDisplayName());
                     if (region != null) {
-                        regionMap.put(name, region);
+                        regionMap.put(name.getDisplayName(), region);
                     }
                 } catch (Exception e) {
                     System.err.println("Failed to load region " + name + ": " + e.getMessage());

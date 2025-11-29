@@ -1,5 +1,6 @@
 package data_access;
 
+import entities.Province;
 import entities.Region;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,38 +21,31 @@ import org.jxmapviewer.viewer.GeoPosition;
  */
 public class BoundariesDataAccess {
     private static final String API_URL_TEMPLATE =
-        "https://nominatim.openstreetmap.org/search?q=%s+canada&format=json&polygon_geojson=1&polygon_threshold=0.1";
+            "https://nominatim.openstreetmap.org/search?q=%s+canada&format=json&polygon_geojson=1&polygon_threshold=0.1";
     private static final String GEOJSON_KEY = "geojson";
     private static final String TYPE_KEY = "type";
     private static final String COORDINATES_KEY = "coordinates";
     private static final String POLYGON_TYPE = "Polygon";
     private static final String MULTIPOLYGON_TYPE = "MultiPolygon";
 
-    public static final String[] PROVINCES = {
-        "Ontario", "Quebec", "British Columbia", "Alberta", "Manitoba", "Saskatchewan",
-        "Nova Scotia", "New Brunswick", "Prince Edward Island", "Newfoundland and Labrador",
-        "Yukon", "Nunavut", "Northwest Territories", "Canada",
+    private static final Map<Province, String> PROVINCES_TO_API = new HashMap<>() {
+        {
+            put(Province.ONTARIO, "ontario");
+            put(Province.QUEBEC, "quebec");
+            put(Province.BRITISH_COLUMBIA, "british+columbia");
+            put(Province.ALBERTA, "alberta");
+            put(Province.MANITOBA, "manitoba");
+            put(Province.SASKATCHEWAN, "saskatchewan");
+            put(Province.NOVA_SCOTIA, "nova+scotia");
+            put(Province.NEW_BRUNSWICK, "new+brunswick");
+            put(Province.PRINCE_EDWARD_ISLAND, "prince+edward+island");
+            put(Province.NEWFOUNDLAND_AND_LABRADOR, "newfoundland+and+labrador");
+            put(Province.YUKON, "yukon");
+            put(Province.NUNAVUT, "nunavut");
+            put(Province.NORTHWEST_TERRITORIES, "northwest+territories");
+        }
     };
 
-    private static final Map<String, String> PROVINCES_TO_API = new HashMap<>() { 
-        {
-            put("Ontario", "ontario");
-            put("Quebec", "quebec");
-            put("British Columbia", "british+columbia");
-            put("Alberta", "alberta");
-            put("Manitoba", "manitoba");
-            put("Saskatchewan", "saskatchewan");
-            put("Nova Scotia", "nova+scotia");
-            put("New Brunswick", "new+brunswick");
-            put("Prince Edward Island", "prince+edward+island");
-            put("Newfoundland and Labrador", "newfoundland+and+labrador");
-            put("Yukon", "yukon");
-            put("Nunavut", "nunavut");
-            put("Northwest Territories", "northwest+territories");
-            put("Canada", "canada");
-        } 
-    };
-    
     private final Map<String, Region> provincesToRegionMap = new HashMap<>();
     private final OkHttpClient client = new OkHttpClient();
 
@@ -74,33 +68,52 @@ public class BoundariesDataAccess {
      * @throws GetData.InvalidDataException if an error occurs during the API request or data parsing.
      */
     public void loadProvinces() throws GetData.InvalidDataException {
-        for (String prov : PROVINCES) {
+        for (Province prov : Province.values()) {
+            System.out.println(String.format("Started fetching boundaries data for %s.", prov.getDisplayName()));
             final List<List<GeoPosition>> boundary = getBoundariesData(prov);
-            final Region region = new Region(prov, boundary);
-            this.provincesToRegionMap.put(prov, region);
+            final Region region = new Region(prov.getDisplayName(), boundary);
+            this.provincesToRegionMap.put(prov.getDisplayName(), region);
+            System.out.println(String.format("Finished fetching boundaries data for %s.", prov.getDisplayName()));
         }
+
+        // For the entire Canada
+        final Region allCanada = new Region("Canada", getBoundariesData("canada"));
+        this.provincesToRegionMap.put("Canada", allCanada);
+    }
+
+    /**
+     * Wrapper method of getBoundariesData, enforcing the enum class Province while allowing fetching for "Canada".
+     *
+     * @param provinceName Name of the province from Province enum class
+     * @return
+     * @throws GetData.InvalidDataException
+     */
+    public List<List<GeoPosition>> getBoundariesData(final Province provinceName) throws GetData.InvalidDataException {
+        final String provinceNameAPI = PROVINCES_TO_API.get(provinceName);
+        return getBoundariesData(provinceNameAPI);
+
     }
 
     /**
      * Fetches and parses the boundaries data for a single province from the Nominatim API.
      *
-     * @param provinceName The name of the province to fetch.
+     * @param provinceNameAPI The query parameter name of the province to fetch.
      * @return A list of polygons, where each polygon is a list of {@link GeoPosition} points.
      * @throws GetData.InvalidDataException if the API call fails or the response is invalid.
      */
-    public List<List<GeoPosition>> getBoundariesData(final String provinceName) throws GetData.InvalidDataException {
-        final String provinceNameAPI = PROVINCES_TO_API.get(provinceName);
+    public List<List<GeoPosition>> getBoundariesData(final String provinceNameAPI) throws GetData.InvalidDataException {
         final String url = String.format(API_URL_TEMPLATE, provinceNameAPI);
         final Request request = new Request.Builder().url(url).build();
-
         try (Response response = this.client.newCall(request).execute()) {
             final ResponseBody responseBody = response.body();
             if (responseBody == null) {
                 throw new GetData.InvalidDataException("Response body was null.");
             }
             final JSONArray responseArray = new JSONArray(responseBody.string());
-            return parseResponse(responseArray);
-        } 
+            List<List<GeoPosition>> parsedResponse = parseResponse(responseArray);
+            System.out.println(String.format("Finished parsing response for %s.", provinceNameAPI));
+            return parsedResponse;
+        }
         catch (IOException error) {
             throw new GetData.InvalidDataException("API call failed: " + error.getMessage());
         }
@@ -118,6 +131,7 @@ public class BoundariesDataAccess {
             return boundaries;
         }
 
+
         final JSONObject geoJsonObj = responseArray.getJSONObject(0).getJSONObject(GEOJSON_KEY);
         final String polygonType = geoJsonObj.getString(TYPE_KEY);
         final JSONArray coords = geoJsonObj.getJSONArray(COORDINATES_KEY);
@@ -125,7 +139,7 @@ public class BoundariesDataAccess {
         if (POLYGON_TYPE.equals(polygonType)) {
             final JSONArray outerRing = coords.getJSONArray(0);
             boundaries.add(parsePolygon(outerRing));
-        } 
+        }
         else if (MULTIPOLYGON_TYPE.equals(polygonType)) {
             for (int i = 0; i < coords.length(); i++) {
                 final JSONArray jsonPolygon = coords.getJSONArray(i);
