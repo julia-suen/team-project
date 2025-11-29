@@ -231,7 +231,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
                         fire.getCoordinates().get(0).getLat(),
                         fire.getCoordinates().get(0).getLon()
                 );
-                this.addFireMarker(geo, MapViewConfig.DEFAULT_FIRE_RADIUS);
+                this.addFireMarker(geo, fire.getRadius());
             }
         }
     }
