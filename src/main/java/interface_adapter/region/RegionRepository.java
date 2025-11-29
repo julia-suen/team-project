@@ -92,9 +92,9 @@ public class RegionRepository {
                     if (region != null) {
                         regionMap.put(name.getDisplayName(), region);
                     }
+                } catch (final Exception e) {
+                    System.err.println("Failed to load province boundaries: " + e.getMessage());
                 }
-            } catch (final Exception e) {
-                System.err.println("Failed to load province boundaries: " + e.getMessage());
             }
             return null;
         }
