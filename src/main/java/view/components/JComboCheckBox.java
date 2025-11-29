@@ -5,6 +5,8 @@ package view.components;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
+import java.util.List;
 
 public class JComboCheckBox extends JComboBox<JCheckBox> {
     public JComboCheckBox(JCheckBox[] items) {
@@ -28,6 +30,20 @@ public class JComboCheckBox extends JComboBox<JCheckBox> {
         }
     }
 
+    // Helper method to retrieve all selected provinces
+    public List<JCheckBox> getCheckedItems() {
+        List<JCheckBox> selected = new ArrayList<>();
+
+        ComboBoxModel<JCheckBox> model = getModel();
+        for (int i = 0; i < model.getSize(); i++) {
+            Object obj = model.getElementAt(i);
+            if (obj instanceof JCheckBox cb && cb.isSelected()) {
+                selected.add(cb);
+            }
+        }
+        return selected;
+    }
+
     @Override
     public void setPopupVisible(boolean v) {
         // Only allow *show*, never allow *hide* triggered by item clicks
@@ -44,33 +60,40 @@ public class JComboCheckBox extends JComboBox<JCheckBox> {
         }
     }
 
-    class ComboBoxRenderer implements ListCellRenderer {
-        private JLabel defaultLabel;
-
+    class ComboBoxRenderer implements ListCellRenderer<JCheckBox> {
         public ComboBoxRenderer() {
             setOpaque(true);
         }
 
-        public Component getListCellRendererComponent(JList list, Object value, int index,
-                                                      boolean isSelected, boolean cellHasFocus) {
-            if (value instanceof Component) {
-                Component c = (Component) value;
-                if (isSelected) {
-                    c.setBackground(list.getSelectionBackground());
-                    c.setForeground(list.getSelectionForeground());
+        @Override
+        public Component getListCellRendererComponent(JList<? extends JCheckBox> list,
+                                                      JCheckBox value,
+                                                      int index,
+                                                      boolean isSelected,
+                                                      boolean cellHasFocus) {
+
+            if (index == -1) {
+                // Collapsed combo box display (not the dropdown list)
+                // Show summary text
+                final int selectedCount = getCheckedItems().size();
+
+                JLabel label = new JLabel();
+                if (selectedCount == 0) {
+                    label.setText("Select provinces...");
+                } else if (selectedCount == 1) {
+                    label.setText(value.getText()); // only selected checkbox
                 } else {
-                    c.setBackground(list.getBackground());
-                    c.setForeground(list.getForeground());
+                    label.setText(selectedCount + " provinces selected");
                 }
-                return c;
-            } else {
-                if (defaultLabel == null) {
-                    defaultLabel = new JLabel(value.toString());
-                } else {
-                    defaultLabel.setText("Multiple provinces selected");
-                }
-                return defaultLabel;
+                return label;
             }
+
+            // index >= 0 → this is one item in the dropdown list
+            value.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+            value.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
+            value.setSelected(value.isSelected());
+            return value;
         }
+
     }
 }
