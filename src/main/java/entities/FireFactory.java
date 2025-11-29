@@ -109,13 +109,15 @@ public class FireFactory {
     }
 
     /**
-     * Sorts bundles of coordinates into Fire objects with greater FRP than
+     * Sorts bundles of coordinates into Fire objects with greater FRP than THRESHOLD given.
      * @param ptBundles an unfiltered collection of fires
+     * @param medSev boolean representing whether to change displayed fire to only medium severity ones
+     * @param highSev boolean representing whether to change displayed fire to only high severity ones
      * @return a filtered fire list based off of their severity as determined by FRP
      */
     public static List<Fire> makeFilteredFireList(List<List<Coordinate>> ptBundles, boolean medSev, boolean highSev) {
         final List<Fire> fires = new ArrayList<>();
-        double severity;
+        final double severity;
         double radius;
 
         if (medSev) {
@@ -182,6 +184,12 @@ public class FireFactory {
                 frp / numFires);
     }
 
+    /**
+     * Returns a list of fires which fit a given severity filter.
+     * @param bundles the currently loaded fires to filter
+     * @param severityFilter the filter the user wants to apply to the bundles of fires given
+     * @return the fires which fit the severity filter given
+     */
     public static List<Fire> filterFires(List<List<Coordinate>> bundles, SeverityFilter severityFilter) {
         return switch (severityFilter) {
             case MEDIUM -> FireFactory.makeFilteredFireList(bundles, true, false);

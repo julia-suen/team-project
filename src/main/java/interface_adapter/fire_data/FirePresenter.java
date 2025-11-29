@@ -21,7 +21,9 @@ public class FirePresenter implements FireOutputBoundary {
     @Override
     public void prepareSuccessView(FireOutputData response) {
         final FireState state = fireViewModel.getState();
-        state.setFires(response.getFires());
+
+        state.setLoadedFires(response.getFires());
+        state.setDisplayedFires(response.getFires());
         state.setGraphData(response.getFireTrendData());
         state.setError(null);
 

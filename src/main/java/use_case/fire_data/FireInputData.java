@@ -1,7 +1,5 @@
 package use_case.fire_data;
 
-import entities.SeverityFilter;
-
 /**
  * The input data for the fire analytics use case.
  * Represents a request that a user makes to the program by giving it a date and a day range
@@ -11,13 +9,10 @@ public class FireInputData {
     private final String date;
     private final int dateRange;
     private final boolean isNationalOverview;
-    private final SeverityFilter severityFilter;
 
-    public FireInputData(String province, String date, int dateRange, boolean isNationalOverview,
-                         SeverityFilter severityFilter) {
+    public FireInputData(String province, String date, int dateRange, boolean isNationalOverview) {
         this.date = date;
         this.dateRange = dateRange;
-        this.severityFilter = severityFilter;
         this.isNationalOverview = isNationalOverview;
         this.province = province;
     }
@@ -37,7 +32,5 @@ public class FireInputData {
     public boolean isNationalOverview() {
         return isNationalOverview;
     }
-
-    public SeverityFilter getSeverityFilter() { return severityFilter; }
 
 }

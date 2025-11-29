@@ -3,7 +3,6 @@ package interface_adapter.fire_data;
 import javax.swing.SwingWorker;
 
 import data_access.GetData;
-import entities.SeverityFilter;
 import use_case.fire_data.FireInputBoundary;
 import use_case.fire_data.FireInputData;
 
@@ -28,15 +27,14 @@ public class FireController {
      * @param date           the given date
      * @param dateRange      the day range requested
      * @param isNational     whether to fetch national overview data
-     * @param severityFilter the severity filters applied to displayed fires
      */
 
-    public void execute(String province, String date, int dateRange, boolean isNational, SeverityFilter severityFilter) {
+    public void execute(String province, String date, int dateRange, boolean isNational) {
         // Run on background thread to prevent UI freezing during multiple API calls
         final SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
-                final FireInputData inputData = new FireInputData(province, date, dateRange, isNational, severityFilter);
+                final FireInputData inputData = new FireInputData(province, date, dateRange, isNational);
                 try {
                     fireInteractor.execute(inputData);
                 }

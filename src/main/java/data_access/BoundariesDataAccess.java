@@ -1,17 +1,18 @@
 package data_access;
 
 import entities.Province;
-import entities.Region;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import entities.Region;
+import java.io.IOException;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jxmapviewer.viewer.GeoPosition;

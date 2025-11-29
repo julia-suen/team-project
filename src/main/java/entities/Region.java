@@ -24,4 +24,5 @@ public class Region {
 	public List<List<GeoPosition>> getBoundary() {
 		return boundary;
 	}
+
 }

@@ -48,13 +48,11 @@ public class Coordinate {
         return lon;
     }
 
-    public String[] getDateDayConfidence() {
-        return dateDayConfidence;
-    }
-
     public double[] getBrightness() {
         return brightness;
     }
 
-    public double getFrp() { return frp; }
+    public double getFrp() {
+        return frp;
+    }
 }
