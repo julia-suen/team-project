@@ -66,9 +66,6 @@ public class FireInteractor implements FireInputBoundary {
 
             // Retrieve the selected province
             String province = fireInputData.getProvince();
-            if (province == null) {
-                province = "All";
-            }
 
             // get filters
             final SeverityFilter severityFilter = fireInputData.getSeverityFilter();

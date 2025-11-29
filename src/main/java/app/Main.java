@@ -31,9 +31,6 @@ public class Main {
             // Created once and shared so Interactor sees what Repo loads
             final BoundariesDataAccess boundariesAccess = new BoundariesDataAccess();
 
-            // RegionRepository starts loading boundaries in background
-            final RegionRepository regionRepository = new RegionRepository(boundariesAccess);
-
             final FireFactory factory = new FireFactory(Collections.emptyList());
             final FireDataAccess fireDataAccess = new FireDataAccess(factory);
 

@@ -81,11 +81,7 @@ public class MapController implements PropertyChangeListener {
                 range = DEFAULT_RANGE;
             }
 
-            mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(false);
-            mainFrame.getSidePanelView().getNationalButton().setEnabled(false);
-            mainFrame.getSidePanelView().getResetButton().setEnabled(false);
-            mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(false);
-            mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(false);
+            toggleButtons(false);
 
             // Get the selected province
             String province = (String) mainFrame.getSidePanelView().getProvinceSelector().getSelectedItem();
@@ -102,11 +98,7 @@ public class MapController implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         // These enable buttons immediately, which is generally safe, but safer inside invokeLater
         SwingUtilities.invokeLater(() -> {
-            mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(true);
-            mainFrame.getSidePanelView().getNationalButton().setEnabled(true);
-            mainFrame.getSidePanelView().getResetButton().setEnabled(true);
-            mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(true);
-            mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(true);
+            toggleButtons(true);
 
             if ("state".equals(evt.getPropertyName())) {
                 final FireState state = (FireState) evt.getNewValue();
@@ -126,5 +118,13 @@ public class MapController implements PropertyChangeListener {
                 }
             }
         });
+    }
+
+    private void toggleButtons(Boolean enabled) {
+        mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(enabled);
+        mainFrame.getSidePanelView().getNationalButton().setEnabled(enabled);
+        mainFrame.getSidePanelView().getResetButton().setEnabled(enabled);
+        mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(enabled);
+        mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(enabled);
     }
 }
