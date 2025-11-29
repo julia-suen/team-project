@@ -223,7 +223,7 @@ public class SidePanelView extends JPanel {
 
         // Favourite Dropdown Label
         final JLabel favouriteDropdownLabel = new JLabel("Saved Favourites: ");
-        favouriteDropdownLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        favouriteDropdownLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         favouritesPanel.add(favouriteDropdownLabel);
 
         //Favourites Dropdown
