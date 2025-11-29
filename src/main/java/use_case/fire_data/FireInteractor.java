@@ -226,7 +226,7 @@ public class FireInteractor implements FireInputBoundary {
             path.closePath();
 
             // Check if the point is inside this specific polygon
-            if (path.contains(point.getLongitude(), point.getLatitude())) {
+            if (path.contains(point.getLon(), point.getLat())) {
                 return true;
             }
         }
