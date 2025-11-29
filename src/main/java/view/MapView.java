@@ -44,7 +44,6 @@ public class MapView extends JPanel {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    private static final double MIN_RADIUS = 0.1;
     private final transient RegionRepository regionRepo = new RegionRepository(
             new data_access.BoundariesDataAccess()
     );
