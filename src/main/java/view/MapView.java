@@ -211,8 +211,8 @@ public class MapView extends JPanel {
         for (final Fire fire : fires) {
             if (fire.getCoordinates() != null && !fire.getCoordinates().isEmpty()) {
                 final GeoPosition geo = new GeoPosition(
-                        fire.getCoordinates().get(0).getLatitude(),
-                        fire.getCoordinates().get(0).getLongitude()
+                        fire.getCoordinates().get(0).getLat(),
+                        fire.getCoordinates().get(0).getLon()
                 );
 
                 this.addFireMarker(geo, MIN_RADIUS); // Assuming a default radius
