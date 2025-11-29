@@ -1,5 +1,7 @@
 package view;
 
+import data_access.BoundariesDataAccess;
+
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
@@ -17,10 +19,10 @@ public class MainFrame extends JFrame {
     /**
      * Constructs the Main Frame.
      */
-    public MainFrame() {
+    public MainFrame(BoundariesDataAccess boundariesDataAccess) {
         super("Canada Wildfire Data Viewer");
 
-        mapView = new MapView();
+        mapView = new MapView(boundariesDataAccess);
         sidePanelView = new SidePanelView();
 
         setLayout(new BorderLayout());
