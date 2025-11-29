@@ -6,12 +6,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import entities.*;
+
 import org.jxmapviewer.viewer.GeoPosition;
 
 import data_access.BoundariesDataAccess;
 import data_access.GetData;
-
-import static entities.FireFactory.filterFires;
 
 /**
  * Interactor for the Fire Data Use Case.
@@ -70,15 +69,12 @@ public class FireInteractor implements FireInputBoundary {
                 province = "All";
             }
 
-            // get filters
-            final SeverityFilter severityFilter = fireInputData.getSeverityFilter();
-
             if (fireInputData.isNationalOverview()) {
-                processNationalOverview(inputDate, range, allFires, trendData, severityFilter);
+                processNationalOverview(inputDate, range, allFires, trendData);
 
             }
             else {
-                processStandardView(inputDateStr, inputDate, range, allFires, trendData, province, severityFilter);
+                processStandardView(inputDateStr, inputDate, range, allFires, trendData, province);
             }
 
             final FireOutputData fireOutputData = new FireOutputData(allFires, trendData);
@@ -88,15 +84,13 @@ public class FireInteractor implements FireInputBoundary {
         catch (GetData.InvalidDataException ex) {
             firePresenter.prepareFailView("Error fetching data: " + ex.getMessage());
         }
-        catch (RuntimeException ex) {
-            ex.printStackTrace();
-            firePresenter.prepareFailView("Unexpected error: " + ex.getMessage());
+        catch (Exception error) {
+            firePresenter.prepareFailView("Unexpected error: " + error.getMessage());
         }
     }
 
     private void processNationalOverview(LocalDate inputDate, int range,
-                                         List<Fire> allFires, Map<String, Integer> trendData,
-                                         SeverityFilter severityFilter)
+                                         List<Fire> allFires, Map<String, Integer> trendData)
             throws GetData.InvalidDataException {
 
         // For National Overview, we fetch world data but FILTER for Canada using boundaries
@@ -107,7 +101,6 @@ public class FireInteractor implements FireInputBoundary {
             final LocalDate targetDate = inputDate.minusMonths(i);
             final String targetDateStr = targetDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
             final String label = targetDate.format(DateTimeFormatter.ofPattern(LABEL_FORMAT));
-            List<Fire> monthFires;
 
             // Fetch data
             List<Coordinate> points = dataAccessInterface.getFireData(range, targetDateStr, WORLD_BOUNDS);
@@ -125,16 +118,14 @@ public class FireInteractor implements FireInputBoundary {
             if (!points.isEmpty()) {
                 final FireFactory fireFactory = new FireFactory(points);
                 final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
-
-                monthFires = filterFires(bundles, severityFilter);
+                final List<Fire> monthFires = FireFactory.makeFireList(bundles);
                 allFires.addAll(monthFires);
             }
         }
     }
 
     private void processStandardView(String inputDateStr, LocalDate inputDate, int range,
-                                     List<Fire> allFires, Map<String, Integer> trendData, String province,
-                                     SeverityFilter severityFilter)
+                                     List<Fire> allFires, Map<String, Integer> trendData, String province)
             throws GetData.InvalidDataException {
 
         // Fetch data for the whole world
@@ -155,7 +146,7 @@ public class FireInteractor implements FireInputBoundary {
             final FireFactory fireFactory = new FireFactory(points);
             final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
 
-            final List<Fire> monthFires = filterFires(bundles, severityFilter);
+            final List<Fire> monthFires = FireFactory.makeFireList(bundles);
             allFires.addAll(monthFires);
             trendData.put(label, points.size());
         }

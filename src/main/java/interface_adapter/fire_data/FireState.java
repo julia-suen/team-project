@@ -12,7 +12,8 @@ import entities.Fire;
  * Stores the list of fires, graph data, and any error messages.
  */
 public class FireState {
-    private List<Fire> fires = new ArrayList<>();
+    private List<Fire> loadedFires = new ArrayList<>();
+    private List<Fire> displayedFires = new ArrayList<>();
     private Map<String, Integer> graphData = new LinkedHashMap<>();
     private String error;
 
@@ -21,7 +22,8 @@ public class FireState {
      * @param copy the state to copy from
      */
     public FireState(FireState copy) {
-        this.fires = copy.fires;
+        this.loadedFires = copy.loadedFires;
+        this.displayedFires = copy.displayedFires;
         this.graphData = copy.graphData;
         this.error = copy.error;
     }
@@ -32,12 +34,20 @@ public class FireState {
     public FireState() {
     }
 
-    public List<Fire> getFires() {
-        return fires;
+    public List<Fire> getLoadedFires() {
+        return loadedFires;
     }
 
-    public void setFires(List<Fire> fires) {
-        this.fires = fires;
+    public void setLoadedFires(List<Fire> fires) {
+        this.loadedFires = fires;
+    }
+
+    public List<Fire> getDisplayedFires() {
+        return displayedFires;
+    }
+
+    public void setDisplayedFires(List<Fire> fires) {
+        this.displayedFires = fires;
     }
 
     public Map<String, Integer> getGraphData() {

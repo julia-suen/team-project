@@ -12,6 +12,7 @@ import entities.SeverityFilter;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FireState;
 import interface_adapter.fire_data.FireViewModel;
+import interface_adapter.severity_filter.SeverityController;
 import view.MainFrame;
 
 public class MapController implements PropertyChangeListener {
@@ -21,11 +22,14 @@ public class MapController implements PropertyChangeListener {
 
     private final MainFrame mainFrame;
     private final FireController fireController;
+    private final SeverityController severityController;
     private final FireViewModel fireViewModel;
 
-    public MapController(MainFrame mainFrame, FireController fireController, FireViewModel fireViewModel) {
+    public MapController(MainFrame mainFrame, FireController fireController, SeverityController severityController,
+                         FireViewModel fireViewModel) {
         this.mainFrame = mainFrame;
         this.fireController = fireController;
+        this.severityController = severityController;
         this.fireViewModel = fireViewModel;
 
         this.fireViewModel.addPropertyChangeListener(this);
@@ -36,26 +40,26 @@ public class MapController implements PropertyChangeListener {
     private void addListeners() {
         // Standard Load
         mainFrame.getSidePanelView().getLoadFiresButton().addActionListener(evt ->
-                loadFires(false, SeverityFilter.RESET));
+                loadFires(false));
 
         // National Overview
         mainFrame.getSidePanelView().getNationalButton().addActionListener(evt ->
-                loadFires(true, SeverityFilter.RESET));
+                loadFires(true));
 
         // Reset
         mainFrame.getSidePanelView().getResetButton().addActionListener(evt ->
-                loadFires(false, SeverityFilter.RESET));
+                severityController.filterBySeverity(SeverityFilter.RESET));
 
         // Medium Severity
         mainFrame.getSidePanelView().getMedSeverityButton().addActionListener(evt ->
-                loadFires(false, SeverityFilter.MEDIUM));
+                severityController.filterBySeverity(SeverityFilter.MEDIUM));
 
         // High Severity
         mainFrame.getSidePanelView().getHighSeverityButton().addActionListener(evt ->
-                loadFires(false, SeverityFilter.HIGH));
+                severityController.filterBySeverity(SeverityFilter.HIGH));
     }
 
-    private void loadFires(boolean isNational, SeverityFilter severityFilter) {
+    private void loadFires(boolean isNational) {
         final String date = mainFrame.getSidePanelView().getDatePickerComponent().getDateStringOrEmptyString();
         final Object selectedRange = mainFrame.getSidePanelView().getDayRangeSelector().getSelectedItem();
 
@@ -94,7 +98,7 @@ public class MapController implements PropertyChangeListener {
             }
 
             // Pass it to the controller
-            fireController.execute(province, date, range, isNational, severityFilter);
+            fireController.execute(province, date, range, isNational);
         }
     }
 
@@ -115,8 +119,8 @@ public class MapController implements PropertyChangeListener {
                     JOptionPane.showMessageDialog(mainFrame, state.getError(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 else {
-                    // Pass the whole list of fires to be displayed at once
-                    final List<Fire> fires = state.getFires();
+                    // Pass the list of display fires
+                    final List<Fire> fires = state.getDisplayedFires();
 
                     // Update MapView on the EDT to avoid ConcurrentModificationException
                     mainFrame.getMapView().displayFires(fires);
