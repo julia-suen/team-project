@@ -2,7 +2,6 @@ package view;
 
 import java.awt.Color;
 import java.awt.Font;
-
 import org.jxmapviewer.viewer.GeoPosition;
 
 /**
@@ -22,6 +21,7 @@ public final class MapViewConfig {
     public static final float BOUNDARY_STROKE_WIDTH = 3.0f;
     public static final float FIRE_STROKE_WIDTH = 2.0f;
     public static final int MIN_FIRE_RADIUS = 5;
+    public static final double DEFAULT_FIRE_RADIUS = 0.1;
     public static final double CENTER_POSITION_TOLERANCE = 1.0;
     public static final int MIN_POLYGON_POINTS = 3;
 

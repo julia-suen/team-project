@@ -11,13 +11,10 @@ public class Region {
 
 	private final String provinceName;
 	private final List<List<GeoPosition>> boundary;
-	// private final double susceptibilityScore;
 
-	// public Region(String provinceName, List<GeoPosition> boundary, double susceptibilityScore) {
     public Region(String provinceName, List<List<GeoPosition>> boundary) {
         this.provinceName = provinceName;
 		this.boundary = boundary;
-		// this.susceptibilityScore = susceptibilityScore;
 	}
 
 	public String getProvinceName() {
@@ -27,8 +24,4 @@ public class Region {
 	public List<List<GeoPosition>> getBoundary() {
 		return boundary;
 	}
-
-    //	public double getSusceptibilityScore() {
-    //		return susceptibilityScore;
-    //	}
 }
