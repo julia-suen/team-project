@@ -59,9 +59,9 @@ public class MapView extends JPanel implements PropertyChangeListener {
     /**
      * Constructs the MapView panel.
      */
-    public MapView() {
+    public MapView(data_access.BoundariesDataAccess boundariesDataAccess) {
         this.waypoints = new HashSet<>();
-        this.regionRepo = new RegionRepository(new data_access.BoundariesDataAccess());
+        this.regionRepo = new RegionRepository(boundariesDataAccess);
 
         this.waypointPainter = new WaypointPainter<>();
         this.waypointPainter.setRenderer(new FireWaypointRenderer());

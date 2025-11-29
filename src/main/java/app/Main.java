@@ -26,13 +26,13 @@ public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
-            final MainFrame mainFrame = new MainFrame();
-            final FireViewModel fireViewModel = new FireViewModel();
-            final ViewManagerModel viewManagerModel = new ViewManagerModel();
-
             // Initialize Shared Data Access
             // Created once and shared so Interactor sees what Repo loads
             final BoundariesDataAccess boundariesAccess = new BoundariesDataAccess();
+
+            final MainFrame mainFrame = new MainFrame(boundariesAccess);
+            final FireViewModel fireViewModel = new FireViewModel();
+            final ViewManagerModel viewManagerModel = new ViewManagerModel();
 
             final FireFactory factory = new FireFactory(Collections.emptyList());
             final FireDataAccess fireDataAccess = new FireDataAccess(factory);
