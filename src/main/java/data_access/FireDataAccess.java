@@ -12,7 +12,7 @@ import entities.FireFactory;
 import use_case.load_fires.LoadFiresFireDataAccess;
 import use_case.national_overview.NationalOverviewFireDataAccess;
 
-public class FireDataAccess implements GetData, LoadFiresFireDataAccess, NationalOverviewFireDataAccess {
+public class FireDataAccess implements GetFireData, LoadFiresFireDataAccess, NationalOverviewFireDataAccess {
 
     /**
      * DataAccess implementation that relies on the NRT VIIRS active fire API.
@@ -87,7 +87,7 @@ public class FireDataAccess implements GetData, LoadFiresFireDataAccess, Nationa
         }
 
         catch (Exception exception) {
-            throw new GetData.InvalidDataException();
+            throw new GetFireData.InvalidDataException();
         }
         return dataPoints;
     }

@@ -9,14 +9,5 @@ import entities.Fire;
  * Represents the final information that will be sent back out to the view.
  */
 
-public class SeverityOutputData {
-    private final List<Fire> filteredFires;
-
-    public SeverityOutputData(List<Fire> filteredFires) {
-        this.filteredFires = filteredFires;
-    }
-
-    public List<Fire> getFilteredFires() {
-        return filteredFires;
-    }
+public record SeverityOutputData(List<Fire> filteredFires) {
 }

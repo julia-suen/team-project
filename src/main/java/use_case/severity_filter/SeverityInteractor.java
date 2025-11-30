@@ -3,7 +3,6 @@ package use_case.severity_filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import data_access.GetData;
 import entities.Coordinate;
 import entities.Fire;
 import entities.FireFactory;
@@ -28,31 +27,26 @@ public class SeverityInteractor implements SeverityInputBoundary {
 
     @Override
     public void execute(SeverityInputData inputData) {
-        try {
-            final List<Fire> currentFires = inputData.getCurrentFires();
-            final SeverityFilter severityFilter = inputData.getSeverityFilter();
 
-            final List<Fire> filteredFires;
+        final List<Fire> currentFires = inputData.currentFires();
+        final SeverityFilter severityFilter = inputData.severityFilter();
 
-            if (currentFires == null || currentFires.isEmpty()) {
-                filteredFires = new ArrayList<>();
-            }
-            else {
-                final List<List<Coordinate>> bundles = convertFires(currentFires);
-                filteredFires = FireFactory.filterFires(bundles, severityFilter);
-            }
+        final List<Fire> filteredFires;
 
-            final SeverityOutputData outputData = new SeverityOutputData(
-                    filteredFires
-            );
-
-            severityOutputBoundary.prepareSuccessView(outputData);
-
+        if (currentFires == null || currentFires.isEmpty()) {
+            filteredFires = new ArrayList<>();
         }
-        // not expecting any specific errors but as a failsafe :
-        catch (Exception error) {
-            severityOutputBoundary.prepareFailView("Unexpected error: " + error.getMessage());
+        else {
+            final List<List<Coordinate>> bundles = convertFires(currentFires);
+            filteredFires = FireFactory.filterFires(bundles, severityFilter);
         }
+
+        final SeverityOutputData outputData = new SeverityOutputData(
+                filteredFires
+        );
+
+        severityOutputBoundary.prepareSuccessView(outputData);
+
     }
 
     /**

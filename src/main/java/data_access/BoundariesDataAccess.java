@@ -68,9 +68,9 @@ public class BoundariesDataAccess implements LoadFiresBoundaryDataAccess, Nation
      * This method iterates through a predefined list of provinces, fetches the
      * boundary data for each, and stores it in a local cache.
      *
-     * @throws GetData.InvalidDataException if an error occurs during the API request or data parsing.
+     * @throws GetFireData.InvalidDataException if an error occurs during the API request or data parsing.
      */
-    public void loadProvinces() throws GetData.InvalidDataException {
+    public void loadProvinces() throws GetFireData.InvalidDataException {
         for (Province prov : Province.values()) {
             System.out.println(String.format("Started fetching boundaries data for %s.", prov.getDisplayName()));
             final List<List<GeoPosition>> boundary = getBoundariesData(prov);
@@ -89,9 +89,9 @@ public class BoundariesDataAccess implements LoadFiresBoundaryDataAccess, Nation
      *
      * @param provinceName Name of the province from Province enum class
      * @return
-     * @throws GetData.InvalidDataException
+     * @throws GetFireData.InvalidDataException
      */
-    public List<List<GeoPosition>> getBoundariesData(final Province provinceName) throws GetData.InvalidDataException {
+    public List<List<GeoPosition>> getBoundariesData(final Province provinceName) throws GetFireData.InvalidDataException {
         final String provinceNameAPI = PROVINCES_TO_API.get(provinceName);
         return getBoundariesData(provinceNameAPI);
 
@@ -102,15 +102,15 @@ public class BoundariesDataAccess implements LoadFiresBoundaryDataAccess, Nation
      *
      * @param provinceNameAPI The query parameter name of the province to fetch.
      * @return A list of polygons, where each polygon is a list of {@link GeoPosition} points.
-     * @throws GetData.InvalidDataException if the API call fails or the response is invalid.
+     * @throws GetFireData.InvalidDataException if the API call fails or the response is invalid.
      */
-    public List<List<GeoPosition>> getBoundariesData(final String provinceNameAPI) throws GetData.InvalidDataException {
+    public List<List<GeoPosition>> getBoundariesData(final String provinceNameAPI) throws GetFireData.InvalidDataException {
         final String url = String.format(API_URL_TEMPLATE, provinceNameAPI);
         final Request request = new Request.Builder().url(url).build();
         try (Response response = this.client.newCall(request).execute()) {
             final ResponseBody responseBody = response.body();
             if (responseBody == null) {
-                throw new GetData.InvalidDataException("Response body was null.");
+                throw new GetFireData.InvalidDataException("Response body was null.");
             }
             final JSONArray responseArray = new JSONArray(responseBody.string());
             List<List<GeoPosition>> parsedResponse = parseResponse(responseArray);
@@ -118,7 +118,7 @@ public class BoundariesDataAccess implements LoadFiresBoundaryDataAccess, Nation
             return parsedResponse;
         }
         catch (IOException error) {
-            throw new GetData.InvalidDataException("API call failed: " + error.getMessage());
+            throw new GetFireData.InvalidDataException("API call failed: " + error.getMessage());
         }
     }
 

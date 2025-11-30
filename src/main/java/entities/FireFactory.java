@@ -79,7 +79,7 @@ public class FireFactory {
 
     /**
      * Sorts bundles of coordinates into Fire objects by calculating their centerpoint and radius.
-     *
+     * Runs if no filters are applied, or if filters are RESET.
      * @param ptBundles the List containing bundles of coordinates to be sorted into Fire objects
      * @return a List of Fires recognized using the bundles of data points given
      */
@@ -110,12 +110,12 @@ public class FireFactory {
 
     /**
      * Sorts bundles of coordinates into Fire objects with greater FRP than THRESHOLD given.
+     * Is only called if a filter other than "RESET" is applied, so if medSev is false, highSev filter is applied.
      * @param ptBundles an unfiltered collection of fires
      * @param medSev boolean representing whether to change displayed fire to only medium severity ones
-     * @param highSev boolean representing whether to change displayed fire to only high severity ones
      * @return a filtered fire list based off of their severity as determined by FRP
      */
-    public static List<Fire> makeFilteredFireList(List<List<Coordinate>> ptBundles, boolean medSev, boolean highSev) {
+    public static List<Fire> makeFilteredFireList(List<List<Coordinate>> ptBundles, boolean medSev) {
         final List<Fire> fires = new ArrayList<>();
         final double severity;
         double radius;
@@ -130,7 +130,7 @@ public class FireFactory {
         for (List<Coordinate> bundle : ptBundles) {
             final Coordinate center = getAvgCoordinate(bundle);
 
-            if (center.getFrp() >= severity) {
+            if (center.getFrp() > severity) {
                 bundle.sort(Comparator.comparingDouble(Coordinate::getLat));
                 final double latDiff = Math.abs(bundle.get(0).getLat() - bundle.get(bundle.size() - 1).getLat());
                 final double lonDiff = Math.abs(bundle.get(0).getLon() - bundle.get(bundle.size() - 1).getLon());
@@ -192,8 +192,8 @@ public class FireFactory {
      */
     public static List<Fire> filterFires(List<List<Coordinate>> bundles, SeverityFilter severityFilter) {
         return switch (severityFilter) {
-            case MEDIUM -> FireFactory.makeFilteredFireList(bundles, true, false);
-            case HIGH -> FireFactory.makeFilteredFireList(bundles, false, true);
+            case MEDIUM -> FireFactory.makeFilteredFireList(bundles, true);
+            case HIGH -> FireFactory.makeFilteredFireList(bundles, false);
             default -> FireFactory.makeFireList(bundles);
         };
     }
