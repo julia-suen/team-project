@@ -1,16 +1,21 @@
 package view;
 
 import entities.Fire;
+import interface_adapter.marker.MarkerPresenter;
+import interface_adapter.marker.MarkerViewModel;
 import interface_adapter.region.RegionRepository;
 import interface_adapter.select_region.MapCoordinateConverter;
 import interface_adapter.select_region.SelectRegionController;
 import interface_adapter.select_region.SelectRegionPresenter;
 import interface_adapter.select_region.SelectRegionViewModel;
+import interface_adapter.marker.MarkerController;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serial;
@@ -35,6 +40,9 @@ import org.jxmapviewer.painter.Painter;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.WaypointPainter;
+import use_case.marker.MarkerInputBoundary;
+import use_case.marker.MarkerInteractor;
+import use_case.marker.MarkerOutputBoundary;
 import use_case.select_region.CoordinateConverter;
 import use_case.select_region.SelectRegionInteractor;
 
@@ -57,6 +65,8 @@ public class MapView extends JPanel implements PropertyChangeListener {
     private final transient WaypointPainter<FireWaypoint> fireMarkerPainter;
     private final transient SelectRegionController selectRegionController;
     private final transient RegionBoundaryPainter regionBoundaryPainter;
+    private final transient MarkerController markerController;
+    private boolean firesDisplayed = false;
 
     /**
      * Constructs the MapView panel.
@@ -85,6 +95,12 @@ public class MapView extends JPanel implements PropertyChangeListener {
                 this.regionRepo, selectRegionPresenter, coordinateConverter
         );
         this.selectRegionController = new SelectRegionController(selectRegionInteractor);
+
+        // Build Marker Use Case
+        final MarkerViewModel markerViewModel = new MarkerViewModel();
+        final MarkerOutputBoundary markerOutputBoundary = new MarkerPresenter(markerViewModel);
+        final MarkerInputBoundary markerInteractor = new MarkerInteractor(markerOutputBoundary);
+        this.markerController = new MarkerController(markerInteractor);
 
         this.regionBoundaryPainter = new RegionBoundaryPainter();
 
@@ -184,6 +200,19 @@ public class MapView extends JPanel implements PropertyChangeListener {
         final PanMouseInputListener mouseListener = new PanMouseInputListener(map);
         map.addMouseListener(mouseListener);
         map.addMouseMotionListener(mouseListener);
+
+        map.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                if (firesDisplayed){
+                    Fire fire = fireAtPoint(map, e.getX(), e.getY());
+                    if (fire != null) {
+                        markerController.execute(fire);
+                        // System.out.println("Hovering fire: " + fire.getCenter().getLat() + fire.getCenter().getLon());
+                    }
+                }
+            }
+        });
     }
 
     private void setupZoomButtons(final JXMapKit kit) {
@@ -227,6 +256,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
         this.waypoints.clear();
         this.waypointPainter.setWaypoints(this.waypoints);
         this.mapKit.getMainMap().repaint();
+        this.firesDisplayed = false;
     }
 
     /**
@@ -244,5 +274,19 @@ public class MapView extends JPanel implements PropertyChangeListener {
                 this.addFireMarker(geo, fire.getRadius(), fire);
             }
         }
+        this.firesDisplayed = true;
+    }
+
+    private Fire fireAtPoint(JXMapViewer map, final double x, final double y) {
+        for (FireWaypoint fireWaypoint: this.markers){
+            Point2D marker = map.convertGeoPositionToPoint(fireWaypoint.getPosition());
+            double dx = marker.getX() - x;
+            double dy = marker.getY() - y;
+
+            if (dx*dx + dy*dy < 8*8){
+                return fireWaypoint.getFire();
+            }
+        }
+        return null;
     }
 }
