@@ -34,10 +34,11 @@ public class FireController {
             @Override
             protected Void doInBackground() {
                 if (isNational) {
-                    NationalOverviewInputData inputData = new NationalOverviewInputData(date, dateRange);
+                    final NationalOverviewInputData inputData = new NationalOverviewInputData(date, dateRange);
                     nationalOverviewInteractor.execute(inputData);
-                } else {
-                    LoadFiresInputData inputData = new LoadFiresInputData(province, date, dateRange);
+                }
+                else {
+                    final LoadFiresInputData inputData = new LoadFiresInputData(province, date, dateRange);
                     loadFiresInteractor.execute(inputData);
                 }
                 return null;

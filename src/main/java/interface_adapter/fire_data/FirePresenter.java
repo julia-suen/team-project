@@ -20,19 +20,19 @@ public class FirePresenter implements LoadFiresOutputBoundary, NationalOverviewO
         this.viewManagerModel = viewManagerModel;
     }
 
-    // --- Load Fires Output ---
+    // Load Fires Output
     @Override
     public void prepareSuccessView(LoadFiresOutputData response) {
         updateState(response.getFires(), response.getFireTrendData());
     }
 
-    // --- National Overview Output ---
+    // National Overview Output
     @Override
     public void prepareSuccessView(NationalOverviewOutputData response) {
         updateState(response.getFires(), response.getFireTrendData());
     }
 
-    // --- Shared Fail View ---
+    // Shared Fail View
     @Override
     public void prepareFailView(String error) {
         final FireState state = fireViewModel.getState();
