@@ -20,7 +20,7 @@ public class SeverityPresenter implements SeverityOutputBoundary {
     @Override
     public void prepareSuccessView(SeverityOutputData outputData) {
         final FireState state = fireViewModel.getState();
-        state.setDisplayedFires(outputData.getFilteredFires());
+        state.setDisplayedFires(outputData.filteredFires());
 
         state.setError(null);
         fireViewModel.setState(state);

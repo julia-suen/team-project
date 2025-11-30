@@ -1,7 +1,7 @@
 package use_case.fire_data;
 
 import data_access.BoundariesDataAccess;
-import data_access.GetData;
+import data_access.GetFireData;
 import entities.Coordinate;
 import entities.Region;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class FireInteractorTest {
         coords.add(new Coordinate(43.7001, -79.4001,
                 new String[]{"2025-11-20", "D", "h"}, new double[]{300.0, 280.0}, 5.0));
 
-        final TestDataAccess dataAccess = new TestDataAccess(coords);
+        final TestFireDataAccess dataAccess = new TestFireDataAccess(coords);
         final TestPresenter presenter = new TestPresenter();
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
@@ -48,7 +48,7 @@ class FireInteractorTest {
         coords.add(new Coordinate(43.7, -79.4,
                 new String[]{"2025-11-20", "D", "h"}, new double[]{300.0, 280.0}, 5.0));
 
-        final TestDataAccess dataAccess = new TestDataAccess(coords);
+        final TestFireDataAccess dataAccess = new TestFireDataAccess(coords);
         final TestPresenter presenter = new TestPresenter();
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
@@ -74,7 +74,7 @@ class FireInteractorTest {
         coords.add(new Coordinate(20, 20,
                 new String[]{"2025-11-20", "D", "h"}, new double[]{300.0, 280.0}, 5.0));
 
-        final TestDataAccess dataAccess = new TestDataAccess(coords);
+        final TestFireDataAccess dataAccess = new TestFireDataAccess(coords);
         final TestPresenter presenter = new TestPresenter();
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
@@ -92,7 +92,7 @@ class FireInteractorTest {
      */
     @Test
     void testEmptyDate(){
-        final TestDataAccess dataAccess = new TestDataAccess(new ArrayList<>());
+        final TestFireDataAccess dataAccess = new TestFireDataAccess(new ArrayList<>());
         final TestPresenter presenter = new TestPresenter();
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
@@ -111,7 +111,7 @@ class FireInteractorTest {
      */
     @Test
     void testNullDate() {
-        final TestDataAccess dataAccess = new TestDataAccess(new ArrayList<>());
+        final TestFireDataAccess dataAccess = new TestFireDataAccess(new ArrayList<>());
         final TestPresenter presenter = new TestPresenter();
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
@@ -129,7 +129,7 @@ class FireInteractorTest {
      */
     @Test
     void testFutureDate() {
-        final TestDataAccess dataAccess = new TestDataAccess(new ArrayList<>());
+        final TestFireDataAccess dataAccess = new TestFireDataAccess(new ArrayList<>());
         final TestPresenter presenter = new TestPresenter();
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
@@ -148,7 +148,7 @@ class FireInteractorTest {
      */
     @Test
     void testInvalidHighDayRange() {
-        final TestDataAccess dataAccess = new TestDataAccess(new ArrayList<>());
+        final TestFireDataAccess dataAccess = new TestFireDataAccess(new ArrayList<>());
         final TestPresenter presenter = new TestPresenter();
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
@@ -167,7 +167,7 @@ class FireInteractorTest {
      */
     @Test
     void testInvalidLowDayRange() {
-        final TestDataAccess dataAccess = new TestDataAccess(new ArrayList<>());
+        final TestFireDataAccess dataAccess = new TestFireDataAccess(new ArrayList<>());
         final TestPresenter presenter = new TestPresenter();
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
@@ -185,7 +185,7 @@ class FireInteractorTest {
      */
     @Test
     void testInvalidDataException() {
-        final TestDataAccess dataAccess = new TestDataAccess(null);
+        final TestFireDataAccess dataAccess = new TestFireDataAccess(null);
         dataAccess.shouldThrowException = true;
         final TestPresenter presenter = new TestPresenter();
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
@@ -205,7 +205,7 @@ class FireInteractorTest {
      */
     @Test
     void testNullCoords() {
-        final TestDataAccess dataAccess = new TestDataAccess(null);
+        final TestFireDataAccess dataAccess = new TestFireDataAccess(null);
         final TestPresenter presenter = new TestPresenter();
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
@@ -227,7 +227,7 @@ class FireInteractorTest {
         coords.add(new Coordinate(43.7, -79.4,
                 new String[]{"2025-11-20", "D", "h"}, new double[]{300.0, 280.0}, 5.0));
 
-        final TestDataAccess dataAccess = new TestDataAccess(coords);
+        final TestFireDataAccess dataAccess = new TestFireDataAccess(coords);
         final TestPresenter presenter = new TestPresenter();
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
         boundariesAccess.returnNull = true;
@@ -246,12 +246,12 @@ class FireInteractorTest {
      * Below are helpers that mock data access objects and presenters required for tests, instead of making calls to
      * the actual APIs.
      */
-    private static class TestDataAccess implements GetData {
+    private static class TestFireDataAccess implements GetFireData {
         private final List<Coordinate> coords;
         int lastRange = -1;
         boolean shouldThrowException = false;
 
-        TestDataAccess(List<Coordinate> coords) {
+        TestFireDataAccess(List<Coordinate> coords) {
             this.coords = coords;
         }
 

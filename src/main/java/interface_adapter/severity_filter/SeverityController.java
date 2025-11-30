@@ -1,5 +1,8 @@
 package interface_adapter.severity_filter;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import entities.Fire;
@@ -9,29 +12,36 @@ import use_case.severity_filter.SeverityInputBoundary;
 import use_case.severity_filter.SeverityInputData;
 
 /**
- * Controller for the severity filter use case, gets current fires from FireViewModel state.
+ * Controller for the severity filter use case, stores fires on the map in a cache.
  */
 
-public class SeverityController {
+public class SeverityController implements PropertyChangeListener {
     private final SeverityInputBoundary severityInteractor;
-    private final FireViewModel viewModel;
+    private List<Fire> cachedFires = new ArrayList<>();
 
-    public SeverityController(SeverityInputBoundary severityInteractor, FireViewModel viewModel) {
+    public SeverityController(SeverityInputBoundary severityInteractor) {
         this.severityInteractor = severityInteractor;
-        this.viewModel = viewModel;
     }
 
     /**
-     * Execute the filter severity use case.
-     * Gets current fires from the view model and applies the filter.
-     *
-     * @param filter the severity filter to apply
+     * Updates cache with fires on the map.
      */
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("fires_loaded".equals(evt.getPropertyName())) {
+            List<Fire> fires = (List<Fire>) evt.getNewValue();
+            this.cachedFires = new ArrayList<>(fires);
+        }
+    }
+
+    /**
+     * Execute the filter severity use case using fires currently on map (stored in cache).
+     * @param filter the severity filter to apply
+     */
     public void filterBySeverity(SeverityFilter filter) {
 
-        final List<Fire> currentFires = viewModel.getState().getLoadedFires();
-        final SeverityInputData inputData = new SeverityInputData(currentFires, filter);
+        final SeverityInputData inputData = new SeverityInputData(cachedFires, filter);
         severityInteractor.execute(inputData);
     }
 }

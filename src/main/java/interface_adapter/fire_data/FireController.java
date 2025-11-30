@@ -2,7 +2,7 @@ package interface_adapter.fire_data;
 
 import javax.swing.SwingWorker;
 
-import data_access.GetData;
+import data_access.GetFireData;
 import use_case.fire_data.FireInputBoundary;
 import use_case.fire_data.FireInputData;
 
@@ -38,7 +38,7 @@ public class FireController {
                 try {
                     fireInteractor.execute(inputData);
                 }
-                catch (GetData.InvalidDataException ex) {
+                catch (GetFireData.InvalidDataException ex) {
                     ex.printStackTrace();
                 }
                 return null;

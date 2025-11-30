@@ -25,8 +25,8 @@ class SeverityInteractorTest {
         interactor.execute(inputData);
 
         assertNotNull(presenter.outputData);
-        assertNotNull(presenter.outputData.getFilteredFires());
-        assertFalse(presenter.outputData.getFilteredFires().isEmpty());
+        assertNotNull(presenter.outputData.filteredFires());
+        assertFalse(presenter.outputData.filteredFires().isEmpty());
     }
 
     /**
@@ -43,8 +43,8 @@ class SeverityInteractorTest {
         interactor.execute(inputData);
 
         assertNotNull(presenter.outputData);
-        assertNotNull(presenter.outputData.getFilteredFires());
-        assertEquals(1, presenter.outputData.getFilteredFires().size());
+        assertNotNull(presenter.outputData.filteredFires());
+        assertEquals(2, presenter.outputData.filteredFires().size());
     }
 
     /**
@@ -61,8 +61,8 @@ class SeverityInteractorTest {
         interactor.execute(inputData);
 
         assertNotNull(presenter.outputData);
-        assertNotNull(presenter.outputData.getFilteredFires());
-        assertEquals(1, presenter.outputData.getFilteredFires().size());
+        assertNotNull(presenter.outputData.filteredFires());
+        assertEquals(1, presenter.outputData.filteredFires().size());
     }
 
     /**
@@ -77,7 +77,7 @@ class SeverityInteractorTest {
         interactor.execute(inputData);
 
         assertNotNull(presenter.outputData);
-        assertTrue(presenter.outputData.getFilteredFires().isEmpty());
+        assertTrue(presenter.outputData.filteredFires().isEmpty());
     }
 
     /**
@@ -93,7 +93,7 @@ class SeverityInteractorTest {
         interactor.execute(inputData);
 
         assertNotNull(presenter.outputData);
-        assertTrue(presenter.outputData.getFilteredFires().isEmpty());
+        assertTrue(presenter.outputData.filteredFires().isEmpty());
     }
 
     /**
@@ -109,7 +109,7 @@ class SeverityInteractorTest {
         interactor.execute(inputData);
 
         assertNotNull(presenter.outputData);
-        assertTrue(presenter.outputData.getFilteredFires().isEmpty());
+        assertTrue(presenter.outputData.filteredFires().isEmpty());
     }
 
     /**
@@ -126,7 +126,7 @@ class SeverityInteractorTest {
         interactor.execute(inputData);
 
         assertNotNull(presenter.outputData);
-        assertTrue(presenter.outputData.getFilteredFires().isEmpty());
+        assertTrue(presenter.outputData.filteredFires().isEmpty());
     }
 
     /**
@@ -144,8 +144,8 @@ class SeverityInteractorTest {
         interactor.execute(inputData);
 
         assertNotNull(presenter.outputData);
-        assertFalse(presenter.outputData.getFilteredFires().isEmpty());
-        assertEquals(1, presenter.outputData.getFilteredFires().size());
+        assertFalse(presenter.outputData.filteredFires().isEmpty());
+        assertEquals(1, presenter.outputData.filteredFires().size());
     }
 
     /**

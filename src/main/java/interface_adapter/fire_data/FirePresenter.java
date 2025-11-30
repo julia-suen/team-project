@@ -29,6 +29,7 @@ public class FirePresenter implements FireOutputBoundary {
 
         fireViewModel.setState(state);
         fireViewModel.firePropertyChange();
+        fireViewModel.fireFiresLoaded(response.getFires());
     }
 
     @Override

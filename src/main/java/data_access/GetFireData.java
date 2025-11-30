@@ -8,7 +8,7 @@ import entities.Coordinate;
  * DAO Interface getting all high confidence fire data points for a given date and time range.
  * Allows for flexibility in database used.
  */
-public interface GetData {
+public interface GetFireData {
 
     /**
      * Fetch fire data.

@@ -3,7 +3,6 @@ package use_case.severity_filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import data_access.GetData;
 import entities.Coordinate;
 import entities.Fire;
 import entities.FireFactory;
@@ -29,8 +28,8 @@ public class SeverityInteractor implements SeverityInputBoundary {
     @Override
     public void execute(SeverityInputData inputData) {
 
-        final List<Fire> currentFires = inputData.getCurrentFires();
-        final SeverityFilter severityFilter = inputData.getSeverityFilter();
+        final List<Fire> currentFires = inputData.currentFires();
+        final SeverityFilter severityFilter = inputData.severityFilter();
 
         final List<Fire> filteredFires;
 
