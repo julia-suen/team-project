@@ -18,6 +18,6 @@
 //
 //}
 
-// we prolly need to make this + connect with BoundariesDataAccess cuz rn fireInteractor replies on data access object
+// we prolly need to make this + connect with BoundariesDataAccess cuz rn fireInteractor relies on data access object
 // BoundariesDataAccess instead of its interface
 // will let whoever is in charge of it complete implementation since it's not rly in my scope of the project anymore

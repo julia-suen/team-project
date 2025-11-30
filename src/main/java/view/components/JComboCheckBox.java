@@ -25,18 +25,18 @@ public class JComboCheckBox extends JComboBox<JCheckBox> {
 
     private void itemSelected() {
         if (getSelectedItem() instanceof JCheckBox) {
-            JCheckBox jcb = (JCheckBox) getSelectedItem();
+            final JCheckBox jcb = (JCheckBox) getSelectedItem();
             jcb.setSelected(!jcb.isSelected());
         }
     }
 
     // Helper method to retrieve all selected provinces
     public List<JCheckBox> getCheckedItems() {
-        List<JCheckBox> selected = new ArrayList<>();
+        final List<JCheckBox> selected = new ArrayList<>();
 
-        ComboBoxModel<JCheckBox> model = getModel();
+        final ComboBoxModel<JCheckBox> model = getModel();
         for (int i = 0; i < model.getSize(); i++) {
-            Object obj = model.getElementAt(i);
+            final Object obj = model.getElementAt(i);
             if (obj instanceof JCheckBox cb && cb.isSelected()) {
                 selected.add(cb);
             }
@@ -77,12 +77,14 @@ public class JComboCheckBox extends JComboBox<JCheckBox> {
                 // Show summary text
                 final int selectedCount = getCheckedItems().size();
 
-                JLabel label = new JLabel();
+                final JLabel label = new JLabel();
                 if (selectedCount == 0) {
                     label.setText("Select provinces...");
-                } else if (selectedCount == 1) {
+                }
+                else if (selectedCount == 1) {
                     label.setText(value.getText()); // only selected checkbox
-                } else {
+                }
+                else {
                     label.setText(selectedCount + " provinces selected");
                 }
                 return label;
