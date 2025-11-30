@@ -44,6 +44,7 @@ class SeverityInteractorTest {
 
         assertNotNull(presenter.outputData);
         assertNotNull(presenter.outputData.getFilteredFires());
+        assertEquals(1, presenter.outputData.getFilteredFires().size());
     }
 
     /**
@@ -61,6 +62,7 @@ class SeverityInteractorTest {
 
         assertNotNull(presenter.outputData);
         assertNotNull(presenter.outputData.getFilteredFires());
+        assertEquals(1, presenter.outputData.getFilteredFires().size());
     }
 
     /**
@@ -143,6 +145,7 @@ class SeverityInteractorTest {
 
         assertNotNull(presenter.outputData);
         assertFalse(presenter.outputData.getFilteredFires().isEmpty());
+        assertEquals(1, presenter.outputData.getFilteredFires().size());
     }
 
     /**
