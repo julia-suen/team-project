@@ -81,9 +81,6 @@ public class FireInteractor implements FireInputBoundary {
         catch (GetData.InvalidDataException ex) {
             firePresenter.prepareFailView("Error fetching data: " + ex.getMessage());
         }
-        catch (Exception error) {
-            firePresenter.prepareFailView("Unexpected error: " + error.getMessage());
-        }
     }
 
     private void processNationalOverview(LocalDate inputDate, int range,
@@ -102,22 +99,15 @@ public class FireInteractor implements FireInputBoundary {
             // Fetch data
             List<Coordinate> points = dataAccessInterface.getFireData(range, targetDateStr, WORLD_BOUNDS);
 
-            if (points == null) {
-                points = new ArrayList<>();
-            }
-
             points = filterPointsByProvince(points, "Canada");
 
             // Add to trend map (e.g., "Aug" -> 150)
             trendData.put(label, points.size());
 
-            // Accumulate fires for the map
-            if (!points.isEmpty()) {
-                final FireFactory fireFactory = new FireFactory(points);
-                final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
-                final List<Fire> monthFires = FireFactory.makeFireList(bundles);
-                allFires.addAll(monthFires);
-            }
+            final FireFactory fireFactory = new FireFactory(points);
+            final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
+            final List<Fire> monthFires = FireFactory.makeFireList(bundles);
+            allFires.addAll(monthFires);
         }
     }
 
@@ -194,9 +184,6 @@ public class FireInteractor implements FireInputBoundary {
      * @return true if the point is inside the region, false otherwise.
      */
     private boolean isPointInRegion(Coordinate point, List<List<GeoPosition>> boundaries) {
-        if (boundaries == null) {
-            return false;
-        }
 
         for (List<GeoPosition> polygon : boundaries) {
             // Use Path2D for polygon inclusion test
