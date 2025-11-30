@@ -147,7 +147,7 @@ class SeverityInteractorTest {
 
     /**
      * Creates a mock list of 3 fires, each of differing severity.
-     * @return a list containing a single high severity fire.
+     * @return a list containing 3 different severity fires.
      */
     private List<Fire> createTestFires() {
         final List<Fire> fires = new ArrayList<>();
