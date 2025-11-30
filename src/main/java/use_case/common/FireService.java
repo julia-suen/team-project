@@ -30,8 +30,8 @@ public class FireService {
         if (points == null || points.isEmpty()) {
             return new ArrayList<>();
         }
-        FireFactory fireFactory = new FireFactory(points);
-        List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
+        final FireFactory fireFactory = new FireFactory(points);
+        final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
         return FireFactory.makeFireList(bundles);
     }
 
@@ -71,7 +71,8 @@ public class FireService {
                 if (first) {
                     path.moveTo(gp.getLongitude(), gp.getLatitude());
                     first = false;
-                } else {
+                }
+                else {
                     path.lineTo(gp.getLongitude(), gp.getLatitude());
                 }
             }

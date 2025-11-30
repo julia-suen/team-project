@@ -14,12 +14,13 @@ import java.util.Map;
 
 public class LoadFiresInteractor implements LoadFiresInputBoundary {
 
+    private static final String LABEL_FORMAT = "MMM";
+
     private final LoadFiresFireDataAccess fireAccess;
     private final LoadFiresBoundaryDataAccess boundaryAccess;
     private final LoadFiresOutputBoundary presenter;
     private final FireService fireService;
 
-    private static final String LABEL_FORMAT = "MMM";
 
     public LoadFiresInteractor(LoadFiresFireDataAccess fireAccess,
                                LoadFiresBoundaryDataAccess boundaryAccess,
@@ -41,25 +42,27 @@ public class LoadFiresInteractor implements LoadFiresInputBoundary {
             }
 
             // Preprocessing
-            List<Fire> allFires = fireService.createFiresFromPoints(points);
+            final List<Fire> allFires = fireService.createFiresFromPoints(points);
 
             // Prepare Trend Label
-            LocalDate date = LocalDate.parse(inputData.getDate());
-            String label = date.format(DateTimeFormatter.ofPattern(LABEL_FORMAT));
-            Map<String, Integer> trendData = new LinkedHashMap<>();
+            final LocalDate date = LocalDate.parse(inputData.getDate());
+            final String label = date.format(DateTimeFormatter.ofPattern(LABEL_FORMAT));
+            final Map<String, Integer> trendData = new LinkedHashMap<>();
 
-            List<Fire> resultFires;
+            final List<Fire> resultFires;
 
             // Filter logic
-            String province = inputData.getProvince();
+            final String province = inputData.getProvince();
             if ("All".equalsIgnoreCase(province)) {
                 resultFires = allFires;
-            } else {
-                Region region = boundaryAccess.getRegion(province);
+            }
+            else {
+                final Region region = boundaryAccess.getRegion(province);
                 if (region == null) {
                     System.err.println("Warning: Boundary data for " + province + " not found.");
                     resultFires = new ArrayList<>();
-                } else {
+                }
+                else {
                     resultFires = fireService.filterFiresByRegion(allFires, region);
                 }
             }
@@ -71,10 +74,11 @@ public class LoadFiresInteractor implements LoadFiresInputBoundary {
             }
             trendData.put(label, hotspotCount);
 
-            LoadFiresOutputData output = new LoadFiresOutputData(resultFires, trendData);
+            final LoadFiresOutputData output = new LoadFiresOutputData(resultFires, trendData);
             presenter.prepareSuccessView(output);
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             presenter.prepareFailView("Error fetching data: " + e.getMessage());
         }
     }
