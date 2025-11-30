@@ -40,4 +40,16 @@ public class Fire {
     public List<Coordinate> getCoordinates() {
         return coordinates;
     }
+
+    public int getCoordinatesSize() {
+        return coordinates.size();
+    }
+
+    public String getDate(){
+        return center.getDate();
+    }
+
+    public double getFrp(){
+        return center.getFrp();
+    }
 }

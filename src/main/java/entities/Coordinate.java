@@ -55,4 +55,8 @@ public class Coordinate {
     public double getFrp() {
         return frp;
     }
+
+    public String getDate(){
+        return dateDayConfidence[0];
+    }
 }
