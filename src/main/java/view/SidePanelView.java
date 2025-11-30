@@ -61,6 +61,21 @@ public class SidePanelView extends JPanel {
 
     private final JComboBox<String> favouriteSelector;
 
+    private final String[] provinceOptions = {
+        "Alberta",
+        "BC",
+        "Manitoba",
+        "New Brunswick",
+        "Newfoundland & Labrador",
+        "Nova Scotia",
+        "Nunavut",
+        "NWT",
+        "Ontario",
+        "PEI",
+        "Quebec",
+        "Saskatchewan",
+        "Yukon"};
+
     private final DefaultComboBoxModel<String> favouriteModel;
 
     private final DatePicker datePicker;
@@ -220,6 +235,10 @@ public class SidePanelView extends JPanel {
         final JLabel favouritesLabel = new JLabel("Quick Access: ");
         favouritesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(favouritesLabel);
+
+        favouriteSelector.setMaximumSize(maxFieldSize);
+        favouriteSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
+        add(favouriteSelector);
 
         add(Box.createVerticalStrut(BOX_SPACE));
 
