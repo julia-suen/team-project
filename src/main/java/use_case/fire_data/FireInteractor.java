@@ -10,7 +10,7 @@ import entities.*;
 import org.jxmapviewer.viewer.GeoPosition;
 
 import data_access.BoundariesDataAccess;
-import data_access.GetData;
+import data_access.GetFireData;
 
 /**
  * Interactor for the Fire Data Use Case.
@@ -25,9 +25,10 @@ public class FireInteractor implements FireInputBoundary {
     private static final String LABEL_FORMAT = "MMM";
     // e.g., "Aug", "Sep"
     private static final String WORLD_BOUNDS = "-180,-90,180,90";
-    private final GetData dataAccessInterface;
+    private final GetFireData dataAccessInterface;
     private final FireOutputBoundary firePresenter;
     private final BoundariesDataAccess boundariesDataAccess;
+    // private final GetBoundariesData boundariesDataAccess;
 
     /**
      * Constructs a FireInteractor.
@@ -35,8 +36,9 @@ public class FireInteractor implements FireInputBoundary {
      * @param fireOutputBoundary the presenter
      * @param boundariesDataAccess the data access object for province boundaries
      */
-    public FireInteractor(GetData dataAccessInterface, FireOutputBoundary fireOutputBoundary,
+    public FireInteractor(GetFireData dataAccessInterface, FireOutputBoundary fireOutputBoundary,
                           BoundariesDataAccess boundariesDataAccess) {
+        // TODO: change instance attributes to match switch from DAO to DAI
         this.dataAccessInterface = dataAccessInterface;
         this.firePresenter = fireOutputBoundary;
         this.boundariesDataAccess = boundariesDataAccess;
@@ -78,17 +80,14 @@ public class FireInteractor implements FireInputBoundary {
             firePresenter.prepareSuccessView(fireOutputData);
 
         }
-        catch (GetData.InvalidDataException ex) {
+        catch (GetFireData.InvalidDataException ex) {
             firePresenter.prepareFailView("Error fetching data: " + ex.getMessage());
-        }
-        catch (Exception error) {
-            firePresenter.prepareFailView("Unexpected error: " + error.getMessage());
         }
     }
 
     private void processNationalOverview(LocalDate inputDate, int range,
                                          List<Fire> allFires, Map<String, Integer> trendData)
-            throws GetData.InvalidDataException {
+            throws GetFireData.InvalidDataException {
 
         // For National Overview, we fetch world data but FILTER for Canada using boundaries
         final Region canadaRegion = boundariesDataAccess.getRegion("Canada");
@@ -102,28 +101,21 @@ public class FireInteractor implements FireInputBoundary {
             // Fetch data
             List<Coordinate> points = dataAccessInterface.getFireData(range, targetDateStr, WORLD_BOUNDS);
 
-            if (points == null) {
-                points = new ArrayList<>();
-            }
-
             points = filterPointsByProvince(points, "Canada");
 
             // Add to trend map (e.g., "Aug" -> 150)
             trendData.put(label, points.size());
 
-            // Accumulate fires for the map
-            if (!points.isEmpty()) {
-                final FireFactory fireFactory = new FireFactory(points);
-                final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
-                final List<Fire> monthFires = FireFactory.makeFireList(bundles);
-                allFires.addAll(monthFires);
-            }
+            final FireFactory fireFactory = new FireFactory(points);
+            final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
+            final List<Fire> monthFires = FireFactory.makeFireList(bundles);
+            allFires.addAll(monthFires);
         }
     }
 
     private void processStandardView(String inputDateStr, LocalDate inputDate, int range,
                                      List<Fire> allFires, Map<String, Integer> trendData, String province)
-            throws GetData.InvalidDataException {
+            throws GetFireData.InvalidDataException {
 
         // Fetch data for the whole world
         List<Coordinate> points = dataAccessInterface.getFireData(range, inputDateStr);
@@ -194,9 +186,6 @@ public class FireInteractor implements FireInputBoundary {
      * @return true if the point is inside the region, false otherwise.
      */
     private boolean isPointInRegion(Coordinate point, List<List<GeoPosition>> boundaries) {
-        if (boundaries == null) {
-            return false;
-        }
 
         for (List<GeoPosition> polygon : boundaries) {
             // Use Path2D for polygon inclusion test

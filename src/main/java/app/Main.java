@@ -45,7 +45,8 @@ public class Main {
             // load severity use case presenter, interactor and controller
             final SeverityPresenter severityPresenter = new SeverityPresenter(fireViewModel);
             final SeverityInteractor severityInteractor = new SeverityInteractor(severityPresenter);
-            final SeverityController severityController = new SeverityController(severityInteractor, fireViewModel);
+            final SeverityController severityController = new SeverityController(severityInteractor);
+            fireViewModel.addPropertyChangeListener(severityController);
 
             final MapController mapController = new MapController(
                     mainFrame,
