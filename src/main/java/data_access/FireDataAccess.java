@@ -48,7 +48,7 @@ public class FireDataAccess implements GetFireData, LoadFiresFireDataAccess, Nat
      */
 
     @Override
-    public List<Coordinate> getFireData(int dateRange, String date) throws GetData.InvalidDataException {
+    public List<Coordinate> getFireData(int dateRange, String date) throws GetFireData.InvalidDataException {
         return getFireData(dateRange, date, REGION);
     }
 
