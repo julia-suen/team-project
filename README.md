@@ -22,4 +22,5 @@ The goal of this project is to create an interactive software that allows users 
 
 ### Working Demo
 - screenshots or animations demonstrating current functionality
+
 ![Wildfire Map of Canada](README_Screenshots/WorkingModelScreenshot.png)
