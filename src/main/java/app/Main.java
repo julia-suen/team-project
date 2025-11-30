@@ -10,9 +10,10 @@ import interface_adapter.fire_data.FirePresenter;
 import interface_adapter.fire_data.FireViewModel;
 import interface_adapter.severity_filter.SeverityController;
 import interface_adapter.severity_filter.SeverityPresenter;
+import use_case.common.FireService;
+import use_case.load_fires.LoadFiresInteractor;
+import use_case.national_overview.NationalOverviewInteractor;
 import use_case.severity_filter.SeverityInteractor;
-import interface_adapter.region.RegionRepository;
-import use_case.fire_data.FireInteractor;
 import view.MainFrame;
 
 import javax.swing.SwingUtilities;
@@ -27,7 +28,6 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
 
             // Initialize Shared Data Access
-            // Created once and shared so Interactor sees what Repo loads
             final BoundariesDataAccess boundariesAccess = new BoundariesDataAccess();
 
             final MainFrame mainFrame = new MainFrame(boundariesAccess);
@@ -36,11 +36,22 @@ public class Main {
 
             final FireFactory factory = new FireFactory(Collections.emptyList());
             final FireDataAccess fireDataAccess = new FireDataAccess(factory);
+            final FireService fireService = new FireService();
 
-            // load basic fire data presenter, interactor, controller
+            // Setup Presenter (handles both load fires and national overview)
             final FirePresenter firePresenter = new FirePresenter(fireViewModel, viewManagerModel);
-            final FireInteractor fireInteractor = new FireInteractor(fireDataAccess, firePresenter, boundariesAccess);
-            final FireController fireController = new FireController(fireInteractor);
+
+            // Setup Interactors
+            final LoadFiresInteractor loadFiresInteractor = new LoadFiresInteractor(
+                    fireDataAccess, boundariesAccess, firePresenter, fireService
+            );
+
+            final NationalOverviewInteractor nationalInteractor = new NationalOverviewInteractor(
+                    fireDataAccess, boundariesAccess, firePresenter, fireService
+            );
+
+            // Setup Controller
+            final FireController fireController = new FireController(loadFiresInteractor, nationalInteractor);
 
             // load severity use case presenter, interactor and controller
             final SeverityPresenter severityPresenter = new SeverityPresenter(fireViewModel);

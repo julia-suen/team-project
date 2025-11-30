@@ -9,8 +9,10 @@ import java.util.List;
 
 import entities.Coordinate;
 import entities.FireFactory;
+import use_case.load_fires.LoadFiresFireDataAccess;
+import use_case.national_overview.NationalOverviewFireDataAccess;
 
-public class FireDataAccess implements GetData {
+public class FireDataAccess implements GetData, LoadFiresFireDataAccess, NationalOverviewFireDataAccess {
 
     /**
      * DataAccess implementation that relies on the NRT VIIRS active fire API.
