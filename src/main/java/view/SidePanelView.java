@@ -49,6 +49,7 @@ public class SidePanelView extends JPanel {
     private final JButton medSeverityButton = new JButton("Medium");
     private final JButton highSeverityButton = new JButton("High");
     private final JButton addFavouriteButton = new JButton("+ Add Favourite");
+    private final JButton removeFavouritesButton = new JButton("- Clear Favourites");
 
     // Initialize province selector dynamically using the source of truth
     private final JComboBox<String> provinceSelector;
@@ -140,15 +141,40 @@ public class SidePanelView extends JPanel {
         return new JComboCheckBox(checkBoxItems);
     }
 
+    // Code if I intend to make favourites drop down instead of pop-up on click
+    /* private JComboCheckBox createFavouritesCheckbox() {
+        final List<JCheckBox> checkBoxList = new ArrayList<>();
+
+        final List<String> provinces = new ArrayList<>();
+        provinces.add("All");
+
+        // Fetch from source of truth
+        provinces.addAll(Arrays.asList(Province.ALL_PROVINCES));
+
+        // Sort alphabetically for better UX (skipping "All" at index 0)
+        Collections.sort(provinces.subList(1, provinces.size()));
+
+        for (String province: provinces) {
+            final JCheckBox provinceCheckBox = new JCheckBox(province);
+            provinceCheckBox.setSelected(false);
+
+            checkBoxList.add(provinceCheckBox);
+        }
+
+        final JCheckBox[] checkBoxItems = checkBoxList.toArray(new JCheckBox[0]);
+
+        return new JComboCheckBox(checkBoxItems);
+    } */
+
     private void addComponents(Dimension maxFieldSize) {
         // Province
         final JLabel provinceLabel = new JLabel("Province:");
         provinceLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(provinceLabel);
 
-        provinceSelector.setMaximumSize(maxFieldSize);
+        /* provinceSelector.setMaximumSize(maxFieldSize);
         provinceSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
-        add(provinceSelector);
+        add(provinceSelector); */
 
         provinceComboCheckBox.setMaximumSize(maxFieldSize);
         provinceComboCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -191,12 +217,16 @@ public class SidePanelView extends JPanel {
         add(Box.createVerticalStrut(SPACING_MEDIUM));
 
         // Favourites panel
-        final JLabel favouritesLabel = new JLabel("Favourites: ");
+        final JLabel favouritesLabel = new JLabel("Quick Access: ");
         favouritesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(favouritesLabel);
+
         add(Box.createVerticalStrut(BOX_SPACE));
 
-        add(Box.createVerticalStrut(SPACING_MEDIUM));
+        // Favourite Buttons
+        addFavouritesPanel();
+
+        // add(Box.createVerticalStrut(SPACING_MEDIUM));
 
         // Graph at the bottom
         add(new JLabel("Trend Analysis:"));
@@ -249,30 +279,24 @@ public class SidePanelView extends JPanel {
     }
 
     /**
-     * Adds favourites panel to UI
-     * @param maxFieldSize the maximum field size for components
+     * Adds favourites panel to UI.
+     * Currently missing dropdown
      */
-    private void addFavouritesPanel(Dimension maxFieldSize) {
+    private void addFavouritesPanel() {
         final JPanel favouritesPanel = new JPanel();
         favouritesPanel.setLayout(new BoxLayout(favouritesPanel, BoxLayout.Y_AXIS));
         favouritesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        //Adding Favourites Button
         addFavouriteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         addFavouriteButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+
+        removeFavouritesButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        removeFavouritesButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+
         favouritesPanel.add(addFavouriteButton);
-
         favouritesPanel.add(Box.createVerticalStrut(SPACING_SMALL));
-
-        // Favourite Dropdown Label
-        final JLabel favouriteDropdownLabel = new JLabel("Saved Favourites: ");
-        favouriteDropdownLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        favouritesPanel.add(favouriteDropdownLabel);
-
-        //Favourites Dropdown
-        favouriteSelector.setMaximumSize(maxFieldSize);
-        favouriteSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
-        favouritesPanel.add(favouriteSelector);
+        favouritesPanel.add(removeFavouritesButton);
+        favouritesPanel.add(Box.createVerticalStrut(SPACING_SMALL));
 
         add(favouritesPanel);
     }
@@ -326,6 +350,14 @@ public class SidePanelView extends JPanel {
         return highSeverityButton;
     }
 
+    public JButton getFavouritesButton() {
+        return addFavouriteButton;
+    }
+
+    public JButton getRemoveFavouritesButton() {
+        return removeFavouritesButton;
+    }
+
     public JComboBox<String> getProvinceSelector() {
         return provinceSelector;
     }
@@ -345,5 +377,7 @@ public class SidePanelView extends JPanel {
     public GraphPanel getGraphPanel() {
         return graphPanel;
     }
+
+    // Will need to add Favourites dropdown here.
 
 }
