@@ -1,15 +1,30 @@
 package use_case.marker;
 
 
+import entities.Fire;
+
 public class MarkerInteractor implements MarkerInputBoundary {
-    private final MarkerOutputBoundary markerOutputBoundary;
+    private final MarkerOutputBoundary markerPresenter;
 
     public MarkerInteractor(MarkerOutputBoundary markerOutputBoundary) {
-        this.markerOutputBoundary = markerOutputBoundary;
+        this.markerPresenter = markerOutputBoundary;
     }
 
     @Override
     public void execute(MarkerInputData markerInputData) {
-        // to be edited
+        try{
+            final Fire fire = markerInputData.getFire();
+            final double lat = fire.getLat();
+            final double lon = fire.getLon();
+            final int size = fire.getCoordinatesSize();
+            final String date = fire.getDate();
+            final double frp = fire.getFrp();
+            final MarkerOutputData markerOutputData = new MarkerOutputData(lat, lon, size, date, frp);
+            markerPresenter.prepareSuccessView(markerOutputData);
+        }catch(Exception e){
+            markerPresenter.prepareFailView("Unexpected error: " + e.getMessage());
+        }
+
+
     }
 }

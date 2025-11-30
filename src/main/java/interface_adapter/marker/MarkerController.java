@@ -13,8 +13,7 @@ public class MarkerController {
 
 
     public void execute(Fire fire) {
-        final MarkerInputData loginInputData = new MarkerInputData();
-
+        final MarkerInputData loginInputData = new MarkerInputData(fire);
         markerUseCaseInteractor.execute(loginInputData);
     }
 }

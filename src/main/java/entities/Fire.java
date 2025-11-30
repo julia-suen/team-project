@@ -52,4 +52,12 @@ public class Fire {
     public double getFrp(){
         return center.getFrp();
     }
+
+    public double getLat(){
+        return center.getLat();
+    }
+
+    public double getLon(){
+        return center.getLon();
+    }
 }
