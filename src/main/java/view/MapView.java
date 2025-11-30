@@ -52,7 +52,9 @@ public class MapView extends JPanel implements PropertyChangeListener {
     private final JLabel provinceLabel = new JLabel("Province: None");
     private final JXMapKit mapKit;
     private final transient Set<FireWaypoint> waypoints;
+    private final transient Set<FireWaypoint> markers;
     private final transient WaypointPainter<FireWaypoint> waypointPainter;
+    private final transient WaypointPainter<FireWaypoint> fireMarkerPainter;
     private final transient SelectRegionController selectRegionController;
     private final transient RegionBoundaryPainter regionBoundaryPainter;
 
@@ -61,11 +63,16 @@ public class MapView extends JPanel implements PropertyChangeListener {
      */
     public MapView(data_access.BoundariesDataAccess boundariesDataAccess) {
         this.waypoints = new HashSet<>();
+        this.markers = new HashSet<>();
         this.regionRepo = new RegionRepository(boundariesDataAccess);
 
         this.waypointPainter = new WaypointPainter<>();
         this.waypointPainter.setRenderer(new FireWaypointRenderer());
         this.waypointPainter.setWaypoints(this.waypoints);
+
+        this.fireMarkerPainter = new WaypointPainter<>();
+        this.fireMarkerPainter.setRenderer(new FireMarkerRenderer());
+        this.fireMarkerPainter.setWaypoints(this.markers);
 
         this.mapKit = new JXMapKit();
         final JXMapViewer map = this.mapKit.getMainMap();
@@ -122,6 +129,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
         final List<Painter<JXMapViewer>> painters = new ArrayList<>();
         painters.add(this.regionBoundaryPainter);
         painters.add(this.waypointPainter);
+        painters.add(this.fireMarkerPainter);
 
         final CompoundPainter<JXMapViewer> compoundPainter = new CompoundPainter<>(painters);
         map.setOverlayPainter(compoundPainter);
@@ -204,9 +212,11 @@ public class MapView extends JPanel implements PropertyChangeListener {
      * @param location The geographical location of the fire.
      * @param radius The radius of the fire marker.
      */
-    public void addFireMarker(final GeoPosition location, final double radius) {
-        this.waypoints.add(new FireWaypoint(location, radius));
+    public void addFireMarker(final GeoPosition location, final double radius, final Fire fire) {
+        this.waypoints.add(new FireWaypoint(location, radius, fire));
+        this.markers.add(new FireWaypoint(location, radius, fire));
         this.waypointPainter.setWaypoints(this.waypoints);
+        this.fireMarkerPainter.setWaypoints(this.markers);
         this.mapKit.getMainMap().repaint();
     }
 
@@ -231,7 +241,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
                         fire.getCoordinates().get(0).getLat(),
                         fire.getCoordinates().get(0).getLon()
                 );
-                this.addFireMarker(geo, fire.getRadius());
+                this.addFireMarker(geo, fire.getRadius(), fire);
             }
         }
     }
