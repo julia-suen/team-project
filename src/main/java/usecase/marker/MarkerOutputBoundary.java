@@ -1,4 +1,4 @@
-package use_case.marker;
+package usecase.marker;
 
 /**
  * The output boundary for the Login Use Case.

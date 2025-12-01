@@ -40,13 +40,12 @@ import org.jxmapviewer.painter.Painter;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.WaypointPainter;
-import use_case.marker.MarkerInputBoundary;
-import use_case.marker.MarkerInteractor;
-import use_case.marker.MarkerOutputBoundary;
-import use_case.select_region.CoordinateConverter;
-import use_case.select_region.SelectRegionInteractor;
-import usecase.select_region.CoordinateConverter;
+import usecase.marker.MarkerInputBoundary;
+import usecase.marker.MarkerInteractor;
+import usecase.marker.MarkerOutputBoundary;
+import interface_adapter.select_region.MapCoordinateConverter;
 import usecase.select_region.SelectRegionInteractor;
+import usecase.select_region.CoordinateConverter;
 
 /**
  * The main map view component for the application.

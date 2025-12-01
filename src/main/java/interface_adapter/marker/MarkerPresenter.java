@@ -1,7 +1,7 @@
 package interface_adapter.marker;
 
-import use_case.marker.MarkerOutputBoundary;
-import use_case.marker.MarkerOutputData;
+import usecase.marker.MarkerOutputBoundary;
+import usecase.marker.MarkerOutputData;
 
 public class MarkerPresenter implements MarkerOutputBoundary {
     private final MarkerViewModel markerViewModel;
