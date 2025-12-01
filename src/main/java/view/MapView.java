@@ -66,12 +66,14 @@ public class MapView extends JPanel implements PropertyChangeListener {
     private final transient SelectRegionController selectRegionController;
     private final transient RegionBoundaryPainter regionBoundaryPainter;
     private final transient MarkerController markerController;
+    private final transient MarkerViewModel markerViewModel;
+    private MarkerInfoPanel markerInfoPanel;
     private boolean firesDisplayed = false;
 
     /**
      * Constructs the MapView panel.
      */
-    public MapView(data_access.BoundariesDataAccess boundariesDataAccess) {
+    public MapView(data_access.BoundariesDataAccess boundariesDataAccess, MarkerViewModel markerViewModel) {
         this.waypoints = new HashSet<>();
         this.markers = new HashSet<>();
         this.regionRepo = new RegionRepository(boundariesDataAccess);
@@ -97,10 +99,15 @@ public class MapView extends JPanel implements PropertyChangeListener {
         this.selectRegionController = new SelectRegionController(selectRegionInteractor);
 
         // Build Marker Use Case
-        final MarkerViewModel markerViewModel = new MarkerViewModel();
+        this.markerViewModel = markerViewModel;
+        markerViewModel.addPropertyChangeListener(this);
         final MarkerOutputBoundary markerOutputBoundary = new MarkerPresenter(markerViewModel);
         final MarkerInputBoundary markerInteractor = new MarkerInteractor(markerOutputBoundary);
         this.markerController = new MarkerController(markerInteractor);
+
+        markerInfoPanel = new MarkerInfoPanel();
+        markerInfoPanel.setBounds(520, 20, 200, 90);
+        this.add(markerInfoPanel);
 
         this.regionBoundaryPainter = new RegionBoundaryPainter();
 
@@ -208,7 +215,10 @@ public class MapView extends JPanel implements PropertyChangeListener {
                     Fire fire = fireAtPoint(map, e.getX(), e.getY());
                     if (fire != null) {
                         markerController.execute(fire);
+                        markerInfoPanel.setVisible(true);
                         // System.out.println("Hovering fire: " + fire.getCenter().getLat() + fire.getCenter().getLon());
+                    }else{
+                        markerInfoPanel.setVisible(false);
                     }
                 }
             }
@@ -232,6 +242,10 @@ public class MapView extends JPanel implements PropertyChangeListener {
             this.provinceLabel.setText(SelectRegionViewModel.PROVINCE_LABEL + newProvince);
             final entities.Region selectedRegion = this.regionRepo.getRegion(newProvince);
             this.regionBoundaryPainter.setRegion(selectedRegion);
+            this.repaint();
+        }else if ("markerHover".equals(evt.getPropertyName())){
+            System.out.println("displaying details");
+            displayMarkerDetails();
             this.repaint();
         }
     }
@@ -288,5 +302,18 @@ public class MapView extends JPanel implements PropertyChangeListener {
             }
         }
         return null;
+    }
+
+    private void displayMarkerDetails() {
+        this.markerInfoPanel.update(
+                this.markerViewModel.getLat(),
+                this.markerViewModel.getLon(),
+                this.markerViewModel.getSize(),
+                this.markerViewModel.getDate(),
+                this.markerViewModel.getFrp()
+
+        );
+
+
     }
 }

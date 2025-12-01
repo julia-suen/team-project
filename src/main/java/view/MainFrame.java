@@ -1,6 +1,7 @@
 package view;
 
 import data_access.BoundariesDataAccess;
+import interface_adapter.marker.MarkerViewModel;
 
 import java.awt.BorderLayout;
 
@@ -22,7 +23,8 @@ public class MainFrame extends JFrame {
     public MainFrame(BoundariesDataAccess boundariesDataAccess) {
         super("Canada Wildfire Data Viewer");
 
-        mapView = new MapView(boundariesDataAccess);
+        MarkerViewModel markerViewModel = new MarkerViewModel();
+        mapView = new MapView(boundariesDataAccess, markerViewModel);
         sidePanelView = new SidePanelView();
 
         setLayout(new BorderLayout());
