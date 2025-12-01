@@ -1,8 +1,8 @@
 package interface_adapter.favourites;
 
-import use_case.favourites.FavouritesInputData;
-import use_case.favourites.FavouritesInputBoundary;
-import use_case.favourites.FavouritesAction;
+import usecase.favourites.FavouritesInputData;
+import usecase.favourites.FavouritesInputBoundary;
+import usecase.favourites.FavouritesAction;
 
 import javax.swing.*;
 

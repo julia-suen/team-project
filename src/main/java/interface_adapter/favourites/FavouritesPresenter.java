@@ -1,7 +1,7 @@
 package interface_adapter.favourites;
 
-import use_case.favourites.FavouritesOutputBoundary;
-import use_case.favourites.FavouritesOutputData;
+import usecase.favourites.FavouritesOutputBoundary;
+import usecase.favourites.FavouritesOutputData;
 
 /**
  * Updates FavouritesViewModel when Favourites change.
