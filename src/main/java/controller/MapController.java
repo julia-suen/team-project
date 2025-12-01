@@ -190,7 +190,7 @@ public class MapController implements PropertyChangeListener {
         ComboBoxModel<JCheckBox> model = provinceCheckBox.getModel();
         for (int i = 0; i < model.getSize(); i++) {
             JCheckBox checkBox = model.getElementAt(i);
-            if (checkBox.getText().equals(provinceName)) {
+            if (checkBox.getText().equalsIgnoreCase(provinceName)) {
                 checkBox.setSelected(true);
                 break;
             }
@@ -204,5 +204,6 @@ public class MapController implements PropertyChangeListener {
         mainFrame.getSidePanelView().getResetButton().setEnabled(enabled);
         mainFrame.getSidePanelView().getMedSeverityButton().setEnabled(enabled);
         mainFrame.getSidePanelView().getHighSeverityButton().setEnabled(enabled);
+        mainFrame.getSidePanelView().getFavouritesButton().setEnabled(enabled);
     }
 }

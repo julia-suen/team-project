@@ -34,7 +34,6 @@ public class FavouritesInteractor implements FavouritesInputBoundary {
     }
 
     private void handleAdd(String province) {
-        System.out.println("DEBUG: handleAdd called with province: " + province);
         if (province == null) {
             return;
         }
@@ -42,12 +41,9 @@ public class FavouritesInteractor implements FavouritesInputBoundary {
             favouritesPresenter.prepareFailureView("Province already added!");
             return;
         }
-        System.out.println("DEBUG: Adding province to favourites");
         favourites.add(province);
-        System.out.println("DEBUG: Current list of favourites : " + favourites);
         final FavouritesOutputData outputData = new FavouritesOutputData(new ArrayList<>(favourites));
         favouritesPresenter.prepareSuccessView(outputData);
-        System.out.println("DEBUG: Calling prepareSuccessView");
     }
 
     private void handleClear() {
