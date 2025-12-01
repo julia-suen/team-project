@@ -17,6 +17,7 @@ import interface_adapter.fire_data.FireState;
 import interface_adapter.fire_data.FireViewModel;
 import interface_adapter.severity_filter.SeverityController;
 import view.MainFrame;
+import view.components.JComboCheckBox;
 
 public class MapController implements PropertyChangeListener {
 
@@ -76,6 +77,14 @@ public class MapController implements PropertyChangeListener {
         // Clear Favourites
         mainFrame.getSidePanelView().getRemoveFavouritesButton().addActionListener(evt ->
                 favouritesController.clearFavourites());
+
+        // Select Favourite
+        mainFrame.getSidePanelView().getFavouriteSelector().addActionListener(evt -> {
+            String selected = (String) mainFrame.getSidePanelView().getFavouriteSelector().getSelectedItem();
+            if (selected != null) {
+                updateProvinceSelection(selected);
+            }
+        });
     }
 
     private void loadFires(boolean isNational) {
@@ -142,12 +151,8 @@ public class MapController implements PropertyChangeListener {
             }
             else if (FavouritesViewModel.FAVOURITES_UPDATED.equals(evt.getPropertyName())) {
 
-                System.out.println("DEBUG MapController : FAVOURITES_UPDATED detected");
                 // Update the favourites dropdown
-
                 final FavouritesState favouritesState = favouritesViewModel.getState();
-
-                System.out.println("DEBUG MapController : FavouritesState received " + favouritesState.getFavourites());
 
                 updateFavouritesDropdown(favouritesState);
 
@@ -176,7 +181,24 @@ public class MapController implements PropertyChangeListener {
         }
     }
 
-    private void toggleButtons(Boolean enabled) {
+    private void updateProvinceSelection(String provinceName) {
+        JComboCheckBox provinceCheckBox = mainFrame.getSidePanelView().getProvinceComboCheckBox();
+        List<JCheckBox> checkedItems = provinceCheckBox.getCheckedItems();
+        for (JCheckBox checkBox : checkedItems) {
+            checkBox.setSelected(false);
+        }
+        ComboBoxModel<JCheckBox> model = provinceCheckBox.getModel();
+        for (int i = 0; i < model.getSize(); i++) {
+            JCheckBox checkBox = model.getElementAt(i);
+            if (checkBox.getText().equals(provinceName)) {
+                checkBox.setSelected(true);
+                break;
+            }
+            provinceCheckBox.repaint();
+        }
+    }
+
+    private void toggleButtons (Boolean enabled) {
         mainFrame.getSidePanelView().getLoadFiresButton().setEnabled(enabled);
         mainFrame.getSidePanelView().getNationalButton().setEnabled(enabled);
         mainFrame.getSidePanelView().getResetButton().setEnabled(enabled);
