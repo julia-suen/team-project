@@ -8,11 +8,13 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FirePresenter;
 import interface_adapter.fire_data.FireViewModel;
+import interface_adapter.region.RegionRepository;
 import interface_adapter.severity_filter.SeverityController;
 import interface_adapter.severity_filter.SeverityPresenter;
-import use_case.severity_filter.SeverityInteractor;
-import interface_adapter.region.RegionRepository;
-import use_case.fire_data.FireInteractor;
+import usecase.common.FireService;
+import usecase.load_fires.LoadFiresInteractor;
+import usecase.national_overview.NationalOverviewInteractor;
+import usecase.severity_filter.SeverityInteractor;
 import view.MainFrame;
 
 import javax.swing.SwingUtilities;
@@ -21,32 +23,47 @@ import java.util.Collections;
 /**
  * Initialize the GUI for the wildfire trend viewer.
  */
-
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
-            // Initialize Shared Data Access
-            // Created once and shared so Interactor sees what Repo loads
+            // Initialize Data Access (Frameworks/Drivers)
             final BoundariesDataAccess boundariesAccess = new BoundariesDataAccess();
-
-            final MainFrame mainFrame = new MainFrame(boundariesAccess);
-            final FireViewModel fireViewModel = new FireViewModel();
-            final ViewManagerModel viewManagerModel = new ViewManagerModel();
-
             final FireFactory factory = new FireFactory(Collections.emptyList());
             final FireDataAccess fireDataAccess = new FireDataAccess(factory);
 
-            // load basic fire data presenter, interactor, controller
+            // Initialize Interface Adapters & Services
+            final RegionRepository regionRepository = new RegionRepository(boundariesAccess);
+            final FireService fireService = new FireService();
+
+            // Initialize ViewModels
+            final FireViewModel fireViewModel = new FireViewModel();
+            final ViewManagerModel viewManagerModel = new ViewManagerModel();
+
+            // Initialize Presenters
             final FirePresenter firePresenter = new FirePresenter(fireViewModel, viewManagerModel);
-            final FireInteractor fireInteractor = new FireInteractor(fireDataAccess, firePresenter, boundariesAccess);
-            final FireController fireController = new FireController(fireInteractor);
-
-            // load severity use case presenter, interactor and controller
             final SeverityPresenter severityPresenter = new SeverityPresenter(fireViewModel);
-            final SeverityInteractor severityInteractor = new SeverityInteractor(severityPresenter);
-            final SeverityController severityController = new SeverityController(severityInteractor, fireViewModel);
 
+            // Initialize Interactors (Use Cases)
+            final LoadFiresInteractor loadFiresInteractor = new LoadFiresInteractor(
+                    fireDataAccess, boundariesAccess, firePresenter, fireService
+            );
+
+            final NationalOverviewInteractor nationalInteractor = new NationalOverviewInteractor(
+                    fireDataAccess, boundariesAccess, firePresenter, fireService
+            );
+
+            final SeverityInteractor severityInteractor = new SeverityInteractor(severityPresenter);
+
+            // Initialize Controllers
+            final FireController fireController = new FireController(loadFiresInteractor, nationalInteractor);
+            final SeverityController severityController = new SeverityController(severityInteractor);
+            fireViewModel.addPropertyChangeListener(severityController);
+
+            // Initialize View
+            final MainFrame mainFrame = new MainFrame(regionRepository);
+
+            // Initialize Mediator/View Logic
             final MapController mapController = new MapController(
                     mainFrame,
                     fireController,

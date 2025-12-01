@@ -1,4 +1,4 @@
-package use_case.select_region;
+package usecase.select_region;
 
 import java.awt.geom.Point2D;
 import org.jxmapviewer.viewer.GeoPosition;

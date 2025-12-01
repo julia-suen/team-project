@@ -9,8 +9,10 @@ import java.util.List;
 
 import entities.Coordinate;
 import entities.FireFactory;
+import usecase.load_fires.LoadFiresFireDataAccess;
+import usecase.national_overview.NationalOverviewFireDataAccess;
 
-public class FireDataAccess implements GetData {
+public class FireDataAccess implements GetFireData, LoadFiresFireDataAccess, NationalOverviewFireDataAccess {
 
     /**
      * DataAccess implementation that relies on the NRT VIIRS active fire API.
@@ -31,10 +33,7 @@ public class FireDataAccess implements GetData {
 
     private static final int API_THRESHOLD = 10;
 
-    private final FireFactory fireFactory;
-
     public FireDataAccess(FireFactory fireFactory) {
-        this.fireFactory = fireFactory;
     }
 
     /**
@@ -46,7 +45,7 @@ public class FireDataAccess implements GetData {
      */
 
     @Override
-    public List<Coordinate> getFireData(int dateRange, String date) throws GetData.InvalidDataException {
+    public List<Coordinate> getFireData(int dateRange, String date) throws GetFireData.InvalidDataException {
         return getFireData(dateRange, date, REGION);
     }
 
@@ -85,7 +84,7 @@ public class FireDataAccess implements GetData {
         }
 
         catch (Exception exception) {
-            throw new GetData.InvalidDataException();
+            throw new GetFireData.InvalidDataException();
         }
         return dataPoints;
     }

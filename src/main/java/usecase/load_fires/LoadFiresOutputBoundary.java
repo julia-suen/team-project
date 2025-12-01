@@ -1,0 +1,20 @@
+package usecase.load_fires;
+
+/**
+ * Output boundary for the "Load Fires" use case.
+ * Defines the methods required to present success or failure to the view.
+ */
+public interface LoadFiresOutputBoundary {
+
+    /**
+     * Prepares the success view with the processed fire data.
+     * @param outputData the output data containing the list of fires and trends
+     */
+    void prepareSuccessView(LoadFiresOutputData outputData);
+
+    /**
+     * Prepares the failure view with an error message.
+     * @param errorMessage the description of the error
+     */
+    void prepareFailView(String errorMessage);
+}

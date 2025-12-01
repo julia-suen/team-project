@@ -2,44 +2,44 @@ package interface_adapter.fire_data;
 
 import javax.swing.SwingWorker;
 
-import data_access.GetData;
-import use_case.fire_data.FireInputBoundary;
-import use_case.fire_data.FireInputData;
+import usecase.load_fires.LoadFiresInputBoundary;
+import usecase.load_fires.LoadFiresInputData;
+import usecase.national_overview.NationalOverviewInputBoundary;
+import usecase.national_overview.NationalOverviewInputData;
 
 /**
- * Controller for the fire analysis use case.
+ * Controller for fire analysis use cases.
+ * Directs input to either the LoadFires or NationalOverview interactor.
  */
 public class FireController {
-    private final FireInputBoundary fireInteractor;
+    private final LoadFiresInputBoundary loadFiresInteractor;
+    private final NationalOverviewInputBoundary nationalOverviewInteractor;
 
-    /**
-     * Constructs a FireController.
-     * @param fireInteractor the interactor to use
-     */
-    public FireController(FireInputBoundary fireInteractor) {
-        this.fireInteractor = fireInteractor;
+    public FireController(LoadFiresInputBoundary loadFiresInteractor,
+                          NationalOverviewInputBoundary nationalOverviewInteractor) {
+        this.loadFiresInteractor = loadFiresInteractor;
+        this.nationalOverviewInteractor = nationalOverviewInteractor;
     }
 
     /**
      * Executes the Wildfire analysis use case.
-     *
-     * @param province       the province chosen
-     * @param date           the given date
-     * @param dateRange      the day range requested
-     * @param isNational     whether to fetch national overview data
+     * @param province   the province chosen
+     * @param date       the given date
+     * @param dateRange  the day range requested
+     * @param isNational whether to fetch national overview data
      */
-
     public void execute(String province, String date, int dateRange, boolean isNational) {
-        // Run on background thread to prevent UI freezing during multiple API calls
+        // Run on background thread
         final SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
-                final FireInputData inputData = new FireInputData(province, date, dateRange, isNational);
-                try {
-                    fireInteractor.execute(inputData);
+                if (isNational) {
+                    final NationalOverviewInputData inputData = new NationalOverviewInputData(date, dateRange);
+                    nationalOverviewInteractor.execute(inputData);
                 }
-                catch (GetData.InvalidDataException ex) {
-                    ex.printStackTrace();
+                else {
+                    final LoadFiresInputData inputData = new LoadFiresInputData(province, date, dateRange);
+                    loadFiresInteractor.execute(inputData);
                 }
                 return null;
             }

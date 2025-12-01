@@ -45,11 +45,11 @@ import use_case.marker.MarkerInteractor;
 import use_case.marker.MarkerOutputBoundary;
 import use_case.select_region.CoordinateConverter;
 import use_case.select_region.SelectRegionInteractor;
+import usecase.select_region.CoordinateConverter;
+import usecase.select_region.SelectRegionInteractor;
 
 /**
  * The main map view component for the application.
- * Handles rendering the map, fire data, and region boundaries,
- * as well as user interactions like panning, zooming, and selecting provinces.
  */
 public class MapView extends JPanel implements PropertyChangeListener {
 
@@ -72,11 +72,14 @@ public class MapView extends JPanel implements PropertyChangeListener {
 
     /**
      * Constructs the MapView panel.
+     * @param regionRepository The repository containing loaded region data.
      */
-    public MapView(data_access.BoundariesDataAccess boundariesDataAccess, MarkerViewModel markerViewModel) {
+    public MapView(RegionRepository regionRepository) {
         this.waypoints = new HashSet<>();
         this.markers = new HashSet<>();
-        this.regionRepo = new RegionRepository(boundariesDataAccess);
+      
+        // Decoupling: Use the injected repository instead of creating a new one
+        this.regionRepo = regionRepository;
 
         this.waypointPainter = new WaypointPainter<>();
         this.waypointPainter.setRenderer(new FireWaypointRenderer());
@@ -253,17 +256,14 @@ public class MapView extends JPanel implements PropertyChangeListener {
      * @param location The geographical location of the fire.
      * @param radius The radius of the fire marker.
      */
-    public void addFireMarker(final GeoPosition location, final double radius, final Fire fire) {
-        this.waypoints.add(new FireWaypoint(location, radius, fire));
-        this.markers.add(new FireWaypoint(location, radius, fire));
+    public void addFireMarker(final GeoPosition location, final double radius) {
+        this.waypoints.add(new FireWaypoint(location, radius));
+        this.markers.add(new FireWaypoint(location, radius));
         this.waypointPainter.setWaypoints(this.waypoints);
         this.fireMarkerPainter.setWaypoints(this.markers);
         this.mapKit.getMainMap().repaint();
     }
 
-    /**
-     * Clears all fire markers from the map.
-     */
     public void clearFires() {
         this.waypoints.clear();
         this.waypointPainter.setWaypoints(this.waypoints);
@@ -271,10 +271,6 @@ public class MapView extends JPanel implements PropertyChangeListener {
         this.firesDisplayed = false;
     }
 
-    /**
-     * Displays a list of fires on the map, clearing any previous fires.
-     * @param fires A list of {@link Fire} objects to display.
-     */
     public void displayFires(final List<Fire> fires) {
         this.clearFires();
         for (final Fire fire : fires) {

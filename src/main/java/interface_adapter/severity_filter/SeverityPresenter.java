@@ -2,8 +2,8 @@ package interface_adapter.severity_filter;
 
 import interface_adapter.fire_data.FireState;
 import interface_adapter.fire_data.FireViewModel;
-import use_case.severity_filter.SeverityOutputBoundary;
-import use_case.severity_filter.SeverityOutputData;
+import usecase.severity_filter.SeverityOutputBoundary;
+import usecase.severity_filter.SeverityOutputData;
 
 /**
  * The presenter for the fire severity use case, updates displayed fires.
@@ -20,7 +20,7 @@ public class SeverityPresenter implements SeverityOutputBoundary {
     @Override
     public void prepareSuccessView(SeverityOutputData outputData) {
         final FireState state = fireViewModel.getState();
-        state.setDisplayedFires(outputData.getFilteredFires());
+        state.setDisplayedFires(outputData.filteredFires());
 
         state.setError(null);
         fireViewModel.setState(state);
