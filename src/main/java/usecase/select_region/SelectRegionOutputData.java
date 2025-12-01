@@ -1,4 +1,4 @@
-package use_case.select_region;
+package usecase.select_region;
 
 /**
  * A data class to hold the output of the SelectRegion use case,

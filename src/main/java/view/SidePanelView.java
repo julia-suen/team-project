@@ -188,9 +188,9 @@ public class SidePanelView extends JPanel {
         provinceLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(provinceLabel);
 
-        /* provinceSelector.setMaximumSize(maxFieldSize);
+        provinceSelector.setMaximumSize(maxFieldSize);
         provinceSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
-        add(provinceSelector); */
+        add(provinceSelector);
 
         provinceComboCheckBox.setMaximumSize(maxFieldSize);
         provinceComboCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);

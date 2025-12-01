@@ -1,4 +1,4 @@
-package use_case.severity_filter;
+package usecase.severity_filter;
 
 /**
  * The fire data analysis input interface which specifies the general format expected for user input data.
