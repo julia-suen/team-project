@@ -58,6 +58,9 @@ public class BoundariesDataAccess {
      * @return The cached {@link Region}, or null if not found.
      */
     public Region getRegion(final String provinceName) {
+        System.out.println("Province to Region Map content: " + provincesToRegionMap.toString());
+        System.out.println("Province to fetch: " + provinceName);
+        System.out.println("Result: " + provincesToRegionMap.get(provinceName).getBoundary());
         return this.provincesToRegionMap.get(provinceName);
     }
 

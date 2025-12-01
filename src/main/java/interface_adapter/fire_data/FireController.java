@@ -1,5 +1,7 @@
 package interface_adapter.fire_data;
 
+import java.util.List;
+
 import javax.swing.SwingWorker;
 
 import data_access.GetFireData;
@@ -34,7 +36,7 @@ public class FireController {
         final SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
-                final FireInputData inputData = new FireInputData(province, date, dateRange, isNational);
+                final FireInputData inputData = new FireInputData(List.of(province), date, dateRange, isNational);
                 try {
                     fireInteractor.execute(inputData);
                 }

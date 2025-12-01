@@ -30,7 +30,7 @@ class FireInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final FireInteractor interactor = new FireInteractor(dataAccess, presenter, boundariesAccess);
-        final FireInputData inputData = new FireInputData("All", "2025-11-20", 1, false);
+        final FireInputData inputData = new FireInputData(List.of("ALL"), "2025-11-20", 1, false);
 
         interactor.execute(inputData);
 
@@ -53,7 +53,7 @@ class FireInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final FireInteractor interactor = new FireInteractor(dataAccess, presenter, boundariesAccess);
-        final FireInputData inputData = new FireInputData("Ontario", "2025-11-20",
+        final FireInputData inputData = new FireInputData(List.of("Ontario"), "2025-11-20",
                 1, true);
 
         interactor.execute(inputData);
@@ -79,7 +79,7 @@ class FireInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final FireInteractor interactor = new FireInteractor(dataAccess, presenter, boundariesAccess);
-        final FireInputData inputData = new FireInputData("Ontario", "2025-11-20",
+        final FireInputData inputData = new FireInputData(List.of("Ontario"), "2025-11-20",
                 1, false);
 
         interactor.execute(inputData);
@@ -97,7 +97,7 @@ class FireInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final FireInteractor interactor = new FireInteractor(dataAccess, presenter, boundariesAccess);
-        final FireInputData inputData = new FireInputData("All", "",
+        final FireInputData inputData = new FireInputData(List.of("All"), "",
                 1, false);
 
         interactor.execute(inputData);
@@ -116,7 +116,7 @@ class FireInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final FireInteractor interactor = new FireInteractor(dataAccess, presenter, boundariesAccess);
-        final FireInputData inputData = new FireInputData("All", null,
+        final FireInputData inputData = new FireInputData(List.of("All"), null,
                 1, false);
 
         interactor.execute(inputData);
@@ -134,7 +134,7 @@ class FireInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final FireInteractor interactor = new FireInteractor(dataAccess, presenter, boundariesAccess);
-        final FireInputData inputData = new FireInputData("All", "2030-11-22",
+        final FireInputData inputData = new FireInputData(List.of("All"), "2030-11-22",
                 1, false);
 
         interactor.execute(inputData);
@@ -143,8 +143,8 @@ class FireInteractorTest {
     }
 
     /**
-     * Tests that making a call to the FIRMS api for a date range greater than allowed (10 day period)
-     * runs without error and returns fires for a 10 day period instead.
+     * Tests that making a call to the FIRMS api for a date range greater than allowed (10-day period)
+     * runs without error and returns fires for a 10-day period instead.
      */
     @Test
     void testInvalidHighDayRange() {
@@ -153,7 +153,7 @@ class FireInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final FireInteractor interactor = new FireInteractor(dataAccess, presenter, boundariesAccess);
-        final FireInputData inputData = new FireInputData("All", "2025-11-20",
+        final FireInputData inputData = new FireInputData(List.of("All"), "2025-11-20",
                 15, false);
 
         interactor.execute(inputData);
@@ -163,7 +163,7 @@ class FireInteractorTest {
 
     /**
      * Tests that making a call to the FIRMS api for a date range smaller than allowed (less than 1 day)
-     * runs without error and returns fires for a 1 day period (the selected date) instead.
+     * runs without error and returns fires for a 1-day period (the selected date) instead.
      */
     @Test
     void testInvalidLowDayRange() {
@@ -172,7 +172,7 @@ class FireInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final FireInteractor interactor = new FireInteractor(dataAccess, presenter, boundariesAccess);
-        final FireInputData inputData = new FireInputData("All", "2025-11-20",
+        final FireInputData inputData = new FireInputData(List.of("All"), "2025-11-20",
                 0, false);
 
         interactor.execute(inputData);
@@ -191,7 +191,7 @@ class FireInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final FireInteractor interactor = new FireInteractor(dataAccess, presenter, boundariesAccess);
-        final FireInputData inputData = new FireInputData("All", "2025-11-20",
+        final FireInputData inputData = new FireInputData(List.of("All"), "2025-11-20",
                 1, false);
 
         interactor.execute(inputData);
@@ -210,7 +210,7 @@ class FireInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final FireInteractor interactor = new FireInteractor(dataAccess, presenter, boundariesAccess);
-        final FireInputData inputData = new FireInputData("All", "2025-11-20",
+        final FireInputData inputData = new FireInputData(List.of("All"), "2025-11-20",
                 1, false);
 
         interactor.execute(inputData);
@@ -233,7 +233,7 @@ class FireInteractorTest {
         boundariesAccess.returnNull = true;
 
         final FireInteractor interactor = new FireInteractor(dataAccess, presenter, boundariesAccess);
-        final FireInputData inputData = new FireInputData("Ontario", "2025-11-20",
+        final FireInputData inputData = new FireInputData(List.of("Ontario"), "2025-11-20",
                 1, false);
 
         interactor.execute(inputData);

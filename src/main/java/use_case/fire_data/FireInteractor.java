@@ -6,15 +6,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import entities.*;
+import kotlin.Pair;
 
 import org.jxmapviewer.viewer.GeoPosition;
 
 import data_access.BoundariesDataAccess;
 import data_access.GetFireData;
+import data_access.GetFireData.InvalidDataException;
 
 /**
  * Interactor for the Fire Data Use Case.
- * Orchestrates data fetching, aggregation, filtering by province, and preparation for the presenter.
+ * Orchestrates data fetching, aggregation, filtering by province, and
+ * preparation for the presenter.
  */
 public class FireInteractor implements FireInputBoundary {
 
@@ -32,8 +35,9 @@ public class FireInteractor implements FireInputBoundary {
 
     /**
      * Constructs a FireInteractor.
-     * @param dataAccessInterface the data access object for fire data
-     * @param fireOutputBoundary the presenter
+     *
+     * @param dataAccessInterface  the data access object for fire data
+     * @param fireOutputBoundary   the presenter
      * @param boundariesDataAccess the data access object for province boundaries
      */
     public FireInteractor(GetFireData dataAccessInterface, FireOutputBoundary fireOutputBoundary,
@@ -66,21 +70,18 @@ public class FireInteractor implements FireInputBoundary {
             }
 
             // Retrieve the selected province
-            String province = fireInputData.getProvince();
+            String province = fireInputData.getProvinces().get(0);
 
             if (fireInputData.isNationalOverview()) {
                 processNationalOverview(inputDate, range, allFires, trendData);
 
-            }
-            else {
+            } else {
                 processStandardView(inputDateStr, inputDate, range, allFires, trendData, province);
             }
 
             final FireOutputData fireOutputData = new FireOutputData(allFires, trendData);
             firePresenter.prepareSuccessView(fireOutputData);
-
-        }
-        catch (GetFireData.InvalidDataException ex) {
+        } catch (GetFireData.InvalidDataException ex) {
             firePresenter.prepareFailView("Error fetching data: " + ex.getMessage());
         }
     }
@@ -89,7 +90,8 @@ public class FireInteractor implements FireInputBoundary {
                                          List<Fire> allFires, Map<String, Integer> trendData)
             throws GetFireData.InvalidDataException {
 
-        // For National Overview, we fetch world data but FILTER for Canada using boundaries
+        // For National Overview, we fetch world data but FILTER for Canada using
+        // boundaries
         final Region canadaRegion = boundariesDataAccess.getRegion("Canada");
 
         // Loop backwards (e.g. Month -2, Month -1, Current Month)
@@ -138,15 +140,80 @@ public class FireInteractor implements FireInputBoundary {
             final List<Fire> monthFires = FireFactory.makeFireList(bundles);
             allFires.addAll(monthFires);
             trendData.put(label, points.size());
-        }
-        else {
+        } else {
             trendData.put(label, 0);
         }
     }
 
+    private MultiRegionFireStats processMultiRegionFires(LocalDate inputDate,
+                                                         int range, List<String> provinces) {
+
+        Map<String, List<Pair<String, Integer>>> stats = new HashMap<>();
+        MultiRegionFireStats trendData = new MultiRegionFireStats(stats);
+
+        if (provinces.isEmpty()) {
+            return trendData;
+        }
+
+        try {
+            // Initialize empty lists for each province
+            for (String province : provinces) {
+                trendData.put(province, new ArrayList<>());
+            }
+
+            final LocalDate minDate = LocalDate.of(2025, 8, 1);
+            final LocalDate twoMonthsAgo = inputDate.minusMonths(2);
+            final LocalDate oneMonthAgo = inputDate.minusMonths(1);
+
+            List<LocalDate> startDates = new ArrayList<>();
+
+            if (!twoMonthsAgo.isBefore(minDate)) {
+                startDates.add(twoMonthsAgo);
+            } else {
+                startDates.add(minDate);
+            }
+
+            if (!oneMonthAgo.isBefore(minDate)) {
+                startDates.add(oneMonthAgo);
+            }
+
+            // Always include the selected input date
+            startDates.add(inputDate);
+
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern(DATE_FORMAT);
+
+            for (LocalDate startDate : startDates) {
+                // Fetch data for this date range
+                List<Coordinate> points = dataAccessInterface.getFireData(range, fmt.format(startDate));
+
+                if (!points.isEmpty()) {
+                    LocalDate endDate = startDate.plusDays(range);
+                    String label = fmt.format(startDate) + " to " + fmt.format(endDate);
+
+                    System.out.println("Number of datapoints fetched for analysis: " + points.size() + " for the date range " + label);
+
+                    for (String province : provinces) {
+                        // Filter points for this province
+                        List<Coordinate> firesInProvince = filterPointsByProvince(points, province);
+
+                        // Add to that province's list in trendData
+                        trendData.getData().get(province).add(new Pair<>(label, firesInProvince.size()));
+                    }
+                }
+            }
+
+            return trendData;
+
+        } catch (GetFireData.InvalidDataException ex) {
+            return trendData;
+        }
+    }
+
     /**
-     * Filters a list of coordinates to include only those within the specified province.
-     * @param points The raw list of fire coordinates.
+     * Filters a list of coordinates to include only those within the specified
+     * province.
+     *
+     * @param points       The raw list of fire coordinates.
      * @param provinceName The name of the province to filter by.
      * @return A new list containing only points inside the province.
      */
@@ -165,7 +232,8 @@ public class FireInteractor implements FireInputBoundary {
 
     /**
      * Generic helper to filter points by a specific boundary list.
-     * @param points the points to filter
+     *
+     * @param points     the points to filter
      * @param boundaries the boundary to use to filter the points given
      * @return filtered coordinates within the boundary
      */
@@ -180,8 +248,10 @@ public class FireInteractor implements FireInputBoundary {
     }
 
     /**
-     * Checks if a specific coordinate lies within any of the polygons defining a region.
-     * @param point The fire coordinate to check.
+     * Checks if a specific coordinate lies within any of the polygons defining a
+     * region.
+     *
+     * @param point      The fire coordinate to check.
      * @param boundaries The list of polygons defining the region.
      * @return true if the point is inside the region, false otherwise.
      */
@@ -195,8 +265,7 @@ public class FireInteractor implements FireInputBoundary {
                 if (first) {
                     path.moveTo(gp.getLongitude(), gp.getLatitude());
                     first = false;
-                }
-                else {
+                } else {
                     path.lineTo(gp.getLongitude(), gp.getLatitude());
                 }
             }
@@ -208,5 +277,28 @@ public class FireInteractor implements FireInputBoundary {
             }
         }
         return false;
+    }
+
+    @Override
+    public MultiRegionFireStats fetchStats(FireInputData fireInputData) {
+        String inputDateStr = fireInputData.getDate();
+        if (inputDateStr == null || inputDateStr.isEmpty()) {
+            inputDateStr = LocalDate.now().toString();
+        }
+        final LocalDate inputDate = LocalDate.parse(inputDateStr, DateTimeFormatter.ofPattern(DATE_FORMAT));
+
+        int range = fireInputData.getDateRange();
+        if (range > API_MAX_DAY_RANGE) {
+            range = API_MAX_DAY_RANGE;
+        }
+        if (range < API_MIN_DAY_RANGE) {
+            range = API_MIN_DAY_RANGE;
+        }
+
+        // Retrieve the selected province
+        List<String> provinces = fireInputData.getProvinces();
+        MultiRegionFireStats stats = processMultiRegionFires(inputDate, range, provinces);
+        System.out.println("Stats have been fetched! Stats: " + stats.getData().toString());
+        return stats;
     }
 }
