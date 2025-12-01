@@ -1,7 +1,7 @@
 package interface_adapter.select_region;
 
-import use_case.select_region.SelectRegionOutputBoundary;
-import use_case.select_region.SelectRegionOutputData;
+import usecase.select_region.SelectRegionOutputBoundary;
+import usecase.select_region.SelectRegionOutputData;
 
 /**
  * The Presenter for the Select Region use case. It receives output from the

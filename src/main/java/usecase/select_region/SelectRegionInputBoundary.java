@@ -1,4 +1,4 @@
-package use_case.select_region;
+package usecase.select_region;
 
 /**
  * The input boundary for the Select Region use case.

@@ -1,4 +1,4 @@
-package use_case.select_region;
+package usecase.select_region;
 
 import entities.Region;
 import interface_adapter.region.RegionRepository;
