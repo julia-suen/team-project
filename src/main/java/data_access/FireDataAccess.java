@@ -33,10 +33,7 @@ public class FireDataAccess implements GetFireData, LoadFiresFireDataAccess, Nat
 
     private static final int API_THRESHOLD = 10;
 
-    private final FireFactory fireFactory;
-
     public FireDataAccess(FireFactory fireFactory) {
-        this.fireFactory = fireFactory;
     }
 
     /**
