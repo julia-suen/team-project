@@ -32,7 +32,7 @@ class LoadFiresInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final LoadFiresInteractor interactor = new LoadFiresInteractor(dataAccess, boundariesAccess, presenter, fireService);
-        final LoadFiresInputData inputData = new LoadFiresInputData(List.of("ALL"), "2025-11-20", 1);
+        final LoadFiresInputData inputData = new LoadFiresInputData("All", "2025-11-20", 1);
 
         interactor.execute(inputData);
 
@@ -57,7 +57,7 @@ class LoadFiresInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final LoadFiresInteractor interactor = new LoadFiresInteractor(dataAccess, boundariesAccess, presenter, fireService);
-        final LoadFiresInputData inputData = new LoadFiresInputData(List.of("Ontario"), "2025-11-20", 1);
+        final LoadFiresInputData inputData = new LoadFiresInputData("Ontario", "2025-11-20", 1);
 
         interactor.execute(inputData);
 
@@ -76,7 +76,7 @@ class LoadFiresInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final LoadFiresInteractor interactor = new LoadFiresInteractor(dataAccess, boundariesAccess, presenter, fireService);
-        final LoadFiresInputData inputData = new LoadFiresInputData(List.of("All"), "", 1);
+        final LoadFiresInputData inputData = new LoadFiresInputData("All", "", 1);
         interactor.execute(inputData);
         assertTrue(presenter.outputData != null || presenter.errorMessage != null);
     }
@@ -92,7 +92,7 @@ class LoadFiresInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final LoadFiresInteractor interactor = new LoadFiresInteractor(dataAccess, boundariesAccess, presenter, fireService);
-        final LoadFiresInputData inputData = new LoadFiresInputData(List.of("All"), null, 1);
+        final LoadFiresInputData inputData = new LoadFiresInputData("All", null, 1);
 
         interactor.execute(inputData);
 
@@ -110,7 +110,7 @@ class LoadFiresInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final LoadFiresInteractor interactor = new LoadFiresInteractor(dataAccess, boundariesAccess, presenter, fireService);
-        final LoadFiresInputData inputData = new LoadFiresInputData(List.of("All"), "2030-11-22", 1);
+        final LoadFiresInputData inputData = new LoadFiresInputData("All", "2030-11-22", 1);
 
         interactor.execute(inputData);
 
@@ -118,8 +118,8 @@ class LoadFiresInteractorTest {
     }
 
     /**
-     * Tests that making a call to the FIRMS api for a date range greater than allowed (10-day period)
-     * runs without error and returns fires for a 10-day period instead.
+     * Tests that making a call to the FIRMS api for a date range greater than allowed (10 day period)
+     * runs without error and returns fires for a 10 day period instead.
      */
     @Test
     void testInvalidHighDayRange() {
@@ -128,7 +128,7 @@ class LoadFiresInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final LoadFiresInteractor interactor = new LoadFiresInteractor(dataAccess, boundariesAccess, presenter, fireService);
-        final LoadFiresInputData inputData = new LoadFiresInputData(List.of("All"), "2025-11-20", 15);
+        final LoadFiresInputData inputData = new LoadFiresInputData("All", "2025-11-20", 15);
 
         interactor.execute(inputData);
         assertEquals(15, dataAccess.lastRange); // The mock records input, clamping happens inside real DataAccess impl.
@@ -136,7 +136,7 @@ class LoadFiresInteractorTest {
 
     /**
      * Tests that making a call to the FIRMS api for a date range smaller than allowed (less than 1 day)
-     * runs without error and returns fires for a 1-day period (the selected date) instead.
+     * runs without error and returns fires for a 1 day period (the selected date) instead.
      */
     @Test
     void testInvalidLowDayRange() {
@@ -145,7 +145,7 @@ class LoadFiresInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final LoadFiresInteractor interactor = new LoadFiresInteractor(dataAccess, boundariesAccess, presenter, fireService);
-        final LoadFiresInputData inputData = new LoadFiresInputData(List.of("All"), "2025-11-20", 0);
+        final LoadFiresInputData inputData = new LoadFiresInputData("All", "2025-11-20", 0);
 
         interactor.execute(inputData);
 
@@ -163,7 +163,7 @@ class LoadFiresInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final LoadFiresInteractor interactor = new LoadFiresInteractor(dataAccess, boundariesAccess, presenter, fireService);
-        final LoadFiresInputData inputData = new LoadFiresInputData(List.of("All"), "2025-11-20", 1);
+        final LoadFiresInputData inputData = new LoadFiresInputData("All", "2025-11-20", 1);
 
         interactor.execute(inputData);
 
@@ -181,7 +181,7 @@ class LoadFiresInteractorTest {
         final TestBoundariesAccess boundariesAccess = new TestBoundariesAccess();
 
         final LoadFiresInteractor interactor = new LoadFiresInteractor(dataAccess, boundariesAccess, presenter, fireService);
-        final LoadFiresInputData inputData = new LoadFiresInputData(List.of("All"), "2025-11-20", 1);
+        final LoadFiresInputData inputData = new LoadFiresInputData("All", "2025-11-20", 1);
 
         interactor.execute(inputData);
 
@@ -203,7 +203,7 @@ class LoadFiresInteractorTest {
         boundariesAccess.returnNull = true;
 
         final LoadFiresInteractor interactor = new LoadFiresInteractor(dataAccess, boundariesAccess, presenter, fireService);
-        final LoadFiresInputData inputData = new LoadFiresInputData(List.of("Ontario"), "2025-11-20", 1);
+        final LoadFiresInputData inputData = new LoadFiresInputData("Ontario", "2025-11-20", 1);
 
         interactor.execute(inputData);
 

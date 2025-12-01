@@ -1,7 +1,5 @@
 package interface_adapter.fire_data;
 
-import java.util.List;
-
 import javax.swing.SwingWorker;
 
 import usecase.load_fires.LoadFiresInputBoundary;
@@ -40,7 +38,7 @@ public class FireController {
                     nationalOverviewInteractor.execute(inputData);
                 }
                 else {
-                    final LoadFiresInputData inputData = new LoadFiresInputData(List.of(province), date, dateRange);
+                    final LoadFiresInputData inputData = new LoadFiresInputData(province, date, dateRange);
                     loadFiresInteractor.execute(inputData);
                 }
                 return null;
