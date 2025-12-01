@@ -1,4 +1,4 @@
-package use_case.favourites;
+package usecase.favourites;
 
 public interface FavouritesOutputBoundary {
     /**

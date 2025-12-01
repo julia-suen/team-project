@@ -1,4 +1,4 @@
-package use_case.favourites;
+package usecase.favourites;
 
 import java.util.ArrayList;
 import java.util.List;

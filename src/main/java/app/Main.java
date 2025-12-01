@@ -14,7 +14,7 @@ import interface_adapter.fire_data.FireViewModel;
 import interface_adapter.region.RegionRepository;
 import interface_adapter.severity_filter.SeverityController;
 import interface_adapter.severity_filter.SeverityPresenter;
-import use_case.favourites.FavouritesInteractor;
+import usecase.favourites.FavouritesInteractor;
 import usecase.common.FireService;
 import usecase.load_fires.LoadFiresInteractor;
 import usecase.national_overview.NationalOverviewInteractor;
