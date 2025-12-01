@@ -1,6 +1,6 @@
 package view;
 
-import data_access.BoundariesDataAccess;
+import interface_adapter.region.RegionRepository;
 
 import java.awt.BorderLayout;
 
@@ -18,11 +18,12 @@ public class MainFrame extends JFrame {
 
     /**
      * Constructs the Main Frame.
+     * @param regionRepository The repository containing loaded region data.
      */
-    public MainFrame(BoundariesDataAccess boundariesDataAccess) {
+    public MainFrame(RegionRepository regionRepository) {
         super("Canada Wildfire Data Viewer");
 
-        mapView = new MapView(boundariesDataAccess);
+        mapView = new MapView(regionRepository);
         sidePanelView = new SidePanelView();
 
         setLayout(new BorderLayout());

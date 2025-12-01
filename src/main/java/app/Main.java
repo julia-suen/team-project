@@ -8,6 +8,7 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FirePresenter;
 import interface_adapter.fire_data.FireViewModel;
+import interface_adapter.region.RegionRepository;
 import interface_adapter.severity_filter.SeverityController;
 import interface_adapter.severity_filter.SeverityPresenter;
 import usecase.common.FireService;
@@ -26,23 +27,24 @@ public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
-            // Initialize Shared Data Access
+            // Initialize Data Access (Frameworks/Drivers)
             final BoundariesDataAccess boundariesAccess = new BoundariesDataAccess();
-
-            final MainFrame mainFrame = new MainFrame(boundariesAccess);
-            final FireViewModel fireViewModel = new FireViewModel();
-            final ViewManagerModel viewManagerModel = new ViewManagerModel();
-
             final FireFactory factory = new FireFactory(Collections.emptyList());
             final FireDataAccess fireDataAccess = new FireDataAccess(factory);
 
-            // Shared Service
+            // Initialize Interface Adapters & Services
+            final RegionRepository regionRepository = new RegionRepository(boundariesAccess);
             final FireService fireService = new FireService();
 
-            // Setup Presenter (handles both use cases)
-            final FirePresenter firePresenter = new FirePresenter(fireViewModel, viewManagerModel);
+            // Initialize ViewModels
+            final FireViewModel fireViewModel = new FireViewModel();
+            final ViewManagerModel viewManagerModel = new ViewManagerModel();
 
-            // Setup Interactors
+            // Initialize Presenters
+            final FirePresenter firePresenter = new FirePresenter(fireViewModel, viewManagerModel);
+            final SeverityPresenter severityPresenter = new SeverityPresenter(fireViewModel);
+
+            // Initialize Interactors (Use Cases)
             final LoadFiresInteractor loadFiresInteractor = new LoadFiresInteractor(
                     fireDataAccess, boundariesAccess, firePresenter, fireService
             );
@@ -51,16 +53,17 @@ public class Main {
                     fireDataAccess, boundariesAccess, firePresenter, fireService
             );
 
-            // Setup Controller
-            final FireController fireController = new FireController(loadFiresInteractor, nationalInteractor);
-
-            // Load severity use case
-            final SeverityPresenter severityPresenter = new SeverityPresenter(fireViewModel);
             final SeverityInteractor severityInteractor = new SeverityInteractor(severityPresenter);
-            final SeverityController severityController = new SeverityController(severityInteractor);
 
+            // Initialize Controllers
+            final FireController fireController = new FireController(loadFiresInteractor, nationalInteractor);
+            final SeverityController severityController = new SeverityController(severityInteractor);
             fireViewModel.addPropertyChangeListener(severityController);
 
+            // Initialize View
+            final MainFrame mainFrame = new MainFrame(regionRepository);
+
+            // Initialize Mediator/View Logic
             final MapController mapController = new MapController(
                     mainFrame,
                     fireController,
