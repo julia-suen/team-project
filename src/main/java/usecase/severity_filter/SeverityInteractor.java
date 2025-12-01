@@ -31,8 +31,13 @@ public class SeverityInteractor implements SeverityInputBoundary {
     @Override
     public void execute(SeverityInputData inputData) {
 
-        final List<Fire> currentFires = inputData.currentFires();
+
+        List<Fire> currentFires = inputData.currentFires();
         final SeverityFilter severityFilter = inputData.severityFilter();
+
+        if (currentFires == null) {
+            currentFires = new ArrayList<>();
+        }
 
         final List<Fire> filteredFires = fireService.filterFiresBySeverity(currentFires, severityFilter);
 
@@ -42,20 +47,6 @@ public class SeverityInteractor implements SeverityInputBoundary {
 
         severityOutputBoundary.prepareSuccessView(outputData);
 
-    }
-
-    /**
-     * Helper method that converts Fire objects back to bundles of coordinates to reuse FireFactory.filterFires method.
-     * @param fires the fires to unpack into bundles of coordinates
-     * @return bundles of coordinates extracted from the given Fire objects
-     */
-    private List<List<Coordinate>> convertFires(List<Fire> fires) {
-        final List<List<Coordinate>> bundles = new ArrayList<>();
-
-        for (Fire fire : fires) {
-            bundles.add(fire.getCoordinates());
-        }
-        return bundles;
     }
 
 }

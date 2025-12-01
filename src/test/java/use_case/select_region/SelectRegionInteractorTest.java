@@ -11,6 +11,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jxmapviewer.viewer.GeoPosition;
+import usecase.select_region.CoordinateConverter;
+import usecase.select_region.SelectRegionInputData;
+import usecase.select_region.SelectRegionInteractor;
+import usecase.select_region.SelectRegionOutputBoundary;
 
 class SelectRegionInteractorTest {
 
