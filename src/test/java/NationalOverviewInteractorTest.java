@@ -5,16 +5,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.mockito.ArgumentCaptor;
-import use_case.common.FireService;
-import use_case.national_overview.NationalOverviewBoundaryDataAccess;
-import use_case.national_overview.NationalOverviewFireDataAccess;
-import use_case.national_overview.NationalOverviewInputData;
-import use_case.national_overview.NationalOverviewInteractor;
-import use_case.national_overview.NationalOverviewOutputBoundary;
-import use_case.national_overview.NationalOverviewOutputData;
+import usecase.common.FireService;
+import usecase.national_overview.NationalOverviewBoundaryDataAccess;
+import usecase.national_overview.NationalOverviewFireDataAccess;
+import usecase.national_overview.NationalOverviewInputData;
+import usecase.national_overview.NationalOverviewInteractor;
+import usecase.national_overview.NationalOverviewOutputBoundary;
+import usecase.national_overview.NationalOverviewOutputData;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 

@@ -3,7 +3,7 @@ package interface_adapter.select_region;
 import java.awt.geom.Point2D;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
-import use_case.select_region.CoordinateConverter;
+import usecase.select_region.CoordinateConverter;
 
 public class MapCoordinateConverter implements CoordinateConverter {
 

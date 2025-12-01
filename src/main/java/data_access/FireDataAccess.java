@@ -9,8 +9,8 @@ import java.util.List;
 
 import entities.Coordinate;
 import entities.FireFactory;
-import use_case.load_fires.LoadFiresFireDataAccess;
-import use_case.national_overview.NationalOverviewFireDataAccess;
+import usecase.load_fires.LoadFiresFireDataAccess;
+import usecase.national_overview.NationalOverviewFireDataAccess;
 
 public class FireDataAccess implements GetFireData, LoadFiresFireDataAccess, NationalOverviewFireDataAccess {
 

@@ -10,10 +10,10 @@ import interface_adapter.fire_data.FirePresenter;
 import interface_adapter.fire_data.FireViewModel;
 import interface_adapter.severity_filter.SeverityController;
 import interface_adapter.severity_filter.SeverityPresenter;
-import use_case.common.FireService;
-import use_case.load_fires.LoadFiresInteractor;
-import use_case.national_overview.NationalOverviewInteractor;
-import use_case.severity_filter.SeverityInteractor;
+import usecase.common.FireService;
+import usecase.load_fires.LoadFiresInteractor;
+import usecase.national_overview.NationalOverviewInteractor;
+import usecase.severity_filter.SeverityInteractor;
 import view.MainFrame;
 
 import javax.swing.SwingUtilities;

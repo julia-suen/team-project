@@ -7,9 +7,8 @@ import java.util.List;
 
 import entities.Fire;
 import entities.SeverityFilter;
-import interface_adapter.fire_data.FireViewModel;
-import use_case.severity_filter.SeverityInputBoundary;
-import use_case.severity_filter.SeverityInputData;
+import usecase.severity_filter.SeverityInputBoundary;
+import usecase.severity_filter.SeverityInputData;
 
 /**
  * Controller for the severity filter use case, stores fires on the map in a cache.

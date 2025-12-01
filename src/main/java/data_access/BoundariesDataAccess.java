@@ -16,8 +16,8 @@ import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jxmapviewer.viewer.GeoPosition;
-import use_case.load_fires.LoadFiresBoundaryDataAccess;
-import use_case.national_overview.NationalOverviewBoundaryDataAccess;
+import usecase.load_fires.LoadFiresBoundaryDataAccess;
+import usecase.national_overview.NationalOverviewBoundaryDataAccess;
 
 /**
  * Data access object for fetching geographical boundary data from the Nominatim API.

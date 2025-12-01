@@ -1,10 +1,10 @@
 package interface_adapter.fire_data;
 
 import interface_adapter.ViewManagerModel;
-import use_case.load_fires.LoadFiresOutputBoundary;
-import use_case.load_fires.LoadFiresOutputData;
-import use_case.national_overview.NationalOverviewOutputBoundary;
-import use_case.national_overview.NationalOverviewOutputData;
+import usecase.load_fires.LoadFiresOutputBoundary;
+import usecase.load_fires.LoadFiresOutputData;
+import usecase.national_overview.NationalOverviewOutputBoundary;
+import usecase.national_overview.NationalOverviewOutputData;
 
 /**
  * The presenter for fire analysis use cases.

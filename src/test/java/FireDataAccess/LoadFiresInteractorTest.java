@@ -1,10 +1,10 @@
-package use_case.load_fires;
+package usecase.load_fires;
 
 import entities.Coordinate;
 import entities.Region;
 import org.junit.jupiter.api.Test;
 import org.jxmapviewer.viewer.GeoPosition;
-import use_case.common.FireService;
+import usecase.common.FireService;
 
 import java.util.ArrayList;
 import java.util.List;
