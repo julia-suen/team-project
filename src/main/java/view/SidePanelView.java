@@ -389,6 +389,10 @@ public class SidePanelView extends JPanel {
         return dayRangeSelector;
     }
 
+    public JComboBox<String> getFavouriteSelector() {
+        return favouriteSelector;
+    }
+
     public DatePicker getDatePickerComponent() {
         return datePicker;
     }

@@ -6,14 +6,16 @@ import data_access.FireDataAccess;
 import entities.FireFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.favourites.FavouritesViewModel;
+import interface_adapter.favourites.FavouritesPresenter;
+import interface_adapter.favourites.FavouritesController;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FirePresenter;
 import interface_adapter.fire_data.FireViewModel;
 import interface_adapter.severity_filter.SeverityController;
 import interface_adapter.severity_filter.SeverityPresenter;
 import use_case.severity_filter.SeverityInteractor;
-import interface_adapter.region.RegionRepository;
 import use_case.fire_data.FireInteractor;
+import use_case.favourites.FavouritesInteractor;
 import view.MainFrame;
 
 import javax.swing.SwingUtilities;
@@ -24,16 +26,32 @@ import java.util.Collections;
  */
 
 public class Main {
+    private static final String[] PROVINCE_OPTIONS = {
+        "Alberta",
+        "BC",
+        "Manitoba",
+        "Newfoundland",
+        "New Brunswick",
+        "Nunavut",
+        "NWT",
+        "Nova Scotia",
+        "Ontario",
+        "PEI",
+        "Quebec",
+        "Saskatchewan",
+        "Yukon",
+    };
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
             // Initialize Shared Data Access
             // Created once and shared so Interactor sees what Repo loads
+
             final BoundariesDataAccess boundariesAccess = new BoundariesDataAccess();
 
             final MainFrame mainFrame = new MainFrame(boundariesAccess);
             final FireViewModel fireViewModel = new FireViewModel();
-            final FavouritesViewModel favouritesViewModel = new FavouritesViewModel();
             final ViewManagerModel viewManagerModel = new ViewManagerModel();
 
             final FireFactory factory = new FireFactory(Collections.emptyList());
@@ -50,11 +68,19 @@ public class Main {
             final SeverityController severityController = new SeverityController(severityInteractor);
             fireViewModel.addPropertyChangeListener(severityController);
 
+            // load favourites use case presenter, interactor and controller
+            final FavouritesViewModel favouritesViewModel = new FavouritesViewModel();
+            final FavouritesPresenter favouritesPresenter = new FavouritesPresenter(favouritesViewModel);
+            final FavouritesInteractor favouritesInteractor = new FavouritesInteractor(favouritesPresenter);
+            final FavouritesController favouritesController = new FavouritesController(favouritesInteractor, PROVINCE_OPTIONS);
+
             final MapController mapController = new MapController(
                     mainFrame,
                     fireController,
                     severityController,
-                    fireViewModel
+                    favouritesController,
+                    fireViewModel,
+                    favouritesViewModel
             );
 
             mainFrame.setVisible(true);

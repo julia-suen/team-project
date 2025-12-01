@@ -9,6 +9,9 @@ import javax.swing.*;
 
 import entities.Fire;
 import entities.SeverityFilter;
+import interface_adapter.favourites.FavouritesController;
+import interface_adapter.favourites.FavouritesState;
+import interface_adapter.favourites.FavouritesViewModel;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FireState;
 import interface_adapter.fire_data.FireViewModel;
@@ -19,21 +22,28 @@ public class MapController implements PropertyChangeListener {
 
     private static final int DEFAULT_RANGE = 1;
     private static final int MAX_RANGE_FOR_ALL = 10;
+    private static final String NO_FAVOURITES_MESSAGE = "No favourites added yet!";
 
     private final MainFrame mainFrame;
     private final FireController fireController;
     private final SeverityController severityController;
+    private final FavouritesController favouritesController;
+    private final FavouritesViewModel favouritesViewModel;
     private final FireViewModel fireViewModel;
     // private final FavouritesController favouritesController;
 
     public MapController(MainFrame mainFrame, FireController fireController, SeverityController severityController,
-                         FireViewModel fireViewModel) {
+                         FavouritesController favouritesController,
+                         FireViewModel fireViewModel, FavouritesViewModel favouritesViewModel) {
         this.mainFrame = mainFrame;
         this.fireController = fireController;
         this.severityController = severityController;
+        this.favouritesController = favouritesController;
         this.fireViewModel = fireViewModel;
+        this.favouritesViewModel = favouritesViewModel;
 
         this.fireViewModel.addPropertyChangeListener(this);
+        this.favouritesViewModel.addPropertyChangeListener(this);
 
         addListeners();
     }
@@ -58,6 +68,14 @@ public class MapController implements PropertyChangeListener {
         // High Severity
         mainFrame.getSidePanelView().getHighSeverityButton().addActionListener(evt ->
                 severityController.filterBySeverity(SeverityFilter.HIGH));
+
+        // Add Favourite
+        mainFrame.getSidePanelView().getFavouritesButton().addActionListener(evt ->
+                favouritesController.showAddFavouriteDialog(mainFrame));
+
+        // Clear Favourites
+        mainFrame.getSidePanelView().getRemoveFavouritesButton().addActionListener(evt ->
+                favouritesController.clearFavourites());
     }
 
     private void loadFires(boolean isNational) {
@@ -122,7 +140,40 @@ public class MapController implements PropertyChangeListener {
                     mainFrame.getSidePanelView().getGraphPanel().setData(state.getGraphData());
                 }
             }
+            else if (FavouritesViewModel.FAVOURITES_UPDATED.equals(evt.getPropertyName())) {
+
+                System.out.println("DEBUG MapController : FAVOURITES_UPDATED detected");
+                // Update the favourites dropdown
+
+                final FavouritesState favouritesState = favouritesViewModel.getState();
+
+                System.out.println("DEBUG MapController : FavouritesState received " + favouritesState.getFavourites());
+
+                updateFavouritesDropdown(favouritesState);
+
+                // show error if province already added
+                if (favouritesState.getError() != null) {
+                    JOptionPane.showMessageDialog(mainFrame,
+                            favouritesState.getError(),
+                            "Favourites Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
+    }
+
+    private void updateFavouritesDropdown(FavouritesState state) {
+        final JComboBox<String> favouritesSelector = mainFrame.getSidePanelView().getFavouriteSelector();
+        final DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) favouritesSelector.getModel();
+        model.removeAllElements();
+        if (state.isEmpty()) {
+            model.addElement(NO_FAVOURITES_MESSAGE);
+        }
+        else {
+            for (String favourite : state.getFavourites()) {
+                model.addElement(favourite);
+            }
+        }
     }
 
     private void toggleButtons(Boolean enabled) {
