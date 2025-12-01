@@ -15,8 +15,10 @@ import interface_adapter.region.RegionRepository;
 import interface_adapter.severity_filter.SeverityController;
 import interface_adapter.severity_filter.SeverityPresenter;
 import use_case.favourites.FavouritesInteractor;
-import use_case.fire_data.FireInteractor;
-import use_case.severity_filter.SeverityInteractor;
+import usecase.common.FireService;
+import usecase.load_fires.LoadFiresInteractor;
+import usecase.national_overview.NationalOverviewInteractor;
+import usecase.severity_filter.SeverityInteractor;
 import view.MainFrame;
 
 import javax.swing.SwingUtilities;
