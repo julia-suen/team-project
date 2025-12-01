@@ -76,6 +76,7 @@ public class RegionalAnalysisController {
                 LoadFiresInputData input = new LoadFiresInputData(provinceNames, date, range);
 
                 MultiRegionStatsPopupView popupView = new MultiRegionStatsPopupView(stats);
+                popupView.setHighlightRange(date, range);
                 popupView.setVisible(true);
 
                 new SwingWorker<MultiRegionFireStats, Void>() {

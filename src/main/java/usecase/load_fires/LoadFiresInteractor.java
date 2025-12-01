@@ -24,7 +24,7 @@ import static java.lang.Integer.min;
 public class LoadFiresInteractor implements LoadFiresInputBoundary {
 
     private static final String LABEL_FORMAT = "MMM";
-
+    private static final DateTimeFormatter API_DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final LoadFiresFireDataAccess fireAccess;
     private final LoadFiresBoundaryDataAccess boundaryAccess;
     private final LoadFiresOutputBoundary presenter;
@@ -106,85 +106,87 @@ public class LoadFiresInteractor implements LoadFiresInputBoundary {
 
     @Override
     public MultiRegionFireStats fetchStats(LoadFiresInputData fireInputData) {
-        String inputDateStr = fireInputData.getDate();
-        if (inputDateStr == null || inputDateStr.isEmpty()) {
-            inputDateStr = LocalDate.now().toString();
-        }
-        final LocalDate inputDate = LocalDate.parse(inputDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        Map<String, List<Pair<String, Integer>>> statsMap = new LinkedHashMap<>();
 
+        LocalDate userDate = LocalDate.parse(fireInputData.getDate(), API_DATE_FMT);
         int range = fireInputData.getDateRange();
 
+        //Define expanded time window: [selectDate - Range] to [selectDate + 2*Range].
+        LocalDate grandStartDate = userDate.minusDays(range);
+        int totalDaysToFetch = range * 3;
+
+        List<Coordinate> allRawPoints = fetchAllRawPoints(grandStartDate, totalDaysToFetch);
+
+
         // Retrieve the selected province
-        List<String> provinces = fireInputData.getProvinces();
-        MultiRegionFireStats stats = processMultiRegionFires(inputDate, range, provinces);
-        System.out.println("Stats have been fetched! Stats: " + stats.getData().toString());
-        return stats;
-    }
+        for (String provinceName : fireInputData.getProvinces()) {
+            List<Coordinate> regionPoints;
 
-    private MultiRegionFireStats processMultiRegionFires(LocalDate inputDate,
-                                                         int range, List<String> provinces) {
-
-        Map<String, List<Pair<String, Integer>>> stats = new HashMap<>();
-        MultiRegionFireStats trendData = new MultiRegionFireStats(stats);
-
-        if (provinces.isEmpty()) {
-            return trendData;
-        }
-
-        try {
-            // Initialize empty lists for each province
-            for (String province : provinces) {
-                trendData.put(province, new ArrayList<>());
-            }
-
-            final LocalDate minDate = LocalDate.of(2025, 8, 1);
-            final LocalDate twoMonthsAgo = inputDate.minusMonths(2);
-            final LocalDate oneMonthAgo = inputDate.minusMonths(1);
-
-            List<LocalDate> startDates = new ArrayList<>();
-
-            if (!twoMonthsAgo.isBefore(minDate)) {
-                startDates.add(twoMonthsAgo);
+            if ("All".equalsIgnoreCase(provinceName)) {
+                regionPoints = allRawPoints;
             } else {
-                startDates.add(minDate);
-            }
+                Region region = boundaryAccess.getRegion(provinceName);
+                if (region == null) {
+                    regionPoints = new ArrayList<>();
+                } else {
 
-            if (!oneMonthAgo.isBefore(minDate)) {
-                startDates.add(oneMonthAgo);
-            }
+                    List<Fire> fires = fireService.createFiresFromPoints(allRawPoints);
+                    fires = fireService.filterFiresByRegion(fires, region);
 
-            // Always include the selected input date
-            startDates.add(inputDate);
-
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-            for (LocalDate startDate : startDates) {
-                // Fetch data for this date range
-                List<Coordinate> points = fireAccess.getFireData(range, fmt.format(startDate));
-                final List<Fire> fires = fireService.createFiresFromPoints(points);
-                if (!points.isEmpty()) {
-                    LocalDate endDate = startDate.plusDays(range);
-                    String label = fmt.format(startDate) + " to " + fmt.format(endDate);
-
-                    System.out.println("Number of datapoints fetched for analysis: " + points.size() + " for the date range " + label);
-
-                    for (String province : provinces) {
-                        final Region region = boundaryAccess.getRegion(province);
-                        // Filter points for this province
-                        List<Fire> firesInProvince = fireService.filterFiresByRegion(fires, region);
-
-                        // Add to that province's list in trendData
-                        trendData.getData().get(province).add(new Pair<>(label, firesInProvince.size()));
+                    regionPoints = new ArrayList<>();
+                    for (Fire f : fires) {
+                        regionPoints.addAll(f.getCoordinates());
                     }
                 }
             }
 
-            return trendData;
+            Map<String, Integer> dailyCounts = new TreeMap<>();
 
-        } catch (GetFireData.InvalidDataException ex) {
-            return trendData;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            for (int i = 0; i < totalDaysToFetch; i++) {
+                String dayStr = grandStartDate.plusDays(i).format(API_DATE_FMT);
+                dailyCounts.put(dayStr, 0);
+            }
+
+            //Count actual fire points for each date.
+            for (Coordinate p : regionPoints) {
+                String pDate = p.getDate();
+                if (dailyCounts.containsKey(pDate)) {
+                    dailyCounts.put(pDate, dailyCounts.get(pDate) + 1);
+                }
+            }
+
+            List<Pair<String, Integer>> pointsList = new ArrayList<>();
+            for (Map.Entry<String, Integer> entry : dailyCounts.entrySet()) {
+                pointsList.add(new Pair<>(entry.getKey(), entry.getValue()));
+            }
+
+            statsMap.put(provinceName, pointsList);
         }
+
+        return new MultiRegionFireStats(statsMap);
+    }
+
+    private List<Coordinate> fetchAllRawPoints(LocalDate startDate, int totalDays) {
+        List<Coordinate> accumulator = new ArrayList<>();
+        int daysFetched = 0;
+
+        //Loop to fetch data in chunks because API limits requests to 10 days max.
+        while (daysFetched < totalDays) {
+            LocalDate batchStart = startDate.plusDays(daysFetched);
+            int batchSize = Math.min(10, totalDays - daysFetched);
+
+            try {
+                List<Coordinate> batch = fireAccess.getFireData(batchSize, batchStart.toString());
+                if (batch != null) {
+                    accumulator.addAll(batch);
+                }
+            } catch (Exception e) {
+                System.err.println("Failed to fetch batch starting " + batchStart + ": " + e.getMessage());
+            }
+
+            daysFetched += batchSize;
+        }
+        return accumulator;
     }
 }
+
