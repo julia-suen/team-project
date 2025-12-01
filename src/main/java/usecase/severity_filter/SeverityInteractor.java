@@ -1,4 +1,4 @@
-package use_case.severity_filter;
+package usecase.severity_filter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ import entities.Coordinate;
 import entities.Fire;
 import entities.FireFactory;
 import entities.SeverityFilter;
+import usecase.common.FireService;
 
 /**
  * Interactor for the Fire Data Use Case.
@@ -16,6 +17,7 @@ import entities.SeverityFilter;
 public class SeverityInteractor implements SeverityInputBoundary {
 
     private final SeverityOutputBoundary severityOutputBoundary;
+    private final FireService fireService;
 
     /**
      * Constructs a SeverityInteractor.
@@ -23,6 +25,7 @@ public class SeverityInteractor implements SeverityInputBoundary {
      */
     public SeverityInteractor(SeverityOutputBoundary severityOutputBoundary) {
         this.severityOutputBoundary = severityOutputBoundary;
+        this.fireService = new FireService();
     }
 
     @Override
@@ -31,15 +34,7 @@ public class SeverityInteractor implements SeverityInputBoundary {
         final List<Fire> currentFires = inputData.currentFires();
         final SeverityFilter severityFilter = inputData.severityFilter();
 
-        final List<Fire> filteredFires;
-
-        if (currentFires == null || currentFires.isEmpty()) {
-            filteredFires = new ArrayList<>();
-        }
-        else {
-            final List<List<Coordinate>> bundles = convertFires(currentFires);
-            filteredFires = FireFactory.filterFires(bundles, severityFilter);
-        }
+        final List<Fire> filteredFires = fireService.filterFiresBySeverity(currentFires, severityFilter);
 
         final SeverityOutputData outputData = new SeverityOutputData(
                 filteredFires

@@ -16,11 +16,13 @@ import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jxmapviewer.viewer.GeoPosition;
+import usecase.load_fires.LoadFiresBoundaryDataAccess;
+import usecase.national_overview.NationalOverviewBoundaryDataAccess;
 
 /**
  * Data access object for fetching geographical boundary data from the Nominatim API.
  */
-public class BoundariesDataAccess {
+public class BoundariesDataAccess implements LoadFiresBoundaryDataAccess, NationalOverviewBoundaryDataAccess {
     private static final String API_URL_TEMPLATE =
             "https://nominatim.openstreetmap.org/search?q=%s+canada&format=json&polygon_geojson=1&polygon_threshold=0.1";
     private static final String GEOJSON_KEY = "geojson";
