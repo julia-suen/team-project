@@ -7,6 +7,7 @@ import java.util.List;
 
 import entities.Fire;
 import entities.SeverityFilter;
+import interface_adapter.fire_data.FireState;
 import usecase.severity_filter.SeverityInputBoundary;
 import usecase.severity_filter.SeverityInputData;
 
@@ -28,9 +29,11 @@ public class SeverityController implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if ("fires_loaded".equals(evt.getPropertyName())) {
-            List<Fire> fires = (List<Fire>) evt.getNewValue();
-            this.cachedFires = new ArrayList<>(fires);
+        if ("state".equals(evt.getPropertyName())) {
+            FireState state = (FireState) evt.getNewValue();
+            if (state.getLoadedFires() != null) {
+                this.cachedFires = new ArrayList<>(state.getLoadedFires());
+            }
         }
     }
 

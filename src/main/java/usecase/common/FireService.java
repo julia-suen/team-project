@@ -4,6 +4,7 @@ import entities.Coordinate;
 import entities.Fire;
 import entities.FireFactory;
 import entities.Region;
+import entities.SeverityFilter;
 import org.jxmapviewer.viewer.GeoPosition;
 
 import java.awt.geom.Path2D;
@@ -15,6 +16,8 @@ import java.util.List;
  * Adheres to the principle that raw points should be bundled into Fire entities immediately.
  */
 public class FireService {
+    private static final double MED_SEVERITY_THRESHOLD = 3.0;
+    private static final double HIGH_SEVERITY_THRESHOLD = 7.0;
 
     public FireService() {
         // Empty constructor
@@ -33,6 +36,30 @@ public class FireService {
         final FireFactory fireFactory = new FireFactory(points);
         final List<List<Coordinate>> bundles = FireFactory.bundleDataPoints(fireFactory.getDataPoints());
         return FireFactory.makeFireList(bundles);
+    }
+
+    /**
+     * Filters a list of Fire objects based on the Severity Filter.
+     * Operates directly on the Fire entities without rebuilding them.
+     * * @param fires the list of fires to filter
+     * @param filter the severity filter (RESET, MEDIUM, HIGH)
+     * @return a filtered list of fires
+     */
+    public List<Fire> filterFiresBySeverity(List<Fire> fires, SeverityFilter filter) {
+        if (fires == null || fires.isEmpty() || filter == SeverityFilter.RESET) {
+            return fires; // Return all if reset or empty
+        }
+
+        List<Fire> filtered = new ArrayList<>();
+        double threshold = (filter == SeverityFilter.HIGH) ? HIGH_SEVERITY_THRESHOLD : MED_SEVERITY_THRESHOLD;
+
+        for (Fire fire : fires) {
+            // Check the FRP of the fire's center
+            if (fire.getCenter().getFrp() >= threshold) {
+                filtered.add(fire);
+            }
+        }
+        return filtered;
     }
 
     /**

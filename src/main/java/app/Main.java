@@ -22,7 +22,6 @@ import java.util.Collections;
 /**
  * Initialize the GUI for the wildfire trend viewer.
  */
-
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -36,9 +35,11 @@ public class Main {
 
             final FireFactory factory = new FireFactory(Collections.emptyList());
             final FireDataAccess fireDataAccess = new FireDataAccess(factory);
+
+            // Shared Service
             final FireService fireService = new FireService();
 
-            // Setup Presenter (handles both load fires and national overview)
+            // Setup Presenter (handles both use cases)
             final FirePresenter firePresenter = new FirePresenter(fireViewModel, viewManagerModel);
 
             // Setup Interactors
@@ -53,10 +54,11 @@ public class Main {
             // Setup Controller
             final FireController fireController = new FireController(loadFiresInteractor, nationalInteractor);
 
-            // load severity use case presenter, interactor and controller
+            // Load severity use case
             final SeverityPresenter severityPresenter = new SeverityPresenter(fireViewModel);
             final SeverityInteractor severityInteractor = new SeverityInteractor(severityPresenter);
             final SeverityController severityController = new SeverityController(severityInteractor);
+
             fireViewModel.addPropertyChangeListener(severityController);
 
             final MapController mapController = new MapController(
