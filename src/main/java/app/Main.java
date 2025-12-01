@@ -5,6 +5,7 @@ import data_access.BoundariesDataAccess;
 import data_access.FireDataAccess;
 import entities.FireFactory;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.favourites.FavouritesViewModel;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FirePresenter;
 import interface_adapter.fire_data.FireViewModel;
@@ -32,6 +33,7 @@ public class Main {
 
             final MainFrame mainFrame = new MainFrame(boundariesAccess);
             final FireViewModel fireViewModel = new FireViewModel();
+            final FavouritesViewModel favouritesViewModel = new FavouritesViewModel();
             final ViewManagerModel viewManagerModel = new ViewManagerModel();
 
             final FireFactory factory = new FireFactory(Collections.emptyList());

@@ -24,6 +24,7 @@ public class MapController implements PropertyChangeListener {
     private final FireController fireController;
     private final SeverityController severityController;
     private final FireViewModel fireViewModel;
+    // private final FavouritesController favouritesController;
 
     public MapController(MainFrame mainFrame, FireController fireController, SeverityController severityController,
                          FireViewModel fireViewModel) {
