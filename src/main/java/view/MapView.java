@@ -1,6 +1,7 @@
 package view;
 
 import entities.Fire;
+import entities.Region;
 import interface_adapter.marker.MarkerPresenter;
 import interface_adapter.marker.MarkerViewModel;
 import interface_adapter.region.RegionRepository;
@@ -12,9 +13,7 @@ import interface_adapter.marker.MarkerController;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -40,13 +39,11 @@ import org.jxmapviewer.painter.Painter;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.WaypointPainter;
-import use_case.marker.MarkerInputBoundary;
-import use_case.marker.MarkerInteractor;
-import use_case.marker.MarkerOutputBoundary;
-import use_case.select_region.CoordinateConverter;
-import use_case.select_region.SelectRegionInteractor;
-import usecase.select_region.CoordinateConverter;
+import usecase.marker.MarkerInputBoundary;
+import usecase.marker.MarkerInteractor;
+import usecase.marker.MarkerOutputBoundary;
 import usecase.select_region.SelectRegionInteractor;
+import usecase.select_region.CoordinateConverter;
 
 /**
  * The main map view component for the application.
@@ -74,7 +71,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
      * Constructs the MapView panel.
      * @param regionRepository The repository containing loaded region data.
      */
-    public MapView(RegionRepository regionRepository) {
+    public MapView(RegionRepository regionRepository, MarkerViewModel markerViewModel) {
         this.waypoints = new HashSet<>();
         this.markers = new HashSet<>();
       
@@ -168,9 +165,9 @@ public class MapView extends JPanel implements PropertyChangeListener {
 
         layeredPane.add(this.mapKit, JLayeredPane.DEFAULT_LAYER);
 
-        this.addComponentListener(new java.awt.event.ComponentAdapter() {
+        this.addComponentListener(new ComponentAdapter() {
             @Override
-            public void componentResized(final java.awt.event.ComponentEvent e) {
+            public void componentResized(final ComponentEvent e) {
                 updateChildBounds();
             }
         });
@@ -242,7 +239,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
         if ("selectedProvince".equals(evt.getPropertyName())) {
             final String newProvince = (String) evt.getNewValue();
             this.provinceLabel.setText(SelectRegionViewModel.PROVINCE_LABEL + newProvince);
-            final entities.Region selectedRegion = this.regionRepo.getRegion(newProvince);
+            final Region selectedRegion = this.regionRepo.getRegion(newProvince);
             this.regionBoundaryPainter.setRegion(selectedRegion);
             this.repaint();
         }else if ("markerHover".equals(evt.getPropertyName())){
@@ -256,9 +253,9 @@ public class MapView extends JPanel implements PropertyChangeListener {
      * @param location The geographical location of the fire.
      * @param radius The radius of the fire marker.
      */
-    public void addFireMarker(final GeoPosition location, final double radius) {
-        this.waypoints.add(new FireWaypoint(location, radius));
-        this.markers.add(new FireWaypoint(location, radius));
+    public void addFireMarker(final GeoPosition location, final double radius, final Fire fire) {
+        this.waypoints.add(new FireWaypoint(location, radius, fire));
+        this.markers.add(new FireWaypoint(location, radius, fire));
         this.waypointPainter.setWaypoints(this.waypoints);
         this.fireMarkerPainter.setWaypoints(this.markers);
         this.mapKit.getMainMap().repaint();

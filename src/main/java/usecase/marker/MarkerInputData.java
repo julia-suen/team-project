@@ -1,4 +1,4 @@
-package use_case.marker;
+package usecase.marker;
 
 import entities.Fire;
 

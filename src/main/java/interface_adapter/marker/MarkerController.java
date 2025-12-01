@@ -1,8 +1,8 @@
 package interface_adapter.marker;
 
 import entities.Fire;
-import use_case.marker.MarkerInputBoundary;
-import use_case.marker.MarkerInputData;
+import usecase.marker.MarkerInputBoundary;
+import usecase.marker.MarkerInputData;
 
 public class MarkerController {
     private final MarkerInputBoundary markerUseCaseInteractor;
