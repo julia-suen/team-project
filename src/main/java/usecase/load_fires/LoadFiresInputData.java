@@ -1,21 +1,23 @@
 package usecase.load_fires;
 
+import java.util.List;
+
 /**
  * Data structure representing the input for the "Load Fires" use case.
  */
 public class LoadFiresInputData {
-    private final String province;
+    private final List<String> provinces;
     private final String date;
     private final int dateRange;
 
     /**
      * Constructs a LoadFiresInputData object
-     * @param province  the name of the selected province (or "All")
+     * @param provinces  the name of the selected province (or "All")
      * @param date      the date string in YYYY-MM-DD format
      * @param dateRange the range of days to fetch data for
      */
-    public LoadFiresInputData(String province, String date, int dateRange) {
-        this.province = province;
+    public LoadFiresInputData(List<String> provinces, String date, int dateRange) {
+        this.provinces = provinces;
         this.date = date;
         this.dateRange = dateRange;
     }
@@ -24,8 +26,8 @@ public class LoadFiresInputData {
      * Gets the selected province.
      * @return the province name
      */
-    public String getProvince() {
-        return province;
+    public List<String> getProvinces() {
+        return provinces;
     }
 
     /**

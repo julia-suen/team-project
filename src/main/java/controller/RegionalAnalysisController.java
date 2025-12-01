@@ -10,17 +10,17 @@ import javax.swing.SwingWorker;
 
 import entities.MultiRegionFireStats;
 import entities.Province;
-import use_case.fire_data.FireInputData;
-import use_case.fire_data.FireInteractor;
+import usecase.load_fires.LoadFiresInputData;
+import usecase.load_fires.LoadFiresInteractor;
 import view.MainFrame;
 import view.MultiRegionStatsPopupView;
 
 public class RegionalAnalysisController {
     private final MainFrame mainFrame;
-    private final FireInteractor fireInteractor;
+    private final LoadFiresInteractor fireInteractor;
     private MultiRegionFireStats stats;
 
-    public RegionalAnalysisController(MainFrame mainFrame, FireInteractor fireInteractor) {
+    public RegionalAnalysisController(MainFrame mainFrame, LoadFiresInteractor fireInteractor) {
         this.mainFrame = mainFrame;
         this.fireInteractor = fireInteractor;
         addListeners();
@@ -73,7 +73,7 @@ public class RegionalAnalysisController {
 
                 System.out.println("Provinces selected for analysis: " + provinceNames);
 
-                FireInputData input = new FireInputData(provinceNames, date, range);
+                LoadFiresInputData input = new LoadFiresInputData(provinceNames, date, range);
 
                 MultiRegionStatsPopupView popupView = new MultiRegionStatsPopupView(stats);
                 popupView.setVisible(true);

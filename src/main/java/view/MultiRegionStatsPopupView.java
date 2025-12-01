@@ -15,6 +15,9 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+import java.awt.Color;
+import org.jfree.chart.plot.CategoryPlot;
+
 import entities.MultiRegionFireStats;
 import kotlin.Pair;
 
@@ -69,11 +72,17 @@ public class MultiRegionStatsPopupView extends JDialog {
             }
         }
 
-        return ChartFactory.createLineChart(
+        JFreeChart chart = ChartFactory.createLineChart(
                 "Fire Incidents Over Time",
                 "Date",
                 "Number of Fires",
                 dataset
         );
+        CategoryPlot plot = (CategoryPlot) chart.getPlot();
+        plot.setBackgroundPaint(Color.WHITE);
+        plot.setRangeGridlinePaint(Color.LIGHT_GRAY);
+
+        return chart;
+
     }
 }

@@ -72,7 +72,7 @@ public class Main {
                     fireViewModel
             );
 
-            final RegionalAnalysisController regionalAnalysisController = new RegionalAnalysisController(mainFrame, fireInteractor);
+            final RegionalAnalysisController regionalAnalysisController = new RegionalAnalysisController(mainFrame, loadFiresInteractor);
 
             mainFrame.setVisible(true);
         });

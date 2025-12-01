@@ -1,15 +1,17 @@
 package usecase.common;
 
-import entities.Coordinate;
-import entities.Fire;
-import entities.FireFactory;
-import entities.Region;
-import entities.SeverityFilter;
+import data_access.GetFireData;
+import entities.*;
+import kotlin.Pair;
 import org.jxmapviewer.viewer.GeoPosition;
 
 import java.awt.geom.Path2D;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service containing shared business logic for processing fire data.
@@ -86,6 +88,7 @@ public class FireService {
         }
         return filtered;
     }
+
 
     /**
      * Checks if a coordinate is inside a complex region boundary.
