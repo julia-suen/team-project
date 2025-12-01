@@ -4,14 +4,12 @@ public class MarkerOutputData {
     final double lat;
     final double lon;
     final int size;
-    final String date;
     final double frp;
 
-    public MarkerOutputData(double lat, double lon, int size, String date, double frp) {
+    public MarkerOutputData(double lat, double lon, int size, double frp) {
         this.lat = lat;
         this.lon = lon;
         this.size = size;
-        this.date = date;
         this.frp = frp;
     }
 
@@ -25,10 +23,6 @@ public class MarkerOutputData {
 
     public int getSize() {
         return size;
-    }
-
-    public String getDate() {
-        return date;
     }
 
     public double getFrp() {

@@ -9,7 +9,6 @@ public class MarkerInfoPanel extends JPanel {
     private final JLabel lonLabel = new JLabel();
     private final JLabel sizeLabel = new JLabel();
     private final JLabel frpLabel = new JLabel();
-    private final JLabel dateLabel = new JLabel();
 
     public MarkerInfoPanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -19,17 +18,15 @@ public class MarkerInfoPanel extends JPanel {
         this.add(lonLabel);
         this.add(sizeLabel);
         this.add(frpLabel);
-        this.add(dateLabel);
 
         setVisible(false); // start hidden
     }
 
-    public void update(double lat, double lon, int size, String date, double frp) {
+    public void update(double lat, double lon, int size, double frp) {
         latLabel.setText(" Lat: " + lat);
         lonLabel.setText(" Lon: " + lon);
         sizeLabel.setText(" Size: " + size);
         frpLabel.setText(" FRP: " + frp);
-        dateLabel.setText(" Date: " + date);
 
         setVisible(true);
         repaint();

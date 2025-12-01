@@ -8,7 +8,6 @@ public class MarkerViewModel {
     private double lat;
     private double lon;
     private int size;
-    private String date;
     private double frp;
     private String error;
 
@@ -36,10 +35,6 @@ public class MarkerViewModel {
         return size;
     }
 
-    public String getDate() {
-        return date;
-    }
-
     public double getFrp() {
         return frp;
     }
@@ -58,10 +53,6 @@ public class MarkerViewModel {
 
     public void setSize(int size) {
         this.size = size;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public void setFrp(double frp) {

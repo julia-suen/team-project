@@ -106,7 +106,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
         this.markerController = new MarkerController(markerInteractor);
 
         markerInfoPanel = new MarkerInfoPanel();
-        markerInfoPanel.setBounds(520, 20, 200, 90);
+        markerInfoPanel.setBounds(560, 20, 160, 70);
         this.add(markerInfoPanel);
 
         this.regionBoundaryPainter = new RegionBoundaryPainter();
@@ -307,11 +307,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
                 this.markerViewModel.getLat(),
                 this.markerViewModel.getLon(),
                 this.markerViewModel.getSize(),
-                this.markerViewModel.getDate(),
                 this.markerViewModel.getFrp()
-
         );
-
-
     }
 }

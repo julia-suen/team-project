@@ -17,9 +17,8 @@ public class MarkerInteractor implements MarkerInputBoundary {
             final double lat = fire.getLat();
             final double lon = fire.getLon();
             final int size = fire.getCoordinatesSize();
-            final String date = fire.getDate();
             final double frp = fire.getFrp();
-            final MarkerOutputData markerOutputData = new MarkerOutputData(lat, lon, size, date, frp);
+            final MarkerOutputData markerOutputData = new MarkerOutputData(lat, lon, size, frp);
             markerPresenter.prepareSuccessView(markerOutputData);
         }catch(Exception e){
             markerPresenter.prepareFailView("Unexpected error: " + e.getMessage());

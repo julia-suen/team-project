@@ -45,10 +45,6 @@ public class Fire {
         return coordinates.size();
     }
 
-    public String getDate(){
-        return center.getDate();
-    }
-
     public double getFrp(){
         return center.getFrp();
     }
