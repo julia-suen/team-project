@@ -1,4 +1,4 @@
-package interface_adapter.favourites;
+package use_case.favourites;
 
 import java.util.List;
 

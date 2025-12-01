@@ -1,4 +1,4 @@
-package interface_adapter.favourites;
+package use_case.favourites;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,17 +43,17 @@ public class FavouritesInteractor implements FavouritesInputBoundary {
         }
         favourites.add(province);
         final FavouritesOutputData outputData = new FavouritesOutputData(new ArrayList<>(favourites));
-        favouritesPresenter.preparesuccessView(outputData);
+        favouritesPresenter.prepareSuccessView(outputData);
     }
 
     private void handleClear() {
         favourites.clear();
         final FavouritesOutputData outputData = new FavouritesOutputData(new ArrayList<>(favourites));
-        favouritesPresenter.preparesuccessView(outputData);
+        favouritesPresenter.prepareSuccessView(outputData);
     }
 
     private void handleGet() {
         final FavouritesOutputData outputData = new FavouritesOutputData(new ArrayList<>(favourites));
-        favouritesPresenter.preparesuccessView(outputData);
+        favouritesPresenter.prepareSuccessView(outputData);
     }
 }

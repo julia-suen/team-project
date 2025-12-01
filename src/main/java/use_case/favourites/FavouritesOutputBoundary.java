@@ -1,11 +1,11 @@
-package interface_adapter.favourites;
+package use_case.favourites;
 
 public interface FavouritesOutputBoundary {
     /**
      * Prepares success view for favourites use case.
      * @param outputData the output for success view.
      */
-    void preparesuccessView(FavouritesOutputData outputData);
+    void prepareSuccessView(FavouritesOutputData outputData);
 
     /**
      * Prepares failure view for favourites use case.
@@ -13,3 +13,4 @@ public interface FavouritesOutputBoundary {
      */
     void prepareFailureView(String errorMessage);
 }
+
