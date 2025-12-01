@@ -67,7 +67,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
     private final transient RegionBoundaryPainter regionBoundaryPainter;
     private final transient MarkerController markerController;
     private final transient MarkerViewModel markerViewModel;
-    private MarkerInfoPanel markerInfoPanel;
+    private final MarkerInfoPanel markerInfoPanel;
     private boolean firesDisplayed = false;
 
     /**
@@ -216,7 +216,6 @@ public class MapView extends JPanel implements PropertyChangeListener {
                     if (fire != null) {
                         markerController.execute(fire);
                         markerInfoPanel.setVisible(true);
-                        // System.out.println("Hovering fire: " + fire.getCenter().getLat() + fire.getCenter().getLon());
                     }else{
                         markerInfoPanel.setVisible(false);
                     }
@@ -244,7 +243,6 @@ public class MapView extends JPanel implements PropertyChangeListener {
             this.regionBoundaryPainter.setRegion(selectedRegion);
             this.repaint();
         }else if ("markerHover".equals(evt.getPropertyName())){
-            System.out.println("displaying details");
             displayMarkerDetails();
             this.repaint();
         }

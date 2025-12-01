@@ -35,7 +35,4 @@ public class MarkerInfoPanel extends JPanel {
         repaint();
     }
 
-    public void hidePanel() {
-        setVisible(false);
-    }
 }
