@@ -49,6 +49,7 @@ public class SidePanelView extends JPanel {
     private final JButton medSeverityButton = new JButton("Medium");
     private final JButton highSeverityButton = new JButton("High");
     private final JButton addFavouriteButton = new JButton("+ Add Favourite");
+    private final JButton launchMultiRegionAnalysisButton = new JButton("Compare");
     private final JButton removeFavouritesButton = new JButton("- Clear Favourites");
 
     // Initialize province selector dynamically using the source of truth
@@ -62,19 +63,19 @@ public class SidePanelView extends JPanel {
     private final JComboBox<String> favouriteSelector;
 
     private final String[] provinceOptions = {
-        "Alberta",
-        "BC",
-        "Manitoba",
-        "New Brunswick",
-        "Newfoundland & Labrador",
-        "Nova Scotia",
-        "Nunavut",
-        "NWT",
-        "Ontario",
-        "PEI",
-        "Quebec",
-        "Saskatchewan",
-        "Yukon"};
+            "Alberta",
+            "BC",
+            "Manitoba",
+            "New Brunswick",
+            "Newfoundland & Labrador",
+            "Nova Scotia",
+            "Nunavut",
+            "NWT",
+            "Ontario",
+            "PEI",
+            "Quebec",
+            "Saskatchewan",
+            "Yukon"};
 
     private final DefaultComboBoxModel<String> favouriteModel;
 
@@ -266,9 +267,14 @@ public class SidePanelView extends JPanel {
         nationalButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         nationalButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
 
+        launchMultiRegionAnalysisButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        launchMultiRegionAnalysisButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+
         buttonPanel.add(loadFiresButton);
         buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
         buttonPanel.add(nationalButton);
+        buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
+        buttonPanel.add(launchMultiRegionAnalysisButton);
         buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
 
         add(buttonPanel);
@@ -367,6 +373,10 @@ public class SidePanelView extends JPanel {
 
     public JButton getHighSeverityButton() {
         return highSeverityButton;
+    }
+
+    public JButton getLaunchMultiRegionAnalysisButton() {
+        return launchMultiRegionAnalysisButton;
     }
 
     public JButton getFavouritesButton() {

@@ -1,6 +1,7 @@
 package app;
 
 import controller.MapController;
+import controller.RegionalAnalysisController;
 import data_access.BoundariesDataAccess;
 import data_access.FireDataAccess;
 import entities.FireFactory;
@@ -70,6 +71,8 @@ public class Main {
                     severityController,
                     fireViewModel
             );
+
+            final RegionalAnalysisController regionalAnalysisController = new RegionalAnalysisController(mainFrame, fireInteractor);
 
             mainFrame.setVisible(true);
         });
