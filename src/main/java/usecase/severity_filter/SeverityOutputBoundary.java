@@ -1,4 +1,4 @@
-package use_case.severity_filter;
+package usecase.severity_filter;
 
 /**
  * The output boundary for the severity filtering use case.

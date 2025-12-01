@@ -1,8 +1,8 @@
 package interface_adapter.select_region;
 
 import org.jxmapviewer.viewer.GeoPosition;
-import use_case.select_region.SelectRegionInputBoundary;
-import use_case.select_region.SelectRegionInputData;
+import usecase.select_region.SelectRegionInputBoundary;
+import usecase.select_region.SelectRegionInputData;
 
 /**
  * The Controller for the Select Region use case. It takes user input from the

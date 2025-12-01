@@ -2,7 +2,9 @@ package interface_adapter.fire_data;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.List;
 
+import entities.Fire;
 import interface_adapter.ViewModel;
 
 /**
@@ -27,6 +29,14 @@ public class FireViewModel extends ViewModel<FireState> {
     @Override
     public void firePropertyChange() {
         support.firePropertyChange("state", null, this.getState());
+    }
+
+    /**
+     * Fires event when fires are loaded so severity controller can update cache + apply filters if needed.
+     * @param fires the loaded fires
+     */
+    public void fireFiresLoaded(List<Fire> fires) {
+        support.firePropertyChange("fires_loaded", null, fires);
     }
 
     /**
