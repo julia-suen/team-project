@@ -85,25 +85,23 @@ public class Main {
             final SeverityInteractor severityInteractor = new SeverityInteractor(severityPresenter);
             final MarkerInteractor markerInteractor = new MarkerInteractor(markerPresenter, fireViewModel);
 
-            // Initialize View
-            final MainFrame mainFrame = new MainFrame(regionRepository);
-
             // Initialize Controllers
             final FireController fireController = new FireController(loadFiresInteractor, nationalInteractor);
             final SeverityController severityController = new SeverityController(severityInteractor);
             final MarkerController markerController = new MarkerController(markerInteractor);
-            final UserController userController = new UserController(mainFrame, false);
             fireViewModel.addPropertyChangeListener(severityController);
 
             // load favourites use case presenter, interactor and controller
             final FavouritesViewModel favouritesViewModel = new FavouritesViewModel();
             final FavouritesPresenter favouritesPresenter = new FavouritesPresenter(favouritesViewModel);
             final FavouritesInteractor favouritesInteractor = new FavouritesInteractor(favouritesPresenter, favouritesDataAccess);
-            final FavouritesController favouritesController = new FavouritesController(favouritesInteractor, PROVINCE_OPTIONS, userController);
-            favouritesInteractor.setCurrentUser(userController.getCurrentUser());
             
             // Initialize View
             final MainFrame mainFrame = new MainFrame(regionRepository, markerController, markerViewModel);
+
+            final UserController userController = new UserController(mainFrame, false);
+            final FavouritesController favouritesController = new FavouritesController(favouritesInteractor, PROVINCE_OPTIONS, userController);
+            favouritesInteractor.setCurrentUser(userController.getCurrentUser());
 
             // Initialize Mediator/View Logic
             final MapController mapController = new MapController(
