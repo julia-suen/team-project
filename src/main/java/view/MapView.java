@@ -263,7 +263,9 @@ public class MapView extends JPanel implements PropertyChangeListener {
 
     public void clearFires() {
         this.waypoints.clear();
+        this.markers.clear();
         this.waypointPainter.setWaypoints(this.waypoints);
+        this.fireMarkerPainter.setWaypoints(this.markers);
         this.mapKit.getMainMap().repaint();
         this.firesDisplayed = false;
     }
