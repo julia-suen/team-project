@@ -1,16 +1,16 @@
 package usecase.load_fires;
 
-import entities.Coordinate;
-import entities.Fire;
-import entities.Region;
-import usecase.common.FireService;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import entities.Coordinate;
+import entities.Fire;
+import entities.Region;
+import usecase.common.FireService;
 
 /**
  * Interactor for the "Load Fires" use case.
@@ -96,8 +96,8 @@ public class LoadFiresInteractor implements LoadFiresInputBoundary {
             presenter.prepareSuccessView(output);
 
         }
-        catch (Exception e) {
-            presenter.prepareFailView("Error fetching data: " + e.getMessage());
+        catch (Exception ex) {
+            presenter.prepareFailView("Error fetching data: " + ex.getMessage());
         }
     }
 }
