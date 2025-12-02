@@ -45,6 +45,7 @@ public class SidePanelView extends JPanel {
 
     private final JButton loadFiresButton = new JButton("Load Fires");
     private final JButton nationalButton = new JButton("National Overview");
+    private final JButton launchMultiRegionAnalysisButton = new JButton("Compare");
     private final JButton resetButton = new JButton("Reset");
     private final JButton medSeverityButton = new JButton("Medium");
     private final JButton highSeverityButton = new JButton("High");

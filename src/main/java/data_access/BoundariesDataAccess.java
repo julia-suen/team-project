@@ -8,6 +8,9 @@ import java.util.Map;
 
 import entities.Region;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -16,15 +19,17 @@ import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jxmapviewer.viewer.GeoPosition;
+import usecase.compare.CompareBoundaryDataAccess;
 import usecase.load_fires.LoadFiresBoundaryDataAccess;
 import usecase.national_overview.NationalOverviewBoundaryDataAccess;
 
 /**
  * Data access object for fetching geographical boundary data from the Nominatim API.
  */
-public class BoundariesDataAccess implements LoadFiresBoundaryDataAccess, NationalOverviewBoundaryDataAccess {
+public class BoundariesDataAccess implements LoadFiresBoundaryDataAccess, NationalOverviewBoundaryDataAccess, CompareBoundaryDataAccess {
     private static final String API_URL_TEMPLATE =
             "https://nominatim.openstreetmap.org/search?q=%s+canada&format=json&polygon_geojson=1&polygon_threshold=0.1";
+    private static final String NAME_KEY = "name";
     private static final String GEOJSON_KEY = "geojson";
     private static final String TYPE_KEY = "type";
     private static final String COORDINATES_KEY = "coordinates";
@@ -65,23 +70,77 @@ public class BoundariesDataAccess implements LoadFiresBoundaryDataAccess, Nation
 
     /**
      * Loads the boundary data for all Canadian provinces and territories.
-     * This method iterates through a predefined list of provinces, fetches the
-     * boundary data for each, and stores it in a local cache.
+     * This method first tries to load from boundaries.json file in resources.
+     * If the file is not found or fails to load, it falls back to fetching from the API.
      *
-     * @throws GetFireData.InvalidDataException if an error occurs during the API request or data parsing.
+     * @throws GetFireData.InvalidDataException if an error occurs during loading or parsing.
      */
     public void loadProvinces() throws GetFireData.InvalidDataException {
-        for (Province prov : Province.values()) {
-            System.out.println(String.format("Started fetching boundaries data for %s.", prov.getDisplayName()));
-            final List<List<GeoPosition>> boundary = getBoundariesData(prov);
-            final Region region = new Region(prov.getDisplayName(), boundary);
-            this.provincesToRegionMap.put(prov.getDisplayName(), region);
-            System.out.println(String.format("Finished fetching boundaries data for %s.", prov.getDisplayName()));
+        // Locate the local file in resources
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("boundaries.json");
+
+        if (inputStream != null) {
+            System.out.println("JSON file exists");
+            loadProvincesFromJson(inputStream);
+        } else {
+            System.out.println("JSON file not found or failed to load. Falling back to API.");
+            for (Province prov : Province.values()) {
+                System.out.println(String.format("Started fetching boundaries data for %s.", prov.getDisplayName()));
+                final List<List<GeoPosition>> boundary = getBoundariesData(prov);
+                final Region region = new Region(prov.getDisplayName(), boundary);
+                this.provincesToRegionMap.put(prov.getDisplayName(), region);
+                System.out.println(String.format("Finished fetching boundaries data for %s.", prov.getDisplayName()));
+            }
         }
 
         // For the entire Canada
         final Region allCanada = new Region("Canada", getBoundariesData("canada"));
         this.provincesToRegionMap.put("Canada", allCanada);
+    }
+
+    /**
+     * Loads province boundary data from a JSON file input stream.
+     *
+     * @param inputStream The input stream containing the JSON file content.
+     * @throws GetFireData.InvalidDataException if an error occurs during parsing.
+     */
+    public void loadProvincesFromJson(InputStream inputStream) throws GetFireData.InvalidDataException {
+        String content;
+        try (Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8)) {
+            content = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+
+            // Parse JSON
+            JSONArray jsonArray = new JSONArray(content);
+            System.out.println("Number of objects in JSON array: " + jsonArray.length());
+
+            // Iterate through provinces and territories
+            for (int i = 0; i < jsonArray.length(); i++) {
+                final List<List<GeoPosition>> boundaries = new ArrayList<>();
+
+                String name = jsonArray.getJSONObject(i).getString(NAME_KEY);
+                JSONObject geoJsonObj = jsonArray.getJSONObject(i).getJSONObject(GEOJSON_KEY);
+                final String polygonType = geoJsonObj.getString(TYPE_KEY);
+                final JSONArray coords = geoJsonObj.getJSONArray(COORDINATES_KEY);
+
+                if (POLYGON_TYPE.equals(polygonType)) {
+                    final JSONArray outerRing = coords.getJSONArray(0);
+                    boundaries.add(parsePolygon(outerRing));
+                } else if (MULTIPOLYGON_TYPE.equals(polygonType)) {
+                    for (int j = 0; j < coords.length(); j++) {
+                        final JSONArray jsonPolygon = coords.getJSONArray(j);
+                        final List<GeoPosition> polygon = parsePolygon(jsonPolygon.getJSONArray(0));
+                        boundaries.add(polygon);
+                    }
+                }
+
+                final Region region = new Region(name, boundaries);
+                this.provincesToRegionMap.put(name, region);
+                System.out.println("Finished loading " + name + " from JSON file");
+            }
+        } catch (Exception e) {
+            System.err.println("Exception occurred when reading the boundaries file: " + e.getMessage());
+            throw new GetFireData.InvalidDataException("Failed to load boundaries from JSON file: " + e.getMessage());
+        }
     }
 
     /**
@@ -133,7 +192,6 @@ public class BoundariesDataAccess implements LoadFiresBoundaryDataAccess, Nation
         if (responseArray.isEmpty()) {
             return boundaries;
         }
-
 
         final JSONObject geoJsonObj = responseArray.getJSONObject(0).getJSONObject(GEOJSON_KEY);
         final String polygonType = geoJsonObj.getString(TYPE_KEY);
