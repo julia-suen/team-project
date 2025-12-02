@@ -91,7 +91,7 @@ public class Main {
             final MarkerController markerController = new MarkerController(markerInteractor);
             fireViewModel.addPropertyChangeListener(severityController);
 
-            // load favourites use case presenter, interactor and controller
+            // Initialise favourites use case presenter, interactor and view model
             final FavouritesViewModel favouritesViewModel = new FavouritesViewModel();
             final FavouritesPresenter favouritesPresenter = new FavouritesPresenter(favouritesViewModel);
             final FavouritesInteractor favouritesInteractor = new FavouritesInteractor(favouritesPresenter, favouritesDataAccess);

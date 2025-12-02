@@ -2,7 +2,6 @@ package interface_adapter.favourites;
 
 import usecase.favourites.FavouritesInputData;
 import usecase.favourites.FavouritesInputBoundary;
-import usecase.favourites.FavouritesInteractor;
 import usecase.favourites.FavouritesAction;
 import controller.UserController;
 
