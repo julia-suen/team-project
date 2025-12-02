@@ -1,7 +1,8 @@
 package usecase.national_overview;
 
-import entities.Coordinate;
 import java.util.List;
+
+import entities.Coordinate;
 
 /**
  * Data Access Interface for fetching fire data required by the "National Overview" use case.
