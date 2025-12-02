@@ -30,7 +30,7 @@ public class JComboCheckBox extends JComboBox<JCheckBox> {
         }
     }
 
-    // Helper method to retrieve all selected provinces
+        // Helper method to retrieve all selected provinces
     public List<JCheckBox> getCheckedItems() {
         final List<JCheckBox> selected = new ArrayList<>();
 
