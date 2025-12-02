@@ -54,9 +54,6 @@ public class FavouritesInteractor implements FavouritesInputBoundary {
 
     private void handleAdd(String province) {
         if (currentUser == null) {
-            System.out.println("DEBUG: handleAdd called with province " + province);
-            System.out.println("DEBUG: Current user is: " + (currentUser != null ? currentUser.getUsername() : "NULL"));  // NEW
-            // System.out.println("DEBUG: handleAdd called with username " +  currentUser.getUsername());
             favouritesPresenter.prepareFailureView("Please log in to add favourite!");
             return;
         }
