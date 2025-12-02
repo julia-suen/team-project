@@ -1,14 +1,23 @@
 package usecase.marker;
 
-
 import entities.Fire;
 
 import java.util.List;
+
+/**
+ * Interactor for the Marker Use Case.
+ * Find the fire from the list of fire that are currently displaying
+ */
 
 public class MarkerInteractor implements MarkerInputBoundary {
     private final MarkerOutputBoundary markerPresenter;
     private final FireDisplayStateReader fireDisplayStateReader;
 
+    /**
+     * Constructs a MarkerInteractor.
+     * @param markerOutputBoundary the presenter
+     * @param fireDisplayStateReader the fireViewModel
+     */
     public MarkerInteractor(MarkerOutputBoundary markerOutputBoundary, FireDisplayStateReader fireDisplayStateReader) {
         this.markerPresenter = markerOutputBoundary;
         this.fireDisplayStateReader = fireDisplayStateReader;
@@ -20,7 +29,7 @@ public class MarkerInteractor implements MarkerInputBoundary {
             final double mouseLat = markerInputData.getLat();
             final double mouseLon = markerInputData.getLon();
             final List<Fire> currentFires = fireDisplayStateReader.getDisplayedFires();
-            Fire foundFire = findFireAtGeoPosition(currentFires, mouseLat, mouseLon);
+            Fire foundFire = findFireAtCoord(currentFires, mouseLat, mouseLon);
             if(foundFire != null){
                 final double lat = foundFire.getLat();
                 final double lon = foundFire.getLon();
@@ -34,8 +43,8 @@ public class MarkerInteractor implements MarkerInputBoundary {
         }
     }
 
-    // Helper method for finding the fire (must be added to MarkerInteractor)
-    private Fire findFireAtGeoPosition(List<Fire> fires, double mouseLat, double mouseLon) {
+    // Helper method for finding the fire with a coordinate
+    private Fire findFireAtCoord(List<Fire> fires, double mouseLat, double mouseLon) {
         for (Fire fire : fires) {
             double fireLat = fire.getLat();
             double fireLon = fire.getLon();

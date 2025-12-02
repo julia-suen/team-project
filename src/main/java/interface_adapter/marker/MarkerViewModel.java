@@ -11,8 +11,6 @@ public class MarkerViewModel {
     private double frp;
     private String error;
 
-    public static final String MARKER_HOVER_PROPERTY = "markerHover";
-
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -20,7 +18,7 @@ public class MarkerViewModel {
     }
 
     public void firePropertyChanged() {
-        this.support.firePropertyChange(MARKER_HOVER_PROPERTY, null, null);
+        this.support.firePropertyChange("markerHover", null, null);
     }
 
     public double getLat() {

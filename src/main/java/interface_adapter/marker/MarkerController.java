@@ -11,7 +11,7 @@ public class MarkerController {
     }
 
     public void execute(double lat, double lon) {
-        final MarkerInputData loginInputData = new MarkerInputData(lat, lon);
-        markerUseCaseInteractor.execute(loginInputData);
+        final MarkerInputData markerInputData = new MarkerInputData(lat, lon);
+        markerUseCaseInteractor.execute(markerInputData);
     }
 }
