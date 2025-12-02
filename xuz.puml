@@ -1,0 +1,50 @@
+@startuml
+interface usecase.load_fires.LoadFiresOutputBoundary {
+~ void prepareSuccessView(LoadFiresOutputData)
+~ void prepareFailView(String)
+}
+
+class usecase.load_fires.LoadFiresInputData {
+- String province
+- String date
+- int dateRange
++ String getProvince()
++ String getDate()
++ int getDateRange()
+}
+
+
+interface usecase.load_fires.LoadFiresBoundaryDataAccess {
+~ Region getRegion(String)
+}
+
+class usecase.load_fires.LoadFiresOutputData {
+- List<Fire> fires
+- Map<String,Integer> fireTrendData
++ List<Fire> getFires()
++ Map<String,Integer> getFireTrendData()
+}
+
+
+interface usecase.load_fires.LoadFiresFireDataAccess {
+~ List<Coordinate> getFireData(int,String)
+}
+
+interface usecase.load_fires.LoadFiresInputBoundary {
+~ void execute(LoadFiresInputData)
+}
+
+class usecase.load_fires.LoadFiresInteractor {
+- {static} String LABEL_FORMAT
+- LoadFiresFireDataAccess fireAccess
+- LoadFiresBoundaryDataAccess boundaryAccess
+- LoadFiresOutputBoundary presenter
+- FireService fireService
++ void execute(LoadFiresInputData)
+}
+
+
+
+
+usecase.load_fires.LoadFiresInputBoundary <|.. usecase.load_fires.LoadFiresInteractor
+@enduml

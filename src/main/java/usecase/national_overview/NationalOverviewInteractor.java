@@ -1,16 +1,16 @@
 package usecase.national_overview;
 
-import entities.Coordinate;
-import entities.Fire;
-import entities.Region;
-import usecase.common.FireService;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import entities.Coordinate;
+import entities.Fire;
+import entities.Region;
+import usecase.common.FireService;
 
 /**
  * Interactor for the "National Overview" use case.
@@ -100,8 +100,8 @@ public class NationalOverviewInteractor implements NationalOverviewInputBoundary
             presenter.prepareSuccessView(output);
 
         }
-        catch (Exception e) {
-            presenter.prepareFailView("Error processing national overview: " + e.getMessage());
+        catch (Exception ex) {
+            presenter.prepareFailView("Error processing national overview: " + ex.getMessage());
         }
     }
 }

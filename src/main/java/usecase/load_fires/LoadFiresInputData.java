@@ -9,7 +9,7 @@ public class LoadFiresInputData {
     private final int dateRange;
 
     /**
-     * Constructs a LoadFiresInputData object
+     * Constructs a LoadFiresInputData object.
      * @param province  the name of the selected province (or "All")
      * @param date      the date string in YYYY-MM-DD format
      * @param dateRange the range of days to fetch data for

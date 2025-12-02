@@ -1,7 +1,9 @@
 package app;
 
 import controller.MapController;
+import controller.UserController;
 import data_access.BoundariesDataAccess;
+import data_access.FavouritesDataAccess;
 import data_access.FireDataAccess;
 import entities.FireFactory;
 import interface_adapter.ViewManagerModel;
@@ -37,15 +39,15 @@ public class Main {
         "British Columbia",
         "Manitoba",
         "Newfoundland and Labrador",
-        "New Brunswick",
-        "Nunavut",
         "Northwest Territories",
         "Nova Scotia",
+        "New Brunswick",
+        "Nunavut",
         "Ontario",
-        "Prince Edward Islands",
+        "Prince Edward Island",
         "Quebec",
         "Saskatchewan",
-        "Yukon",
+        "Yukon"
     };
 
     public static void main(String[] args) {
@@ -55,6 +57,7 @@ public class Main {
             final BoundariesDataAccess boundariesAccess = new BoundariesDataAccess();
             final FireFactory factory = new FireFactory(Collections.emptyList());
             final FireDataAccess fireDataAccess = new FireDataAccess(factory);
+            final FavouritesDataAccess favouritesDataAccess = new FavouritesDataAccess();
 
             // Initialize Interface Adapters & Services
             final RegionRepository regionRepository = new RegionRepository(boundariesAccess);
@@ -82,18 +85,23 @@ public class Main {
             final SeverityInteractor severityInteractor = new SeverityInteractor(severityPresenter);
             final MarkerInteractor markerInteractor = new MarkerInteractor(markerPresenter, fireViewModel);
 
+            // Initialize View
+            final MainFrame mainFrame = new MainFrame(regionRepository);
+
             // Initialize Controllers
             final FireController fireController = new FireController(loadFiresInteractor, nationalInteractor);
             final SeverityController severityController = new SeverityController(severityInteractor);
             final MarkerController markerController = new MarkerController(markerInteractor);
+            final UserController userController = new UserController(mainFrame, false);
             fireViewModel.addPropertyChangeListener(severityController);
 
             // load favourites use case presenter, interactor and controller
             final FavouritesViewModel favouritesViewModel = new FavouritesViewModel();
             final FavouritesPresenter favouritesPresenter = new FavouritesPresenter(favouritesViewModel);
-            final FavouritesInteractor favouritesInteractor = new FavouritesInteractor(favouritesPresenter);
-            final FavouritesController favouritesController = new FavouritesController(favouritesInteractor, PROVINCE_OPTIONS);
-
+            final FavouritesInteractor favouritesInteractor = new FavouritesInteractor(favouritesPresenter, favouritesDataAccess);
+            final FavouritesController favouritesController = new FavouritesController(favouritesInteractor, PROVINCE_OPTIONS, userController);
+            favouritesInteractor.setCurrentUser(userController.getCurrentUser());
+            
             // Initialize View
             final MainFrame mainFrame = new MainFrame(regionRepository, markerController, markerViewModel);
 
@@ -103,6 +111,7 @@ public class Main {
                     fireController,
                     severityController,
                     favouritesController,
+                    userController,
                     fireViewModel,
                     favouritesViewModel
             );
