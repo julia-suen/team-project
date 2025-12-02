@@ -31,15 +31,16 @@ public class MapController implements PropertyChangeListener {
     private final FavouritesController favouritesController;
     private final FavouritesViewModel favouritesViewModel;
     private final FireViewModel fireViewModel;
-    // private final FavouritesController favouritesController;
+    private final UserController userController;
 
     public MapController(MainFrame mainFrame, FireController fireController, SeverityController severityController,
-                         FavouritesController favouritesController,
+                         FavouritesController favouritesController, UserController userController,
                          FireViewModel fireViewModel, FavouritesViewModel favouritesViewModel) {
         this.mainFrame = mainFrame;
         this.fireController = fireController;
         this.severityController = severityController;
         this.favouritesController = favouritesController;
+        this.userController = userController;
         this.fireViewModel = fireViewModel;
         this.favouritesViewModel = favouritesViewModel;
 
@@ -89,6 +90,23 @@ public class MapController implements PropertyChangeListener {
             if (selected != null && !selected.equals(NO_FAVOURITES_MESSAGE)) {
                 loadFromFavourite(selected);
             }
+        });
+
+        // Log out
+        mainFrame.getSidePanelView().getLogoutButton().addActionListener(evt -> {
+                if (userController.getCurrentUser() == null) {
+                    JOptionPane.showMessageDialog(
+                            mainFrame,
+                            "You are logged out",
+                            "Not logged in",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+                else {
+                    userController.logout();
+                    //Clear favourites from interactor
+                    favouritesController.setCurrentUser(null);
+                }
         });
     }
 
