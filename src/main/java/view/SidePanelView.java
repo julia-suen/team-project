@@ -384,7 +384,4 @@ public class SidePanelView extends JPanel {
     public GraphPanel getGraphPanel() {
         return graphPanel;
     }
-
-    // Will need to add Favourites dropdown here.
-
 }
