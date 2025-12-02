@@ -59,4 +59,5 @@ public class Coordinate {
     public double getFrp() {
         return frp;
     }
+
 }

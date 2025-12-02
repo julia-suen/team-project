@@ -1,19 +1,13 @@
 package usecase.load_fires;
 
-import data_access.GetFireData;
 import entities.Coordinate;
 import entities.Fire;
-import entities.MultiRegionFireStats;
 import entities.Region;
-import kotlin.Pair;
 import usecase.common.FireService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import static java.lang.Integer.max;
-import static java.lang.Integer.min;
 
 /**
  * Interactor for the "Load Fires" use case.
@@ -24,7 +18,6 @@ import static java.lang.Integer.min;
 public class LoadFiresInteractor implements LoadFiresInputBoundary {
 
     private static final String LABEL_FORMAT = "MMM";
-    private static final DateTimeFormatter API_DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final LoadFiresFireDataAccess fireAccess;
     private final LoadFiresBoundaryDataAccess boundaryAccess;
     private final LoadFiresOutputBoundary presenter;
@@ -103,90 +96,4 @@ public class LoadFiresInteractor implements LoadFiresInputBoundary {
             presenter.prepareFailView("Error fetching data: " + e.getMessage());
         }
     }
-
-    @Override
-    public MultiRegionFireStats fetchStats(LoadFiresInputData fireInputData) {
-        Map<String, List<Pair<String, Integer>>> statsMap = new LinkedHashMap<>();
-
-        LocalDate userDate = LocalDate.parse(fireInputData.getDate(), API_DATE_FMT);
-        int range = fireInputData.getDateRange();
-
-        //Define expanded time window: [selectDate - Range] to [selectDate + 2*Range].
-        LocalDate grandStartDate = userDate.minusDays(range);
-        int totalDaysToFetch = range * 3;
-
-        List<Coordinate> allRawPoints = fetchAllRawPoints(grandStartDate, totalDaysToFetch);
-
-
-        // Retrieve the selected province
-        for (String provinceName : fireInputData.getProvinces()) {
-            List<Coordinate> regionPoints;
-
-            if ("All".equalsIgnoreCase(provinceName)) {
-                regionPoints = allRawPoints;
-            } else {
-                Region region = boundaryAccess.getRegion(provinceName);
-                if (region == null) {
-                    regionPoints = new ArrayList<>();
-                } else {
-
-                    List<Fire> fires = fireService.createFiresFromPoints(allRawPoints);
-                    fires = fireService.filterFiresByRegion(fires, region);
-
-                    regionPoints = new ArrayList<>();
-                    for (Fire f : fires) {
-                        regionPoints.addAll(f.getCoordinates());
-                    }
-                }
-            }
-
-            Map<String, Integer> dailyCounts = new TreeMap<>();
-
-            for (int i = 0; i < totalDaysToFetch; i++) {
-                String dayStr = grandStartDate.plusDays(i).format(API_DATE_FMT);
-                dailyCounts.put(dayStr, 0);
-            }
-
-            //Count actual fire points for each date.
-            for (Coordinate p : regionPoints) {
-                String pDate = p.getDate();
-                if (dailyCounts.containsKey(pDate)) {
-                    dailyCounts.put(pDate, dailyCounts.get(pDate) + 1);
-                }
-            }
-
-            List<Pair<String, Integer>> pointsList = new ArrayList<>();
-            for (Map.Entry<String, Integer> entry : dailyCounts.entrySet()) {
-                pointsList.add(new Pair<>(entry.getKey(), entry.getValue()));
-            }
-
-            statsMap.put(provinceName, pointsList);
-        }
-
-        return new MultiRegionFireStats(statsMap);
-    }
-
-    private List<Coordinate> fetchAllRawPoints(LocalDate startDate, int totalDays) {
-        List<Coordinate> accumulator = new ArrayList<>();
-        int daysFetched = 0;
-
-        //Loop to fetch data in chunks because API limits requests to 10 days max.
-        while (daysFetched < totalDays) {
-            LocalDate batchStart = startDate.plusDays(daysFetched);
-            int batchSize = Math.min(10, totalDays - daysFetched);
-
-            try {
-                List<Coordinate> batch = fireAccess.getFireData(batchSize, batchStart.toString());
-                if (batch != null) {
-                    accumulator.addAll(batch);
-                }
-            } catch (Exception e) {
-                System.err.println("Failed to fetch batch starting " + batchStart + ": " + e.getMessage());
-            }
-
-            daysFetched += batchSize;
-        }
-        return accumulator;
-    }
 }
-

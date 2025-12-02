@@ -10,19 +10,20 @@ import javax.swing.SwingWorker;
 
 import entities.MultiRegionFireStats;
 import entities.Province;
-import usecase.load_fires.LoadFiresInputData;
-import usecase.load_fires.LoadFiresInteractor;
+import usecase.compare.CompareInputBoundary;
+import usecase.compare.CompareInputData;
+import usecase.compare.CompareOutputData;
 import view.MainFrame;
 import view.MultiRegionStatsPopupView;
 
 public class RegionalAnalysisController {
     private final MainFrame mainFrame;
-    private final LoadFiresInteractor fireInteractor;
+    private final CompareInputBoundary compareInteractor;
     private MultiRegionFireStats stats;
 
-    public RegionalAnalysisController(MainFrame mainFrame, LoadFiresInteractor fireInteractor) {
+    public RegionalAnalysisController(MainFrame mainFrame, CompareInputBoundary compareInteractor) {
         this.mainFrame = mainFrame;
-        this.fireInteractor = fireInteractor;
+        this.compareInteractor = compareInteractor;
         addListeners();
     }
 
@@ -73,7 +74,7 @@ public class RegionalAnalysisController {
 
                 System.out.println("Provinces selected for analysis: " + provinceNames);
 
-                LoadFiresInputData input = new LoadFiresInputData(provinceNames, date, range);
+                CompareInputData input = new CompareInputData(provinceNames, date, range);
 
                 MultiRegionStatsPopupView popupView = new MultiRegionStatsPopupView(stats);
                 popupView.setHighlightRange(date, range);
@@ -82,7 +83,8 @@ public class RegionalAnalysisController {
                 new SwingWorker<MultiRegionFireStats, Void>() {
                     @Override
                     protected MultiRegionFireStats doInBackground() throws Exception {
-                        return fireInteractor.fetchStats(input);
+                        CompareOutputData output = compareInteractor.execute(input);
+                        return output.getStats();
                     }
 
                     @Override

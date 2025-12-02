@@ -45,11 +45,11 @@ public class SidePanelView extends JPanel {
 
     private final JButton loadFiresButton = new JButton("Load Fires");
     private final JButton nationalButton = new JButton("National Overview");
+    private final JButton launchMultiRegionAnalysisButton = new JButton("Compare");
     private final JButton resetButton = new JButton("Reset");
     private final JButton medSeverityButton = new JButton("Medium");
     private final JButton highSeverityButton = new JButton("High");
     private final JButton addFavouriteButton = new JButton("+ Add Favourite");
-    private final JButton launchMultiRegionAnalysisButton = new JButton("Compare");
     private final JButton removeFavouritesButton = new JButton("- Clear Favourites");
 
     // Initialize province selector dynamically using the source of truth
@@ -63,19 +63,19 @@ public class SidePanelView extends JPanel {
     private final JComboBox<String> favouriteSelector;
 
     private final String[] provinceOptions = {
-            "Alberta",
-            "BC",
-            "Manitoba",
-            "New Brunswick",
-            "Newfoundland & Labrador",
-            "Nova Scotia",
-            "Nunavut",
-            "NWT",
-            "Ontario",
-            "PEI",
-            "Quebec",
-            "Saskatchewan",
-            "Yukon"};
+          "Alberta",
+          "BC",
+          "Manitoba",
+          "New Brunswick",
+          "Newfoundland & Labrador",
+          "Nova Scotia",
+          "Nunavut",
+          "NWT",
+          "Ontario",
+          "PEI",
+          "Quebec",
+          "Saskatchewan",
+          "Yukon"};
 
     private final DefaultComboBoxModel<String> favouriteModel;
 
@@ -397,6 +397,10 @@ public class SidePanelView extends JPanel {
 
     public JComboBox<String> getDayRangeSelector() {
         return dayRangeSelector;
+    }
+
+    public JComboBox<String> getFavouriteSelector() {
+        return favouriteSelector;
     }
 
     public DatePicker getDatePickerComponent() {

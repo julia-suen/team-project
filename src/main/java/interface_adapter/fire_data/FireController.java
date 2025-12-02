@@ -1,13 +1,13 @@
 package interface_adapter.fire_data;
 
-import java.util.List;
-
 import javax.swing.SwingWorker;
 
 import usecase.load_fires.LoadFiresInputBoundary;
 import usecase.load_fires.LoadFiresInputData;
 import usecase.national_overview.NationalOverviewInputBoundary;
 import usecase.national_overview.NationalOverviewInputData;
+
+import java.util.List;
 
 /**
  * Controller for fire analysis use cases.

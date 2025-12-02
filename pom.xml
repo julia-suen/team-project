@@ -28,7 +28,6 @@
                 <configuration>
                     <source>16</source>
                     <target>16</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
@@ -77,13 +76,6 @@
             <version>11.2.1</version> <!-- or whatever version you pick -->
         </dependency>
 
-        <!-- JFreeChart for drawing line diagrams-->
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-            <version>1.5.4</version>
-        </dependency>
-
         <!-- JUnit 5 for testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -110,6 +102,11 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>4.5.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.4</version>
         </dependency>
     </dependencies>
 
