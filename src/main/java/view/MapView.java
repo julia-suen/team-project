@@ -248,9 +248,9 @@ public class MapView extends JPanel implements PropertyChangeListener {
      * @param location The geographical location of the fire.
      * @param radius The radius of the fire marker.
      */
-    public void addFireMarker(final GeoPosition location, final double radius, final Fire fire) {
-        this.waypoints.add(new FireWaypoint(location, radius, fire));
-        this.markers.add(new FireWaypoint(location, radius, fire));
+    public void addFireMarker(final GeoPosition location, final double radius) {
+        this.waypoints.add(new FireWaypoint(location, radius));
+        this.markers.add(new FireWaypoint(location, radius));
         this.waypointPainter.setWaypoints(this.waypoints);
         this.fireMarkerPainter.setWaypoints(this.markers);
         this.mapKit.getMainMap().repaint();
@@ -273,7 +273,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
                         fire.getCoordinates().get(0).getLat(),
                         fire.getCoordinates().get(0).getLon()
                 );
-                this.addFireMarker(geo, fire.getRadius(), fire);
+                this.addFireMarker(geo, fire.getRadius());
             }
         }
         this.firesDisplayed = true;

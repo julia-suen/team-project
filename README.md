@@ -8,7 +8,7 @@ The goal of this project is to create an interactive software that allows users 
 
 ### User Stories
 1. As a user, I want to analyse wildfire trends in my province over a range of time
-2. As a user, I want to hover over a wildfire marker to see its specifications (location - latitude, longitude; size; date)
+2. As a user, I want to hover over a wildfire marker to see its specifications (latitude-longitude location, number of fires, and fire radiative power)
 3. As a user, I am interested in observing trends in size and scale of wildfires in Canada over the past 3 months
 4. As a user, I would like to drag around the map to focus on specific areas, and zoom-in to get a close-up view of any one region
 5. As a user, I want to filter fires by severity (moderate / high) to focus on areas that are especially susceptible to large-scale fires (determined by Fire Radiation Power)
