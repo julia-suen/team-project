@@ -72,21 +72,28 @@ public class RegionalAnalysisController {
                 popupView.setHighlightRange(date, range);
                 popupView.setVisible(true);
 
-                new SwingWorker<MultiRegionFireStats, Void>() {
+                new SwingWorker<CompareOutputData, Void>() {
                     @Override
-                    protected MultiRegionFireStats doInBackground() throws Exception {
-                        CompareOutputData output = compareInteractor.execute(input);
-                        return output.getStats();
+                    protected CompareOutputData doInBackground() throws Exception {
+                        return compareInteractor.execute(input);
                     }
 
                     @Override
                     protected void done() {
                         try {
-                            MultiRegionFireStats result = get();
-                            setStats(result);
-                            popupView.updateStats(result);
+                            CompareOutputData output = get();
+                            MultiRegionFireStats resultStats = output.getStats();
+                            setStats(resultStats);
+                            popupView.updateStats(resultStats);
+
+                            // Update the main map with the aggregated fires
+                            if (mainFrame.getMapView() != null) {
+                                mainFrame.getMapView().displayFires(output.getFires());
+                            }
+
                         } catch (Exception e) {
                             popupView.showError("Failed to load fire stats: " + e.getMessage());
+                            e.printStackTrace();
                         }
                     }
                 }.execute();

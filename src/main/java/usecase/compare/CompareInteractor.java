@@ -14,7 +14,7 @@ import java.util.*;
 /**
  * Interactor for the "Compare" use case.
  * This class orchestrates the retrieval of fire data for multiple regions over a time range,
- * bundles raw coordinates into stats, and filters them based on the selected provinces.
+ * bundles raw coordinates into stats, and aggregates fires to be displayed on the map.
  */
 public class CompareInteractor implements CompareInputBoundary {
 
@@ -40,36 +40,41 @@ public class CompareInteractor implements CompareInputBoundary {
     @Override
     public CompareOutputData execute(CompareInputData inputData) {
         Map<String, List<Pair<String, Integer>>> statsMap = new LinkedHashMap<>();
+        Set<Fire> aggregatedFires = new LinkedHashSet<>(); // Use Set to avoid duplicates if regions overlap or "All" is used
 
         LocalDate userDate = LocalDate.parse(inputData.getDate(), API_DATE_FMT);
         int range = inputData.getDateRange();
 
-        //Define expanded time window: [selectDate - Range] to [selectDate + 2*Range].
+        // Define expanded time window: [selectDate - Range] to [selectDate + 2*Range].
         LocalDate grandStartDate = userDate.minusDays(range);
         int totalDaysToFetch = range * 3;
 
         List<Coordinate> allRawPoints = fetchAllRawPoints(grandStartDate, totalDaysToFetch);
 
+        // Optimization: Bundle all raw points into Fire objects once
+        List<Fire> allGlobalFires = fireService.createFiresFromPoints(allRawPoints);
+
         // Retrieve the selected province
         for (String provinceName : inputData.getProvinces()) {
-            List<Coordinate> regionPoints;
+            List<Coordinate> regionPoints = new ArrayList<>();
+            List<Fire> regionFires = new ArrayList<>();
 
             if ("All".equalsIgnoreCase(provinceName)) {
                 regionPoints = allRawPoints;
+                regionFires = allGlobalFires;
             } else {
                 Region region = boundaryAccess.getRegion(provinceName);
-                if (region == null) {
-                    regionPoints = new ArrayList<>();
-                } else {
-                    List<Fire> fires = fireService.createFiresFromPoints(allRawPoints);
-                    fires = fireService.filterFiresByRegion(fires, region);
+                if (region != null) {
+                    regionFires = fireService.filterFiresByRegion(allGlobalFires, region);
 
-                    regionPoints = new ArrayList<>();
-                    for (Fire f : fires) {
+                    for (Fire f : regionFires) {
                         regionPoints.addAll(f.getCoordinates());
                     }
                 }
             }
+
+            // Accumulate fires for display
+            aggregatedFires.addAll(regionFires);
 
             Map<String, Integer> dailyCounts = new TreeMap<>();
 
@@ -78,7 +83,7 @@ public class CompareInteractor implements CompareInputBoundary {
                 dailyCounts.put(dayStr, 0);
             }
 
-            //Count actual fire points for each date.
+            // Count actual fire points for each date.
             for (Coordinate p : regionPoints) {
                 String pDate = p.getDate();
                 if (dailyCounts.containsKey(pDate)) {
@@ -94,14 +99,14 @@ public class CompareInteractor implements CompareInputBoundary {
             statsMap.put(provinceName, pointsList);
         }
 
-        return new CompareOutputData(new MultiRegionFireStats(statsMap));
+        return new CompareOutputData(new MultiRegionFireStats(statsMap), new ArrayList<>(aggregatedFires));
     }
 
     private List<Coordinate> fetchAllRawPoints(LocalDate startDate, int totalDays) {
         List<Coordinate> accumulator = new ArrayList<>();
         int daysFetched = 0;
 
-        //Loop to fetch data in chunks because API limits requests to 10 days max.
+        // Loop to fetch data in chunks because API limits requests to 10 days max.
         while (daysFetched < totalDays) {
             LocalDate batchStart = startDate.plusDays(daysFetched);
             int batchSize = Math.min(10, totalDays - daysFetched);
