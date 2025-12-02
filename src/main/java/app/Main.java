@@ -11,12 +11,16 @@ import interface_adapter.favourites.FavouritesViewModel;
 import interface_adapter.fire_data.FireController;
 import interface_adapter.fire_data.FirePresenter;
 import interface_adapter.fire_data.FireViewModel;
+import interface_adapter.marker.MarkerController;
+import interface_adapter.marker.MarkerPresenter;
+import interface_adapter.marker.MarkerViewModel;
 import interface_adapter.region.RegionRepository;
 import interface_adapter.severity_filter.SeverityController;
 import interface_adapter.severity_filter.SeverityPresenter;
 import usecase.favourites.FavouritesInteractor;
 import usecase.common.FireService;
 import usecase.load_fires.LoadFiresInteractor;
+import usecase.marker.MarkerInteractor;
 import usecase.national_overview.NationalOverviewInteractor;
 import usecase.severity_filter.SeverityInteractor;
 import view.MainFrame;
@@ -59,10 +63,12 @@ public class Main {
             // Initialize ViewModels
             final FireViewModel fireViewModel = new FireViewModel();
             final ViewManagerModel viewManagerModel = new ViewManagerModel();
+            final MarkerViewModel markerViewModel = new MarkerViewModel();
 
             // Initialize Presenters
             final FirePresenter firePresenter = new FirePresenter(fireViewModel, viewManagerModel);
             final SeverityPresenter severityPresenter = new SeverityPresenter(fireViewModel);
+            final MarkerPresenter markerPresenter = new MarkerPresenter(markerViewModel);
 
             // Initialize Interactors (Use Cases)
             final LoadFiresInteractor loadFiresInteractor = new LoadFiresInteractor(
@@ -74,10 +80,12 @@ public class Main {
             );
 
             final SeverityInteractor severityInteractor = new SeverityInteractor(severityPresenter);
+            final MarkerInteractor markerInteractor = new MarkerInteractor(markerPresenter, fireViewModel);
 
             // Initialize Controllers
             final FireController fireController = new FireController(loadFiresInteractor, nationalInteractor);
             final SeverityController severityController = new SeverityController(severityInteractor);
+            final MarkerController markerController = new MarkerController(markerInteractor);
             fireViewModel.addPropertyChangeListener(severityController);
 
             // load favourites use case presenter, interactor and controller
@@ -87,7 +95,7 @@ public class Main {
             final FavouritesController favouritesController = new FavouritesController(favouritesInteractor, PROVINCE_OPTIONS);
 
             // Initialize View
-            final MainFrame mainFrame = new MainFrame(regionRepository);
+            final MainFrame mainFrame = new MainFrame(regionRepository, markerController, markerViewModel);
 
             // Initialize Mediator/View Logic
             final MapController mapController = new MapController(
