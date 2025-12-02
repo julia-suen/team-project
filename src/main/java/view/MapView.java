@@ -2,7 +2,6 @@ package view;
 
 import entities.Fire;
 import entities.Region;
-import interface_adapter.marker.MarkerPresenter;
 import interface_adapter.marker.MarkerViewModel;
 import interface_adapter.region.RegionRepository;
 import interface_adapter.select_region.MapCoordinateConverter;
@@ -39,9 +38,6 @@ import org.jxmapviewer.painter.Painter;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.WaypointPainter;
-import usecase.marker.MarkerInputBoundary;
-import usecase.marker.MarkerInteractor;
-import usecase.marker.MarkerOutputBoundary;
 import usecase.select_region.SelectRegionInteractor;
 import usecase.select_region.CoordinateConverter;
 
@@ -71,7 +67,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
      * Constructs the MapView panel.
      * @param regionRepository The repository containing loaded region data.
      */
-    public MapView(RegionRepository regionRepository, MarkerViewModel markerViewModel) {
+    public MapView(RegionRepository regionRepository, MarkerController markerController, MarkerViewModel markerViewModel) {
         this.waypoints = new HashSet<>();
         this.markers = new HashSet<>();
       
@@ -98,13 +94,10 @@ public class MapView extends JPanel implements PropertyChangeListener {
         );
         this.selectRegionController = new SelectRegionController(selectRegionInteractor);
 
-        // Build Marker Use Case
+        // marker use case
+        this.markerController = markerController;
         this.markerViewModel = markerViewModel;
-        markerViewModel.addPropertyChangeListener(this);
-        final MarkerOutputBoundary markerOutputBoundary = new MarkerPresenter(markerViewModel);
-        final MarkerInputBoundary markerInteractor = new MarkerInteractor(markerOutputBoundary);
-        this.markerController = new MarkerController(markerInteractor);
-
+        this.markerViewModel.addPropertyChangeListener(this);
         markerInfoPanel = new MarkerInfoPanel();
         markerInfoPanel.setBounds(560, 20, 160, 70);
         this.add(markerInfoPanel);
@@ -212,9 +205,11 @@ public class MapView extends JPanel implements PropertyChangeListener {
             @Override
             public void mouseMoved(MouseEvent e) {
                 if (firesDisplayed){
-                    Fire fire = fireAtPoint(map, e.getX(), e.getY());
-                    if (fire != null) {
-                        markerController.execute(fire);
+                    FireWaypoint fireWayPoint = fireAtPoint(map, e.getX(), e.getY());
+                    if (fireWayPoint != null) {
+                        double lat = fireWayPoint.getPosition().getLatitude();
+                        double lon = fireWayPoint.getPosition().getLongitude();
+                        markerController.execute(lat, lon);
                         markerInfoPanel.setVisible(true);
                     }else{
                         markerInfoPanel.setVisible(false);
@@ -284,14 +279,14 @@ public class MapView extends JPanel implements PropertyChangeListener {
         this.firesDisplayed = true;
     }
 
-    private Fire fireAtPoint(JXMapViewer map, final double x, final double y) {
+    private FireWaypoint fireAtPoint(JXMapViewer map, final double x, final double y) {
         for (FireWaypoint fireWaypoint: this.markers){
             Point2D marker = map.convertGeoPositionToPoint(fireWaypoint.getPosition());
             double dx = marker.getX() - x;
             double dy = marker.getY() - y;
 
             if (dx*dx + dy*dy < 8*8){
-                return fireWaypoint.getFire();
+                return fireWaypoint;
             }
         }
         return null;

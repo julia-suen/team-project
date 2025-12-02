@@ -1,7 +1,7 @@
 package usecase.marker;
 
 /**
- * The output boundary for the Login Use Case.
+ * The output boundary for the Marker Use Case.
  */
 public interface MarkerOutputBoundary {
     /**
@@ -11,7 +11,7 @@ public interface MarkerOutputBoundary {
     void prepareSuccessView(MarkerOutputData outputData);
 
     /**
-     * Prepares the failure view for the Login Use Case.
+     * Prepares the failure view for the Marker Use Case.
      * @param errorMessage the explanation of the failure
      */
     void prepareFailView(String errorMessage);

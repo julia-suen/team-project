@@ -1,19 +1,17 @@
 package interface_adapter.marker;
 
-import entities.Fire;
 import usecase.marker.MarkerInputBoundary;
 import usecase.marker.MarkerInputData;
 
 public class MarkerController {
     private final MarkerInputBoundary markerUseCaseInteractor;
 
-    public MarkerController(MarkerInputBoundary loginUseCaseInteractor) {
-        this.markerUseCaseInteractor = loginUseCaseInteractor;
+    public MarkerController(MarkerInputBoundary markerUseCaseInteractor) {
+        this.markerUseCaseInteractor = markerUseCaseInteractor;
     }
 
-
-    public void execute(Fire fire) {
-        final MarkerInputData loginInputData = new MarkerInputData(fire);
-        markerUseCaseInteractor.execute(loginInputData);
+    public void execute(double lat, double lon) {
+        final MarkerInputData markerInputData = new MarkerInputData(lat, lon);
+        markerUseCaseInteractor.execute(markerInputData);
     }
 }
