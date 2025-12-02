@@ -54,7 +54,6 @@ public class SidePanelView extends JPanel {
     private final JButton logoutButton = new JButton("Logout");
 
     // Initialize province selector dynamically using the source of truth
-    private final JComboBox<String> provinceSelector;
     private final JComboCheckBox provinceComboCheckBox;
 
     private final JComboBox<String> dayRangeSelector = new JComboBox<>(
@@ -92,7 +91,6 @@ public class SidePanelView extends JPanel {
         setBorder(BorderFactory.createTitledBorder("Filters"));
 
         // Initialize the Province Dropdown dynamically
-        this.provinceSelector = createProvinceComboBox();
         this.provinceComboCheckBox = createProvinceComboCheckBox();
 
         final Dimension maxFieldSize = new Dimension(Integer.MAX_VALUE, FIELD_HEIGHT);
@@ -163,10 +161,6 @@ public class SidePanelView extends JPanel {
         final JLabel provinceLabel = new JLabel("Province:");
         provinceLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(provinceLabel);
-
-        provinceSelector.setMaximumSize(maxFieldSize);
-        provinceSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
-        add(provinceSelector);
 
         provinceComboCheckBox.setMaximumSize(maxFieldSize);
         provinceComboCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -247,9 +241,14 @@ public class SidePanelView extends JPanel {
         nationalButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         nationalButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
 
+        launchMultiRegionAnalysisButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        launchMultiRegionAnalysisButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+
         buttonPanel.add(loadFiresButton);
         buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
         buttonPanel.add(nationalButton);
+        buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
+        buttonPanel.add(launchMultiRegionAnalysisButton);
         buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
 
         add(buttonPanel);
@@ -362,10 +361,6 @@ public class SidePanelView extends JPanel {
         return logoutButton;
     }
 
-    public JComboBox<String> getProvinceSelector() {
-        return provinceSelector;
-    }
-
     public JComboCheckBox getProvinceComboCheckBox() {
         return provinceComboCheckBox;
     }
@@ -385,4 +380,6 @@ public class SidePanelView extends JPanel {
     public GraphPanel getGraphPanel() {
         return graphPanel;
     }
+
+    public JButton getLaunchMultiRegionAnalysisButton() { return launchMultiRegionAnalysisButton; }
 }

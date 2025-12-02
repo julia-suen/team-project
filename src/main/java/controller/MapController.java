@@ -94,19 +94,19 @@ public class MapController implements PropertyChangeListener {
 
         // Log out
         mainFrame.getSidePanelView().getLogoutButton().addActionListener(evt -> {
-                if (userController.getCurrentUser() == null) {
-                    JOptionPane.showMessageDialog(
-                            mainFrame,
-                            "You are logged out",
-                            "Not logged in",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
-                }
-                else {
-                    userController.logout();
-                    //Clear favourites from interactor
-                    favouritesController.setCurrentUser(null);
-                }
+            if (userController.getCurrentUser() == null) {
+                JOptionPane.showMessageDialog(
+                        mainFrame,
+                        "You are logged out",
+                        "Not logged in",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+            else {
+                userController.logout();
+                //Clear favourites from interactor
+                favouritesController.setCurrentUser(null);
+            }
         });
     }
 
@@ -116,37 +116,56 @@ public class MapController implements PropertyChangeListener {
 
         if (date.isEmpty()) {
             JOptionPane.showMessageDialog(mainFrame, "Please select a date.");
+            return;
         }
-        else {
-            int range;
-            try {
-                assert selectedRange != null;
-                if ("All".equalsIgnoreCase(selectedRange.toString())) {
-                    range = MAX_RANGE_FOR_ALL;
-                }
-                else if (!Objects.equals(selectedRange.toString(), "All")) {
-                    range = Integer.parseInt(selectedRange.toString());
-                }
-                else {
-                    range = DEFAULT_RANGE;
-                }
+
+        int range;
+        try {
+            assert selectedRange != null;
+            if ("All".equalsIgnoreCase(selectedRange.toString())) {
+                range = MAX_RANGE_FOR_ALL;
             }
-            catch (NumberFormatException ex) {
-                // Fallback default
+            else if (!Objects.equals(selectedRange.toString(), "All")) {
+                range = Integer.parseInt(selectedRange.toString());
+            }
+            else {
                 range = DEFAULT_RANGE;
             }
-
-            toggleButtons(false);
-
-            // Get the selected province
-            String province = (String) mainFrame.getSidePanelView().getProvinceSelector().getSelectedItem();
-            if (province == null) {
-                province = "All";
-            }
-
-            // Pass it to the controller
-            fireController.execute(province, date, range, isNational);
         }
+        catch (NumberFormatException ex) {
+            range = DEFAULT_RANGE;
+        }
+
+        // Get selected provinces from the Multi-Select CheckBox
+        List<JCheckBox> selectedBoxes = mainFrame.getSidePanelView().getProvinceComboCheckBox().getCheckedItems();
+        String province = "";
+
+        if (selectedBoxes.isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame, "Please select a province.");
+            return;
+        }
+
+        boolean allSelected = selectedBoxes.stream()
+                .anyMatch(cb -> cb.getText().equalsIgnoreCase("All"));
+
+        if (allSelected) {
+            province = "All";
+        }
+        else if (selectedBoxes.size() > 1) {
+            // Enforce single selection for "Load Fires"
+            JOptionPane.showMessageDialog(mainFrame,
+                    "Multiple provinces selected. Please use the 'Compare' button to view multiple regions, or select only one province.",
+                    "Selection Warning",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        else {
+            province = selectedBoxes.get(0).getText();
+        }
+
+        toggleButtons(false);
+        // Pass it to the controller
+        fireController.execute(province, date, range, isNational);
     }
 
     @Override
@@ -212,7 +231,18 @@ public class MapController implements PropertyChangeListener {
     }
 
     private void loadFromFavourite(String provinceName) {
-        mainFrame.getSidePanelView().getProvinceSelector().setSelectedItem(provinceName);
+        // Logic to set the specific item in the Multi-Select CheckBox
+        JComboCheckBox box = mainFrame.getSidePanelView().getProvinceComboCheckBox();
+        ComboBoxModel<JCheckBox> model = box.getModel();
+
+        // Loop through and select only the favourite province
+        for (int i = 0; i < model.getSize(); i++) {
+            JCheckBox cb = model.getElementAt(i);
+            cb.setSelected(cb.getText().equalsIgnoreCase(provinceName));
+        }
+        box.repaint();
+
+        // Trigger load
         loadFires(false);
     }
 
