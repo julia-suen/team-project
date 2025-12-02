@@ -1,0 +1,38 @@
+@startuml
+interface usecase.select_region.SelectRegionInputBoundary {
+~ void execute(SelectRegionInputData)
+}
+
+class usecase.select_region.SelectRegionInteractor {
+- RegionRepository regionRepository
+- SelectRegionOutputBoundary selectRegionPresenter
+- CoordinateConverter coordinateConverter
++ void execute(SelectRegionInputData)
+- boolean pointInRegion(GeoPosition,Region)
+}
+
+
+interface usecase.select_region.SelectRegionOutputBoundary {
+~ void prepareSuccessView(SelectRegionOutputData)
+}
+
+class usecase.select_region.SelectRegionOutputData {
+- String provinceName
++ String getProvinceName()
+}
+
+
+class usecase.select_region.SelectRegionInputData {
+- GeoPosition geoPosition
++ GeoPosition getGeoPosition()
+}
+
+
+interface usecase.select_region.CoordinateConverter {
+~ Point2D geoToPixel(GeoPosition)
+}
+
+
+
+usecase.select_region.SelectRegionInputBoundary <|.. usecase.select_region.SelectRegionInteractor
+@enduml

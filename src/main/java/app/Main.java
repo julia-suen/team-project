@@ -33,15 +33,15 @@ public class Main {
         "British Columbia",
         "Manitoba",
         "Newfoundland and Labrador",
-        "New Brunswick",
-        "Nunavut",
         "Northwest Territories",
         "Nova Scotia",
+        "New Brunswick",
+        "Nunavut",
         "Ontario",
-        "Prince Edward Islands",
+        "Prince Edward Island",
         "Quebec",
         "Saskatchewan",
-        "Yukon",
+        "Yukon"
     };
 
     public static void main(String[] args) {
