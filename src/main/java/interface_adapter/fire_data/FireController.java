@@ -7,6 +7,8 @@ import usecase.load_fires.LoadFiresInputData;
 import usecase.national_overview.NationalOverviewInputBoundary;
 import usecase.national_overview.NationalOverviewInputData;
 
+import java.util.List;
+
 /**
  * Controller for fire analysis use cases.
  * Directs input to either the LoadFires or NationalOverview interactor.

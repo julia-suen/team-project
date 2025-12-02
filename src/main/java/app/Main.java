@@ -1,6 +1,7 @@
 package app;
 
 import controller.MapController;
+import controller.RegionalAnalysisController;
 import controller.UserController;
 import data_access.BoundariesDataAccess;
 import data_access.FavouritesDataAccess;
@@ -19,6 +20,8 @@ import interface_adapter.marker.MarkerViewModel;
 import interface_adapter.region.RegionRepository;
 import interface_adapter.severity_filter.SeverityController;
 import interface_adapter.severity_filter.SeverityPresenter;
+import usecase.favourites.FavouritesInteractor;
+import usecase.compare.CompareInteractor;
 import usecase.favourites.FavouritesInteractor;
 import usecase.common.FireService;
 import usecase.load_fires.LoadFiresInteractor;
@@ -85,6 +88,10 @@ public class Main {
             final SeverityInteractor severityInteractor = new SeverityInteractor(severityPresenter);
             final MarkerInteractor markerInteractor = new MarkerInteractor(markerPresenter, fireViewModel);
 
+            final CompareInteractor compareInteractor = new CompareInteractor(
+                    fireDataAccess, boundariesAccess, fireService
+            );
+
             // Initialize Controllers
             final FireController fireController = new FireController(loadFiresInteractor, nationalInteractor);
             final SeverityController severityController = new SeverityController(severityInteractor);
@@ -95,7 +102,7 @@ public class Main {
             final FavouritesViewModel favouritesViewModel = new FavouritesViewModel();
             final FavouritesPresenter favouritesPresenter = new FavouritesPresenter(favouritesViewModel);
             final FavouritesInteractor favouritesInteractor = new FavouritesInteractor(favouritesPresenter, favouritesDataAccess);
-            
+
             // Initialize View
             final MainFrame mainFrame = new MainFrame(regionRepository, markerController, markerViewModel);
 
@@ -113,6 +120,8 @@ public class Main {
                     fireViewModel,
                     favouritesViewModel
             );
+
+            final RegionalAnalysisController regionalAnalysisController = new RegionalAnalysisController(mainFrame, compareInteractor);
 
             mainFrame.setVisible(true);
         });

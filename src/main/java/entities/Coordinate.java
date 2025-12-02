@@ -40,6 +40,10 @@ public class Coordinate {
         this.frp = frp;
     }
 
+    public String getDate() {
+        return dateDayConfidence[0];
+    }
+
     public double getLat() {
         return lat;
     }
