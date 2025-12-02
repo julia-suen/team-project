@@ -51,6 +51,7 @@ public class SidePanelView extends JPanel {
     private final JButton highSeverityButton = new JButton("High");
     private final JButton addFavouriteButton = new JButton("+ Add Favourite");
     private final JButton removeFavouritesButton = new JButton("- Clear Favourites");
+    private final JButton logoutButton = new JButton("Logout");
 
     // Initialize province selector dynamically using the source of truth
     private final JComboBox<String> provinceSelector;
@@ -63,19 +64,19 @@ public class SidePanelView extends JPanel {
     private final JComboBox<String> favouriteSelector;
 
     private final String[] provinceOptions = {
-          "Alberta",
-          "BC",
-          "Manitoba",
-          "New Brunswick",
-          "Newfoundland & Labrador",
-          "Nova Scotia",
-          "Nunavut",
-          "NWT",
-          "Ontario",
-          "PEI",
-          "Quebec",
-          "Saskatchewan",
-          "Yukon"};
+        "Alberta",
+        "BC",
+        "Manitoba",
+        "New Brunswick",
+        "Newfoundland & Labrador",
+        "Nova Scotia",
+        "Nunavut",
+        "NWT",
+        "Ontario",
+        "PEI",
+        "Quebec",
+        "Saskatchewan",
+        "Yukon"};
 
     private final DefaultComboBoxModel<String> favouriteModel;
 
@@ -157,31 +158,6 @@ public class SidePanelView extends JPanel {
         return new JComboCheckBox(checkBoxItems);
     }
 
-    // Code if I intend to make favourites drop down instead of pop-up on click
-    /* private JComboCheckBox createFavouritesCheckbox() {
-        final List<JCheckBox> checkBoxList = new ArrayList<>();
-
-        final List<String> provinces = new ArrayList<>();
-        provinces.add("All");
-
-        // Fetch from source of truth
-        provinces.addAll(Arrays.asList(Province.ALL_PROVINCES));
-
-        // Sort alphabetically for better UX (skipping "All" at index 0)
-        Collections.sort(provinces.subList(1, provinces.size()));
-
-        for (String province: provinces) {
-            final JCheckBox provinceCheckBox = new JCheckBox(province);
-            provinceCheckBox.setSelected(false);
-
-            checkBoxList.add(provinceCheckBox);
-        }
-
-        final JCheckBox[] checkBoxItems = checkBoxList.toArray(new JCheckBox[0]);
-
-        return new JComboCheckBox(checkBoxItems);
-    } */
-
     private void addComponents(Dimension maxFieldSize) {
         // Province
         final JLabel provinceLabel = new JLabel("Province:");
@@ -252,6 +228,10 @@ public class SidePanelView extends JPanel {
         add(new JLabel("Trend Analysis:"));
         add(Box.createVerticalStrut(BOX_SPACE));
         add(graphPanel);
+
+        add(Box.createVerticalStrut(BOX_SPACE));
+
+        add(logoutButton);
 
         add(Box.createVerticalGlue());
     }
@@ -387,6 +367,10 @@ public class SidePanelView extends JPanel {
         return removeFavouritesButton;
     }
 
+    public JButton getLogoutButton() {
+        return logoutButton;
+    }
+
     public JComboBox<String> getProvinceSelector() {
         return provinceSelector;
     }
@@ -410,7 +394,4 @@ public class SidePanelView extends JPanel {
     public GraphPanel getGraphPanel() {
         return graphPanel;
     }
-
-    // Will need to add Favourites dropdown here.
-
 }

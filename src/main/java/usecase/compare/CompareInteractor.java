@@ -50,7 +50,6 @@ public class CompareInteractor implements CompareInputBoundary {
 
         List<Coordinate> allRawPoints = fetchAllRawPoints(grandStartDate, totalDaysToFetch);
 
-
         // Retrieve the selected province
         for (String provinceName : inputData.getProvinces()) {
             List<Coordinate> regionPoints;
@@ -62,7 +61,6 @@ public class CompareInteractor implements CompareInputBoundary {
                 if (region == null) {
                     regionPoints = new ArrayList<>();
                 } else {
-
                     List<Fire> fires = fireService.createFiresFromPoints(allRawPoints);
                     fires = fireService.filterFiresByRegion(fires, region);
 

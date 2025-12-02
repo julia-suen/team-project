@@ -2,7 +2,6 @@ package controller;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
@@ -56,23 +55,16 @@ public class RegionalAnalysisController {
                     assert selectedRange != null;
                     if ("All".equalsIgnoreCase(selectedRange.toString())) {
                         range = 10;
-                    }
-                    else if (!Objects.equals(selectedRange.toString(), "All")) {
+                    } else {
                         range = Integer.parseInt(selectedRange.toString());
                     }
-                    else {
-                        range = 1;
-                    }
-                }
-                catch (NumberFormatException ex) {
+                } catch (NumberFormatException ex) {
                     range = 1;
                 }
 
                 if (provinceNames.contains("All")) {
                     provinceNames = Arrays.asList(Province.ALL_PROVINCES);
                 }
-
-                System.out.println("Provinces selected for analysis: " + provinceNames);
 
                 CompareInputData input = new CompareInputData(provinceNames, date, range);
 

@@ -6,12 +6,13 @@ import java.util.List;
 
 import entities.Fire;
 import interface_adapter.ViewModel;
+import usecase.marker.FireDisplayStateReader;
 
 /**
  * The ViewModel for the Fire Data View.
  * Manages the state of the fire analysis and notifies listeners of changes.
  */
-public class FireViewModel extends ViewModel<FireState> {
+public class FireViewModel extends ViewModel<FireState> implements FireDisplayStateReader {
 
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
@@ -46,5 +47,11 @@ public class FireViewModel extends ViewModel<FireState> {
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
+    }
+
+    // new method for marker use case
+    @Override
+    public List<Fire> getDisplayedFires() {
+        return this.getState().getDisplayedFires();
     }
 }

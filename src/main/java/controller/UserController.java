@@ -17,6 +17,20 @@ public class UserController {
         requestLogin();
     }
 
+    public UserController(MainFrame mainFrame, boolean showLoginOnStart) {
+        this.mainFrame = mainFrame;
+        if (showLoginOnStart) {
+            requestLogin();
+        }
+    }
+
+    /**
+     * Gets currently logged-in user
+     */
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
     /**
      * Creates and displays the modal login dialog.
      */
@@ -38,6 +52,20 @@ public class UserController {
         });
 
         loginDialog.setVisible(true);
+    }
+
+    public void logout() {
+        if (currentUser != null) {
+            this.currentUser = null;
+            mainFrame.setTitle("Canada Wildfire Data Viewer"); // Reset title
+
+            JOptionPane.showMessageDialog(
+                    mainFrame,
+                    "You have been logged out successfully.",
+                    "Logged Out",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        }
     }
 
     private void showErrorMessage(JDialog owner, String message) {

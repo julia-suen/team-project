@@ -25,7 +25,7 @@ public class MarkerInfoPanel extends JPanel {
     public void update(double lat, double lon, int size, double frp) {
         latLabel.setText(" Lat: " + lat);
         lonLabel.setText(" Lon: " + lon);
-        sizeLabel.setText(" Size: " + size);
+        sizeLabel.setText(" Number of fires: " + size);
         frpLabel.setText(" FRP: " + frp);
 
         setVisible(true);

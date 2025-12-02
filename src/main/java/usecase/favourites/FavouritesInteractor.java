@@ -1,17 +1,36 @@
 package usecase.favourites;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import data_access.FavouritesDataAccess;
+import entities.User;
 
 /**
  * Interactor for handling adding, getting, clearing favourites.
  */
 public class FavouritesInteractor implements FavouritesInputBoundary {
     private final FavouritesOutputBoundary favouritesPresenter;
-    private final List<String> favourites = new ArrayList<>();
+    private final FavouritesDataAccess favouritesDao;
+    private User currentUser;
+    private List<String> favourites = new ArrayList<>();
 
-    public FavouritesInteractor(FavouritesOutputBoundary favouritesPresenter) {
+    public FavouritesInteractor(FavouritesOutputBoundary favouritesPresenter, FavouritesDataAccess favouritesDao) {
         this.favouritesPresenter = favouritesPresenter;
+        this.favouritesDao = favouritesDao;
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+        if (user != null) {
+            loadFavouritesFromFile();
+        }
+        else {
+            favourites.clear();
+            final FavouritesOutputData outputData = new FavouritesOutputData(new ArrayList<>(favourites));
+            favouritesPresenter.prepareSuccessView(outputData);
+        }
     }
 
     @Override
@@ -34,7 +53,8 @@ public class FavouritesInteractor implements FavouritesInputBoundary {
     }
 
     private void handleAdd(String province) {
-        if (province == null) {
+        if (currentUser == null) {
+            favouritesPresenter.prepareFailureView("Please log in to add favourite!");
             return;
         }
         if (favourites.contains(province)) {
@@ -42,12 +62,14 @@ public class FavouritesInteractor implements FavouritesInputBoundary {
             return;
         }
         favourites.add(province);
+        saveFavouritesToFile();
         final FavouritesOutputData outputData = new FavouritesOutputData(new ArrayList<>(favourites));
         favouritesPresenter.prepareSuccessView(outputData);
     }
 
     private void handleClear() {
         favourites.clear();
+        saveFavouritesToFile();
         final FavouritesOutputData outputData = new FavouritesOutputData(new ArrayList<>(favourites));
         favouritesPresenter.prepareSuccessView(outputData);
     }
@@ -55,5 +77,32 @@ public class FavouritesInteractor implements FavouritesInputBoundary {
     private void handleGet() {
         final FavouritesOutputData outputData = new FavouritesOutputData(new ArrayList<>(favourites));
         favouritesPresenter.prepareSuccessView(outputData);
+    }
+
+    private void saveFavouritesToFile() {
+        if (currentUser == null) {
+            return;
+        }
+        else {
+            try {
+                favouritesDao.saveFavourites(currentUser.getUsername(), favourites);
+            }
+            catch (IOException e) {
+                favouritesPresenter.prepareFailureView("Failed to save favourites: " + e.getMessage());
+            }
+        }
+    }
+
+    private void loadFavouritesFromFile() {
+        if (currentUser == null) {
+            return;
+        }
+        try {
+            favourites = new ArrayList<>(favouritesDao.loadFromFavourites(currentUser.getUsername()));
+            final FavouritesOutputData outputData = new FavouritesOutputData(new ArrayList<>(favourites));
+            favouritesPresenter.prepareSuccessView(outputData);
+        } catch (IOException e) {
+            favourites = new ArrayList<>();
+        }
     }
 }

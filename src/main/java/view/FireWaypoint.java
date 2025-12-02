@@ -1,6 +1,5 @@
 package view;
 
-import entities.Fire;
 import org.jxmapviewer.viewer.DefaultWaypoint;
 import org.jxmapviewer.viewer.GeoPosition;
 
@@ -9,17 +8,15 @@ import org.jxmapviewer.viewer.GeoPosition;
  */
 public class FireWaypoint extends DefaultWaypoint {
     private final double radius;
-    private final Fire fire;
 
     /**
      * Constructs a FireWaypoint.
      * @param coord The geographical coordinate.
      * @param radius The radius of the fire.
      */
-    public FireWaypoint(final GeoPosition coord, final double radius, final Fire fire) {
+    public FireWaypoint(final GeoPosition coord, final double radius) {
         super(coord);
         this.radius = radius;
-        this.fire = fire;
     }
 
     /**
@@ -30,11 +27,4 @@ public class FireWaypoint extends DefaultWaypoint {
         return this.radius;
     }
 
-    /**
-     * Gets the fire.
-     * @return the fire.
-     */
-    public Fire getFire() {
-        return this.fire;
-    }
 }

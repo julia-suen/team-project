@@ -1,16 +1,20 @@
 package usecase.marker;
 
-import entities.Fire;
-
 public class MarkerInputData {
-    private final Fire fire;
+    private final double lat;
+    private final double lon;
 
-    public MarkerInputData(Fire fire) {
-        this.fire = fire;
+    public MarkerInputData(double lat, double lon) {
+        this.lat = lat;
+        this.lon = lon;
     }
 
-    public Fire getFire() {
-        return fire;
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
     }
 
 }

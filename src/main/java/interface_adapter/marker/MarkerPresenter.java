@@ -16,6 +16,7 @@ public class MarkerPresenter implements MarkerOutputBoundary {
         this.markerViewModel.setSize(markerOutputData.getSize());
         this.markerViewModel.setFrp(Math.round(markerOutputData.getFrp() * 10000.0) / 10000.0);
         this.markerViewModel.firePropertyChanged();
+        this.markerViewModel.setError(null);
     }
 
     @Override

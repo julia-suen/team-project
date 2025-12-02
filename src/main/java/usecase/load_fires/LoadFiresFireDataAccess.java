@@ -1,7 +1,8 @@
 package usecase.load_fires;
 
-import entities.Coordinate;
 import java.util.List;
+
+import entities.Coordinate;
 
 /**
  * Data Access Interface for fetching fire data required by the "Load Fires" use case.

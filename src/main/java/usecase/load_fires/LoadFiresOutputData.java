@@ -1,8 +1,9 @@
 package usecase.load_fires;
 
-import entities.Fire;
 import java.util.List;
 import java.util.Map;
+
+import entities.Fire;
 
 /**
  * Data structure representing the output of the "Load Fires" use case.

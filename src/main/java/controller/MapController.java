@@ -20,7 +20,7 @@ import view.MainFrame;
 import view.components.JComboCheckBox;
 
 public class MapController implements PropertyChangeListener {
-
+    private boolean isUpdatingFavourites = false;
     private static final int DEFAULT_RANGE = 1;
     private static final int MAX_RANGE_FOR_ALL = 10;
     private static final String NO_FAVOURITES_MESSAGE = "No favourites added yet!";
@@ -31,15 +31,16 @@ public class MapController implements PropertyChangeListener {
     private final FavouritesController favouritesController;
     private final FavouritesViewModel favouritesViewModel;
     private final FireViewModel fireViewModel;
-    // private final FavouritesController favouritesController;
+    private final UserController userController;
 
     public MapController(MainFrame mainFrame, FireController fireController, SeverityController severityController,
-                         FavouritesController favouritesController,
+                         FavouritesController favouritesController, UserController userController,
                          FireViewModel fireViewModel, FavouritesViewModel favouritesViewModel) {
         this.mainFrame = mainFrame;
         this.fireController = fireController;
         this.severityController = severityController;
         this.favouritesController = favouritesController;
+        this.userController = userController;
         this.fireViewModel = fireViewModel;
         this.favouritesViewModel = favouritesViewModel;
 
@@ -80,10 +81,32 @@ public class MapController implements PropertyChangeListener {
 
         // Select Favourite
         mainFrame.getSidePanelView().getFavouriteSelector().addActionListener(evt -> {
-            String selected = (String) mainFrame.getSidePanelView().getFavouriteSelector().getSelectedItem();
-            if (selected != null) {
-                updateProvinceSelection(selected);
+
+            if (isUpdatingFavourites) {
+                return;
             }
+
+            final String selected = (String) mainFrame.getSidePanelView().getFavouriteSelector().getSelectedItem();
+            if (selected != null && !selected.equals(NO_FAVOURITES_MESSAGE)) {
+                loadFromFavourite(selected);
+            }
+        });
+
+        // Log out
+        mainFrame.getSidePanelView().getLogoutButton().addActionListener(evt -> {
+                if (userController.getCurrentUser() == null) {
+                    JOptionPane.showMessageDialog(
+                            mainFrame,
+                            "You are logged out",
+                            "Not logged in",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+                else {
+                    userController.logout();
+                    //Clear favourites from interactor
+                    favouritesController.setCurrentUser(null);
+                }
         });
     }
 
@@ -168,34 +191,29 @@ public class MapController implements PropertyChangeListener {
     }
 
     private void updateFavouritesDropdown(FavouritesState state) {
-        final JComboBox<String> favouritesSelector = mainFrame.getSidePanelView().getFavouriteSelector();
-        final DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) favouritesSelector.getModel();
-        model.removeAllElements();
-        if (state.isEmpty()) {
-            model.addElement(NO_FAVOURITES_MESSAGE);
-        }
-        else {
-            for (String favourite : state.getFavourites()) {
-                model.addElement(favourite);
+
+        // setting flag to prevent actionlistener from triggering
+        isUpdatingFavourites = true;
+        try {
+            final JComboBox<String> favouritesSelector = mainFrame.getSidePanelView().getFavouriteSelector();
+            final DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) favouritesSelector.getModel();
+            model.removeAllElements();
+            if (state.isEmpty()) {
+                model.addElement(NO_FAVOURITES_MESSAGE);
+            } else {
+                for (String favourite : state.getFavourites()) {
+                    model.addElement(favourite);
+                }
             }
+        }
+        finally {
+            isUpdatingFavourites = false;
         }
     }
 
-    private void updateProvinceSelection(String provinceName) {
-        JComboCheckBox provinceCheckBox = mainFrame.getSidePanelView().getProvinceComboCheckBox();
-        List<JCheckBox> checkedItems = provinceCheckBox.getCheckedItems();
-        for (JCheckBox checkBox : checkedItems) {
-            checkBox.setSelected(false);
-        }
-        ComboBoxModel<JCheckBox> model = provinceCheckBox.getModel();
-        for (int i = 0; i < model.getSize(); i++) {
-            JCheckBox checkBox = model.getElementAt(i);
-            if (checkBox.getText().equalsIgnoreCase(provinceName)) {
-                checkBox.setSelected(true);
-                break;
-            }
-            provinceCheckBox.repaint();
-        }
+    private void loadFromFavourite(String provinceName) {
+        mainFrame.getSidePanelView().getProvinceSelector().setSelectedItem(provinceName);
+        loadFires(false);
     }
 
     private void toggleButtons (Boolean enabled) {

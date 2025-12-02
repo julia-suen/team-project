@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.marker.MarkerController;
 import interface_adapter.marker.MarkerViewModel;
 import interface_adapter.region.RegionRepository;
 
@@ -21,10 +22,10 @@ public class MainFrame extends JFrame {
      * Constructs the Main Frame.
      * @param regionRepository The repository containing loaded region data.
      */
-    public MainFrame(RegionRepository regionRepository) {
+    public MainFrame(RegionRepository regionRepository, MarkerController markerController, MarkerViewModel markerViewModel) {
         super("Canada Wildfire Data Viewer");
-        MarkerViewModel markerViewModel = new MarkerViewModel();
-        mapView = new MapView(regionRepository, markerViewModel);
+
+        mapView = new MapView(regionRepository, markerController, markerViewModel);
         sidePanelView = new SidePanelView();
 
         setLayout(new BorderLayout());
