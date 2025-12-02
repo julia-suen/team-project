@@ -209,12 +209,14 @@ public class MapView extends JPanel implements PropertyChangeListener {
         map.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                if (firesDisplayed) {
-                    final GeoPosition mouseGeoPos = map.convertPointToGeoPosition(e.getPoint());
-                    if (isFireAtPoint(map, e.getX(), e.getY())){
-                        markerController.execute(mouseGeoPos.getLatitude(), mouseGeoPos.getLongitude());
+                if (firesDisplayed){
+                    FireWaypoint fireWayPoint = fireAtPoint(map, e.getX(), e.getY());
+                    if (fireWayPoint != null) {
+                        double lat = fireWayPoint.getPosition().getLatitude();
+                        double lon = fireWayPoint.getPosition().getLongitude();
+                        markerController.execute(lat, lon);
                         markerInfoPanel.setVisible(true);
-                    } else {
+                    }else{
                         markerInfoPanel.setVisible(false);
                     }
                 }
@@ -282,17 +284,17 @@ public class MapView extends JPanel implements PropertyChangeListener {
         this.firesDisplayed = true;
     }
 
-    private boolean isFireAtPoint(JXMapViewer map, final double x, final double y) {
+    private FireWaypoint fireAtPoint(JXMapViewer map, final double x, final double y) {
         for (FireWaypoint fireWaypoint: this.markers){
             Point2D marker = map.convertGeoPositionToPoint(fireWaypoint.getPosition());
             double dx = marker.getX() - x;
             double dy = marker.getY() - y;
 
             if (dx*dx + dy*dy < 8*8){
-                return true;
+                return fireWaypoint;
             }
         }
-        return false;
+        return null;
     }
 
     private void displayMarkerDetails() {
