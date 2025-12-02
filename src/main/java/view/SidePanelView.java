@@ -247,14 +247,9 @@ public class SidePanelView extends JPanel {
         nationalButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         nationalButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
 
-        launchMultiRegionAnalysisButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        launchMultiRegionAnalysisButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
-
         buttonPanel.add(loadFiresButton);
         buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
         buttonPanel.add(nationalButton);
-        buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
-        buttonPanel.add(launchMultiRegionAnalysisButton);
         buttonPanel.add(Box.createVerticalStrut(SPACING_SMALL));
 
         add(buttonPanel);
@@ -353,10 +348,6 @@ public class SidePanelView extends JPanel {
 
     public JButton getHighSeverityButton() {
         return highSeverityButton;
-    }
-
-    public JButton getLaunchMultiRegionAnalysisButton() {
-        return launchMultiRegionAnalysisButton;
     }
 
     public JButton getFavouritesButton() {

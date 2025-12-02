@@ -20,6 +20,7 @@ import interface_adapter.marker.MarkerViewModel;
 import interface_adapter.region.RegionRepository;
 import interface_adapter.severity_filter.SeverityController;
 import interface_adapter.severity_filter.SeverityPresenter;
+import usecase.favourites.FavouritesInteractor;
 import usecase.compare.CompareInteractor;
 import usecase.favourites.FavouritesInteractor;
 import usecase.common.FireService;

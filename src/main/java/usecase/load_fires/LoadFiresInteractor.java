@@ -2,7 +2,10 @@ package usecase.load_fires;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import entities.Coordinate;
 import entities.Fire;
@@ -18,6 +21,7 @@ import usecase.common.FireService;
 public class LoadFiresInteractor implements LoadFiresInputBoundary {
 
     private static final String LABEL_FORMAT = "MMM";
+
     private final LoadFiresFireDataAccess fireAccess;
     private final LoadFiresBoundaryDataAccess boundaryAccess;
     private final LoadFiresOutputBoundary presenter;

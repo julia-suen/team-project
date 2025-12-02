@@ -78,7 +78,7 @@ public class BoundariesDataAccess implements LoadFiresBoundaryDataAccess, Nation
     public void loadProvinces() throws GetFireData.InvalidDataException {
         // Locate the local file in resources
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("boundaries.json");
-        
+
         if (inputStream != null) {
             System.out.println("JSON file exists");
             loadProvincesFromJson(inputStream);
