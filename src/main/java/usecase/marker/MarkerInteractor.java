@@ -25,7 +25,7 @@ public class MarkerInteractor implements MarkerInputBoundary {
 
     @Override
     public void execute(MarkerInputData markerInputData) {
-        try{
+        try {
             final double mouseLat = markerInputData.getLat();
             final double mouseLon = markerInputData.getLon();
             final List<Fire> currentFires = fireDisplayStateReader.getDisplayedFires();
@@ -37,6 +37,8 @@ public class MarkerInteractor implements MarkerInputBoundary {
                 final double frp = foundFire.getFrp();
                 final MarkerOutputData markerOutputData = new MarkerOutputData(lat, lon, size, frp);
                 markerPresenter.prepareSuccessView(markerOutputData);
+            }else{
+                markerPresenter.prepareFailView("No fires are found");
             }
         }catch(Exception e){
             markerPresenter.prepareFailView("Unexpected error: " + e.getMessage());
@@ -46,10 +48,11 @@ public class MarkerInteractor implements MarkerInputBoundary {
     // Helper method for finding the fire with a coordinate
     private Fire findFireAtCoord(List<Fire> fires, double mouseLat, double mouseLon) {
         for (Fire fire : fires) {
+            final double TOLERANCE = 1e-10;
             double fireLat = fire.getLat();
             double fireLon = fire.getLon();
 
-            if (fireLat == mouseLat && fireLon == mouseLon) {
+            if (Math.abs(fireLat - mouseLat) < TOLERANCE && Math.abs(fireLon - mouseLon) < TOLERANCE) {
                 return fire;
             }
         }

@@ -94,12 +94,7 @@ public class MapView extends JPanel implements PropertyChangeListener {
         );
         this.selectRegionController = new SelectRegionController(selectRegionInteractor);
 
-        // Build Marker Use Case
-//        this.markerViewModel = markerViewModel;
-//        markerViewModel.addPropertyChangeListener(this);
-//        final MarkerOutputBoundary markerOutputBoundary = new MarkerPresenter(markerViewModel);
-//        final MarkerInputBoundary markerInteractor = new MarkerInteractor(markerOutputBoundary);
-//        this.markerController = new MarkerController(markerInteractor);
+        // marker use case
         this.markerController = markerController;
         this.markerViewModel = markerViewModel;
         this.markerViewModel.addPropertyChangeListener(this);
