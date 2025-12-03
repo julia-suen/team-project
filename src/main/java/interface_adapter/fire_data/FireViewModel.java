@@ -50,6 +50,10 @@ public class FireViewModel extends ViewModel<FireState> implements FireDisplaySt
     }
 
     // new method for marker use case
+    /**
+     * Override method in the interface FireDisplayStateReader.
+     * Allow marker use case interactor to fetch the list of currently displayed fires.
+     */
     @Override
     public List<Fire> getDisplayedFires() {
         return this.getState().getDisplayedFires();

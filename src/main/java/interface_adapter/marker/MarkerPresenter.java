@@ -3,11 +3,20 @@ package interface_adapter.marker;
 import usecase.marker.MarkerOutputBoundary;
 import usecase.marker.MarkerOutputData;
 
+/**
+ * The Presenter for the Marker Use Case.
+ */
 public class MarkerPresenter implements MarkerOutputBoundary {
     private final MarkerViewModel markerViewModel;
+
+    /**
+     * Constructs a SelectRegionPresenter.
+     * @param markerViewModel The ViewModel to update.
+     */
     public MarkerPresenter(MarkerViewModel markerViewModel) {
         this.markerViewModel = markerViewModel;
     }
+
 
     @Override
     public void prepareSuccessView(MarkerOutputData markerOutputData) {

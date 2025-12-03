@@ -9,7 +9,6 @@ import java.util.List;
 public interface FireDisplayStateReader {
     /**
      * Retrieves the list of fires currently displayed on the map.
-     * @return a List of Fire entities.
      */
     List<Fire> getDisplayedFires();
 }

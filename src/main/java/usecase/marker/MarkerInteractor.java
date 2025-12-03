@@ -16,13 +16,19 @@ public class MarkerInteractor implements MarkerInputBoundary {
     /**
      * Constructs a MarkerInteractor.
      * @param markerOutputBoundary the presenter
-     * @param fireDisplayStateReader the fireViewModel
+     * @param fireDisplayStateReader the fireViewModel used to access the list of currently displayed Fire entities.
      */
     public MarkerInteractor(MarkerOutputBoundary markerOutputBoundary, FireDisplayStateReader fireDisplayStateReader) {
         this.markerPresenter = markerOutputBoundary;
         this.fireDisplayStateReader = fireDisplayStateReader;
     }
 
+    /**
+     * Executes the Marker use case.
+     * Iterate the list of currently displayed fires and compare the coordinates with the hovered coordinates.
+     * Retrieves then sends the details of fire to the presenter if found fire process is successful.
+     * @param markerInputData the input data containing the hovered fireWaypoint's latitude and longitude.
+     */
     @Override
     public void execute(MarkerInputData markerInputData) {
         try {
@@ -46,6 +52,7 @@ public class MarkerInteractor implements MarkerInputBoundary {
     }
 
     // Helper method for finding the fire with a coordinate
+    // To avoid floating point approximation error, compare coordinates with a small tolerance level
     private Fire findFireAtCoord(List<Fire> fires, double mouseLat, double mouseLon) {
         for (Fire fire : fires) {
             final double TOLERANCE = 1e-10;

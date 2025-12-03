@@ -3,6 +3,9 @@ package interface_adapter.marker;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+/**
+ * The View Model for the Marker View used in Map View.
+ */
 public class MarkerViewModel {
 
     private double lat;
@@ -13,14 +16,22 @@ public class MarkerViewModel {
 
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
+    /**
+     * Adds a property change listener.
+     * @param listener The listener to add.
+     */
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         this.support.addPropertyChangeListener(listener);
     }
 
+    /**
+     * Fires a property change event to notify listeners.
+     */
     public void firePropertyChanged() {
         this.support.firePropertyChange("markerHover", null, null);
     }
 
+    // getters
     public double getLat() {
         return lat;
     }
@@ -41,6 +52,7 @@ public class MarkerViewModel {
         return error;
     }
 
+    // setters
     public void setLat(double lat) {
         this.lat = lat;
     }
