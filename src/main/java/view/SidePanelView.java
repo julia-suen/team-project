@@ -337,6 +337,10 @@ public class SidePanelView extends JPanel {
         return nationalButton;
     }
 
+    public JButton getLaunchMultiRegionAnalysisButton() {
+        return launchMultiRegionAnalysisButton;
+    }
+
     public JButton getResetButton() {
         return resetButton;
     }
